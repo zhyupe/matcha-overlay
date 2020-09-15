@@ -1,0 +1,30 @@
+.quantity {
+  margin-left: 2px;
+  font-size: .875em;
+}
+
+.group {
+  color: #FFFA;
+  font-size: .875em;
+}
+
+.lowest {
+  color: #b7ca32
+}
+
+.hq {
+  margin-left: 2px;
+}
+
+.icon-hq {
+  margin-right: 2px;
+  height: .875em;
+}
+
+.lowest .icon-hq path {
+  fill: #b7ca32;
+}
+
+.group .icon-hq path {
+  fill: #FFFA;
+}

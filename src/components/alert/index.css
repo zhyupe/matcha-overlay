@@ -1,0 +1,9 @@
+.alert {
+  padding: 10px 20px;
+}
+
+.alert-title {
+  margin: 0 0 10px;
+  color: #b7ca32;
+  font-weight: normal;
+}

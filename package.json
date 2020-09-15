@@ -1,0 +1,61 @@
+{
+  "name": "matcha-overlay",
+  "version": "2.0.2",
+  "private": true,
+  "dependencies": {
+    "axios": "^0.20.0",
+    "debounce": "^1.2.0",
+    "events": "^3.2.0",
+    "immutable": "^4.0.0-rc.12",
+    "lru-cache": "^6.0.0",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-scripts": "^3.4.3",
+    "typescript": "^4.0.2"
+  },
+  "homepage": "http://zhyupe.github.io/matcha-overlay/",
+  "scripts": {
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "predeploy": "npm version patch --no-git-tag-version && npm run build",
+    "staging": "npm run build -- --staging && bash ./deploy.sh --staging",
+    "deploy": "bash ./deploy.sh",
+    "lint": "eslint --ext .js,.ts,.tsx src",
+    "eject": "react-scripts eject"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@types/debounce": "^1.2.0",
+    "@types/lru-cache": "^5.1.0",
+    "@types/react": "^16.9.49",
+    "@types/react-dom": "^16.9.8",
+    "@typescript-eslint/eslint-plugin": "2",
+    "@typescript-eslint/parser": "2",
+    "babel-eslint": "^10.1.0",
+    "eslint": "6",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-config-react-app": "^5.2.1",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-react": "^7.20.6",
+    "eslint-plugin-standard": "^4.0.1",
+    "prettier": "^2.1.1",
+    "react-app-rewired": "^2.1.6",
+    "svgpath": "^2.3.0",
+    "typed-emitter": "^1.3.0"
+  }
+}

@@ -1,0 +1,25 @@
+
+.overlay-market {
+  text-align: center;
+}
+
+.overlay-market th, .overlay-market td {
+  font-weight: normal;
+  padding: 5px 10px;
+}
+
+.overlay-market .small {
+  font-size: .875em;
+}
+
+.overlay-market li {
+  margin-bottom: 5px;
+}
+
+.overlay-market .query {
+  display: inline-block;
+}
+
+.overlay-market .transpose.button-active {
+  transform: rotate(90deg);
+}

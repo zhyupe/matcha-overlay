@@ -1,0 +1,106 @@
+.overlay-gearset {
+  display: flex;
+  flex-direction: row;
+  padding: 0 5px;
+}
+
+.gearset-wrap {
+  flex: 1;
+}
+
+.gearset-wrap h3 {
+  margin: 10px 0 5px 0;
+  font-size: 1em;
+  font-weight: normal;
+  color: #b7ca32;
+}
+
+.gearset-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+.gearset-left, .gearset-right {
+  flex-grow: 1;
+  width: 168px;
+}
+
+.gearset-empty {
+  font-size: 0.875em;
+}
+
+.gearset-item {
+  height: 48px;
+  padding-left: 48px;
+  text-align: left;
+  font-size: 0.875em;
+}
+
+.gearset-item-empty {
+  line-height: 48px;
+}
+
+.gearset-item-icon {
+  position: relative;
+  float: left;
+  height: 40px;
+  margin-left: -48px;
+  margin-top: 4px;
+}
+
+.gearset-item-icon::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 15%;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 50% -460%,
+    rgba(255, 255, 255, .6) 80%,
+    rgba(255,255,255, 0) 85%
+  );
+  box-shadow: inset 0px 2px 2px 1px rgba(255, 255, 255, 0.3),
+    inset 0px -1px 2px 1px rgba(255, 255, 255, 0.1);
+}
+
+.gearset-item-name, .gearset-item-name span {
+  line-height: 24px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.gearset-item-name {
+  position: relative;
+  height: 24px;
+}
+
+@keyframes item-name {
+  0%   { opacity: 1; }
+  40%  { opacity: 1; }
+  50%  { opacity: 0; }
+  90%  { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.gearset-item-name span {
+  position: absolute;
+  display: block;
+  left: 0;
+  right: 0;
+
+  animation: item-name 10s infinite;
+}
+
+.gearset-item-name span.delay {
+  opacity: 0;
+  animation-delay: -5s;
+}
+
+.gearset-item-materia img {
+  height: 24px;
+}

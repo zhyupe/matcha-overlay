@@ -1,0 +1,302 @@
+import React, { useState, useEffect, useReducer, ReducerWithoutAction } from 'react'
+import './index.css'
+import { List, Map } from 'immutable'
+import {
+  MarketRecord,
+  MarketLogInfo,
+  MarketItemRecord,
+  MarketPriceRecord,
+  MarketBoardItemListingCountDTO,
+  MarketBoardItemListingDTO,
+} from './interface'
+import { Cell } from './mods/cell'
+import { MatchaEvent, OverlayProps } from '../../interface'
+import { getConfig, setConfig } from '../../../lib/config'
+import { Close, Target, HQ } from '../../../components/icon'
+
+// [00:16:01.787] 00:0000:Matcha-MarketBoard:[1060,"萌芽池",5703,"魔晶石",[1800,2,0],[1800,3,0]]
+function parseLog(logData: any[]): MarketLogInfo | null {
+  const [mode, serverId, , itemId, , ...data] = logData
+  return {
+    type: 'data',
+    mode,
+    server: { id: serverId },
+    item: { id: itemId },
+    data,
+  }
+}
+
+function updatePriceRow(records: List<MarketPriceRecord>, data: MarketRecord[]): List<MarketPriceRecord> {
+  const ret = data.reduce((records, { price, quantity, hq }) => {
+    const index = records.findIndex((record) => record.get('price') === price)
+    if (index === -1) {
+      return records.push(
+        MarketPriceRecord({
+          price,
+          quantity,
+          hq: hq ? quantity : 0,
+        }),
+      )
+    }
+
+    return records.update(index, (record) =>
+      record.update('quantity', (value) => value + quantity).update('hq', (value) => value + (hq ? quantity : 0)),
+    )
+  }, records)
+
+  return ret
+}
+
+export function MarketOverlay({ eventEmitter, active, setActive }: OverlayProps) {
+  const [worlds, setWorlds] = useState(List<number>())
+  const [items, setItems] = useState(List<MarketItemRecord>())
+  const [transpose, toggleTranspose] = useReducer<ReducerWithoutAction<boolean>, undefined>(
+    (prev) => {
+      const value = !prev
+      setConfig('market-transpose', `${value}`)
+      return value
+    },
+    undefined,
+    () => getConfig('market-transpose') === 'true',
+  )
+  const [hqOnly, toggleHQOnly] = useReducer<ReducerWithoutAction<boolean>, undefined>(
+    (prev) => {
+      const value = !prev
+      setConfig('market-hq-only', `${value}`)
+      return value
+    },
+    undefined,
+    () => getConfig('market-hq-only') === 'true',
+  )
+
+  const reset = () => {
+    setWorlds((servers) => servers.clear())
+    setItems((items) => items.clear())
+  }
+
+  useEffect(() => {
+    /**
+     * @deprecated
+     */
+    const handleLog = function (log: MatchaEvent<any[]>) {
+      const info = parseLog(log.content)
+      if (info === null) return
+
+      if (!active) {
+        setActive()
+      }
+      setWorlds((servers) => {
+        if (!servers.includes(info.server.id)) {
+          return servers.push(info.server.id)
+        } else {
+          return servers
+        }
+      })
+
+      setItems((items) => {
+        const index = items.findIndex((item) => item.get('id') === info.item.id)
+        if (index === -1) {
+          if (info.mode !== 'data') return items
+
+          return items.push(
+            MarketItemRecord({
+              ...info.item,
+              rows: Map<number, List<MarketPriceRecord>>().set(
+                info.server.id,
+                updatePriceRow(
+                  List(),
+                  info.data.map(([price, quantity, hq]) => ({
+                    price,
+                    quantity,
+                    hq: hq !== 0,
+                  })),
+                ),
+              ),
+            }),
+          )
+        }
+
+        return items.update(index, (item) =>
+          item.update('rows', (rows) => {
+            if (info.mode === 'count') {
+              return rows.set(info.server.id, List<MarketPriceRecord>())
+            }
+
+            if (rows.has(info.server.id)) {
+              return rows.update(info.server.id, (records) =>
+                updatePriceRow(
+                  records,
+                  info.data.map(([price, quantity, hq]) => ({
+                    price,
+                    quantity,
+                    hq: hq !== 0,
+                  })),
+                ),
+              )
+            } else {
+              return rows.set(
+                info.server.id,
+                updatePriceRow(
+                  List<MarketPriceRecord>(),
+                  info.data.map(([price, quantity, hq]) => ({
+                    price,
+                    quantity,
+                    hq: hq !== 0,
+                  })),
+                ),
+              )
+            }
+          }),
+        )
+      })
+    }
+
+    const handleCount = function (log: MatchaEvent<MarketBoardItemListingCountDTO>) {
+      const data = log.content
+
+      setItems((items) => {
+        const index = items.findIndex((item) => item.get('id') === data.item)
+        if (index === -1) {
+          return items
+        }
+
+        return items.update(index, (item) =>
+          item.update('rows', (rows) => {
+            return rows.set(data.world, List<MarketPriceRecord>())
+          }),
+        )
+      })
+    }
+
+    const handleListing = function (log: MatchaEvent<MarketBoardItemListingDTO>) {
+      if (!active) {
+        setActive()
+      }
+
+      const data = log.content
+
+      setWorlds((servers) => {
+        if (!servers.includes(data.world)) {
+          return servers.push(data.world)
+        } else {
+          return servers
+        }
+      })
+
+      setItems((items) => {
+        const index = items.findIndex((item) => item.get('id') === data.item)
+        if (index === -1) {
+          return items.push(
+            MarketItemRecord({
+              id: data.item,
+              rows: Map<number, List<MarketPriceRecord>>().set(data.world, updatePriceRow(List(), data.data)),
+            }),
+          )
+        }
+
+        return items.update(index, (item) =>
+          item.update('rows', (rows) => {
+            if (rows.has(data.world)) {
+              return rows.update(data.world, (records) => updatePriceRow(records, data.data))
+            } else {
+              return rows.set(data.world, updatePriceRow(List<MarketPriceRecord>(), data.data))
+            }
+          }),
+        )
+      })
+    }
+
+    // [MarketBoardItemListingCount] {"item":12604,"world":1044,"count":10,"EventType":6}
+    // [MarketBoardItemListing] {"item":12604,"world":0,"data":[{"price":1750,"quantity":39,"hq":false}],"EventType":5}
+    eventEmitter.on('MarketBoard', handleLog)
+    eventEmitter.on('MarketBoardItemListing', handleListing)
+    eventEmitter.on('MarketBoardItemListingCount', handleCount)
+
+    return () => {
+      eventEmitter.off('MarketBoard', handleLog)
+      eventEmitter.off('MarketBoardItemListing', handleListing)
+      eventEmitter.off('MarketBoardItemListingCount', handleCount)
+    }
+  }, [active, eventEmitter, setActive])
+
+  if (!active) return null
+
+  const renderWorld = (world: number | null) =>
+    world === null ? <th>服务器</th> : <Cell.WorldName id={world} key={world} />
+
+  const renderItem = (item: MarketItemRecord | null) => {
+    if (item === null) {
+      return <th key="0">物品名</th>
+    }
+
+    const id = item.get('id')
+    return <Cell.ItemName key={id} item={id} />
+  }
+
+  const columnType = transpose ? 'world' : 'item'
+  const rowType = transpose ? 'item' : 'world'
+  const firstRow: List<number | MarketItemRecord> = columnType === 'world' ? worlds : items
+  const firstColumn: List<number | MarketItemRecord> = rowType === 'world' ? worlds : items
+
+  const columnRender = (columnType === 'world' ? renderWorld : renderItem) as (
+    item: number | MarketItemRecord | null,
+  ) => JSX.Element
+  const rowRender = (rowType === 'world' ? renderWorld : renderItem) as (
+    item: number | MarketItemRecord | null,
+  ) => JSX.Element
+
+  return (
+    <table className="overlay-market">
+      <thead>
+        <tr>
+          <th style={{ width: 100 }}>
+            <button
+              className={`transpose button button-circle ${transpose ? 'button-active' : ''}`}
+              onClick={toggleTranspose}
+              style={{ marginRight: 10 }}
+            >
+              <Target />
+            </button>
+            <button
+              className={`button button-circle ${hqOnly ? 'button-active' : ''}`}
+              onClick={toggleHQOnly}
+              style={{ marginRight: 10 }}
+            >
+              <HQ />
+            </button>
+            <button className="button button-circle" onClick={reset}>
+              <Close />
+            </button>
+          </th>
+          {firstRow.isEmpty() ? columnRender(null) : firstRow.map(columnRender)}
+        </tr>
+      </thead>
+      <tbody>
+        {firstColumn.isEmpty() ? (
+          <tr>
+            {rowRender(null)}
+            {firstRow.isEmpty() ? <Cell.Empty /> : firstRow.map((_) => <Cell.Empty />)}
+          </tr>
+        ) : (
+          firstColumn.map((row) => {
+            return (
+              <tr>
+                {rowRender(row as MarketItemRecord)}
+                {firstRow.isEmpty() ? (
+                  <Cell.Empty />
+                ) : (
+                  firstRow.map((column) => {
+                    const item = (rowType === 'world' ? column : row) as MarketItemRecord
+                    const world = (rowType === 'world' ? row : column) as number
+
+                    return <Cell key={`${world}-${item.get('id')}`} world={world} item={item} hqOnly={hqOnly} />
+                  })
+                )}
+              </tr>
+            )
+          })
+        )}
+      </tbody>
+    </table>
+  )
+}
