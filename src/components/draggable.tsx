@@ -10,7 +10,6 @@ export function Draggable({ children, onClick }: { children: any; onClick: Funct
       },
       onMouseUp(e) {
         if (Date.now() - mouseDown < 200) {
-          console.log(e.isPropagationStopped())
           e.stopPropagation()
           onClick()
         }

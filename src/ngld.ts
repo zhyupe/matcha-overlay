@@ -43,7 +43,6 @@ const sendMessage = (() => {
       })
 
       ws.addEventListener('open', () => {
-        console.log('Connected!')
         if (!queue) return
 
         const q = queue
@@ -77,7 +76,6 @@ const sendMessage = (() => {
       ws.addEventListener('close', () => {
         queue = []
 
-        console.log('Trying to reconnect...')
         // Don't spam the server with retries.
         setTimeout(connectWs, 300)
       })

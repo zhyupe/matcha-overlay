@@ -153,7 +153,6 @@ function App() {
       }
 
       setVersion(logVersion)
-      console.log(event)
       eventEmitter.emit(type, event)
     })
 
