@@ -1,5 +1,3 @@
-declare let OverlayPluginApi: any
-
 export interface NgldMessage {
   [x: string]: any
 }
@@ -97,11 +95,11 @@ const sendMessage = (() => {
           }
         : undefined
 
-      OverlayPluginApi.callHandler(JSON.stringify(message), apiCallback)
+      ;(window as any).OverlayPluginApi.callHandler(JSON.stringify(message), apiCallback)
     }
 
     const waitForApi = () => {
-      if (!OverlayPluginApi || !OverlayPluginApi.ready) {
+      if (!(window as any).OverlayPluginApi || !(window as any).OverlayPluginApi.ready) {
         setTimeout(waitForApi, 300)
         return
       }
