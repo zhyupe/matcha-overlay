@@ -33,14 +33,17 @@ module.exports = function override(config, env) {
     if (process.env.NODE_ENV === 'production') {
       config.output.publicPath = `/matcha/${process.argv.includes('--staging') ? 'overlay-staging' : 'overlay'}/`;
       config.devtool = '';
-    } else {
-      config.output.publicPath = '/';
     }
   }
 
   config.entry = {
     main: config.entry,
-    map: path.join(__dirname, 'src/map/index.ts')
+    map: './src/map/index.ts'
   }
+
+  config.optimization.runtimeChunk = {
+    name: 'runtime'
+  }
+
   return config;
 }
