@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { List } from 'immutable'
-import { GearsetMateria, GearsetDTO } from './interface'
+import { GearsetDTO } from './interface'
 import { MatchaEvent, OverlayProps } from '../../interface'
 import { GearsetPart } from './mods/part'
 import { AvgLevel } from './mods/avg-ilvl'

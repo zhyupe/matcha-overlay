@@ -3,7 +3,6 @@ import './index.css'
 import { List, Map } from 'immutable'
 import {
   MarketRecord,
-  MarketLogInfo,
   MarketItemRecord,
   MarketPriceRecord,
   MarketBoardItemListingCountDTO,
