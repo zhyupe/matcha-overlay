@@ -5,6 +5,7 @@ import { Cache } from '../cache'
 export interface ItemInfo {
   ID: number
   Icon: string
+  LevelItem: number
   IsAdvancedMeldingPermitted: number
   MateriaSlotCount: number
   Name_chs: string
@@ -27,6 +28,10 @@ export interface ItemRecord {
    * IsAdvancedMeldingPermitted
    */
   a: number
+  /**
+   * LevelItem
+   */
+  l: number
 }
 
 export interface XivapiPagedResponse<T> {
@@ -44,6 +49,14 @@ export interface XivapiPagedResponse<T> {
 
 export const xivapiRoot = 'https://cafemaker.wakingsands.com'
 const itemCache = new Cache<number, ItemRecord>('gearset-item')
+const queryColumns: Array<keyof ItemInfo> = [
+  'ID',
+  'Icon',
+  'LevelItem',
+  'MateriaSlotCount',
+  'IsAdvancedMeldingPermitted',
+  'Name_chs',
+]
 
 let itemQueryList: Array<{
   id: number
@@ -55,11 +68,11 @@ const doQuery = debounce(function () {
   const list = itemQueryList.slice()
   itemQueryList = []
 
-  const ids = list.map(({ id }) => id).join('%2C')
+  const ids = Array.from(new Set(list.map(({ id }) => id))).join(',')
 
   axios
     .get<XivapiPagedResponse<ItemInfo>>(
-      `${xivapiRoot}/item?columns=ID%2CIcon%2CMateriaSlotCount%2CIsAdvancedMeldingPermitted%2CName_chs&ids=${ids}`,
+      `${xivapiRoot}/item?columns=${encodeURIComponent(queryColumns.join(','))}&ids=${encodeURIComponent(ids)}`,
     )
     .then((res) => {
       for (const result of res.data.Results) {
@@ -68,6 +81,7 @@ const doQuery = debounce(function () {
           i: result.Icon,
           s: result.MateriaSlotCount,
           a: result.IsAdvancedMeldingPermitted,
+          l: result.LevelItem,
         }
 
         itemCache.set(result.ID, record)
@@ -91,7 +105,7 @@ const doQuery = debounce(function () {
 
 export function queryItem(id: number): Promise<ItemRecord> {
   const fromCache = itemCache.get(id)
-  if (fromCache && typeof fromCache.n === 'string') {
+  if (fromCache && typeof fromCache.l === 'number') {
     return Promise.resolve(fromCache)
   }
 

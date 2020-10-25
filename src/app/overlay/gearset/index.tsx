@@ -3,6 +3,7 @@ import { List } from 'immutable'
 import { GearsetMateria, GearsetDTO } from './interface'
 import { MatchaEvent, OverlayProps } from '../../interface'
 import { GearsetPart } from './mods/part'
+import { AvgLevel } from './mods/avg-ilvl'
 import './index.css'
 
 function parseLog(logData: number[]): GearsetDTO {
@@ -28,7 +29,9 @@ function parseLog(logData: number[]): GearsetDTO {
 function Gearset({ title, list }: { title: string; list: List<GearsetDTO> }) {
   return (
     <div className="gearset-wrap">
-      <h3>{title}</h3>
+      <h3>
+        {title} <AvgLevel list={list} />
+      </h3>
       {list.isEmpty() ? (
         <div className="gearset-empty">暂无配装数据</div>
       ) : (

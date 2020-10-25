@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { GearsetDTO, GearsetMateria } from '../interface'
-import { HQ, Glamour } from '../../../../components/icon'
+import { HQ, Glamour, ILvl } from '../../../../components/icon'
 import { queryItem, ItemRecord, xivapiRoot } from '../../../../lib/store/item'
 
 const materiaMap = [
@@ -35,15 +35,28 @@ const materiaMap = [
 const tierNumbers = '壹贰叁肆伍陆柒捌'
 
 function Materias({ materias, slot, overmeld }: { materias: GearsetMateria[]; slot: number; overmeld: boolean }) {
-  // 古武魂武会使用此字段存储属性信息
   if (materias.some(({ type }) => type >= materiaMap.length)) {
     return null
   }
 
-  const icons = materias.map(({ type, tier }, index) => ({
-    icon: `icon/materia/slot_${index >= slot ? 'overmeld' : 'normal'}_grade0${tier}.png`,
-    name: `${materiaMap[type]}魔晶石${tierNumbers[tier]}型`,
-  }))
+  const icons = []
+  for (let i = 0; i <= materias.length; ++i) {
+    const { type, tier } = materias[i]
+
+    if (type >= materiaMap.length) {
+      // 古武魂武会使用此字段存储属性信息
+      return null
+    }
+
+    if (type === 0) {
+      break
+    }
+
+    icons.push({
+      icon: `icon/materia/slot_${i >= slot ? 'overmeld' : 'normal'}_grade0${tier}.png`,
+      name: `${materiaMap[type]}魔晶石${tierNumbers[tier]}型`,
+    })
+  }
 
   const maxMateria = overmeld ? 5 : slot
   for (let i = icons.length; i < maxMateria; ++i) {
@@ -100,22 +113,23 @@ export function GearsetPart({ part }: { part?: GearsetDTO }) {
   return (
     <div className="gearset-item">
       <div className="gearset-item-icon">{record ? <img alt="" src={`${xivapiRoot}${record.i}`} /> : null}</div>
-      {glamour ? (
-        <div className="gearset-item-name gearset-item-name-animated">
-          <span>
-            {record.n} {part.hq ? <HQ /> : null}
-          </span>
+      <div className={`gearset-item-name ${glamour ? 'gearset-item-animated' : ''}`}>
+        <span>
+          {record.n} {part.hq ? <HQ /> : null}
+        </span>
+        {glamour ? (
           <span className="delay">
             <Glamour /> {glamour.n}
           </span>
-        </div>
-      ) : (
-        <div className="gearset-item-name">
-          {record.n} {part.hq ? <HQ /> : null}
-        </div>
-      )}
-      <div className="gearset-item-materia">
-        <Materias materias={part.materias} slot={record ? record.s : 5} overmeld={record ? !!record.a : false} />
+        ) : null}
+      </div>
+      <div className="gearset-item-materia gearset-item-animated">
+        <span>
+          <Materias materias={part.materias} slot={record ? record.s : 5} overmeld={record ? !!record.a : false} />
+        </span>
+        <span className="delay">
+          <ILvl /> {record.l}
+        </span>
       </div>
     </div>
   )

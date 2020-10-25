@@ -75,8 +75,11 @@
 }
 
 .gearset-item-name {
-  position: relative;
   height: 24px;
+}
+
+.gearset-item-animated {
+  position: relative;
 }
 
 @keyframes item-name {
@@ -87,7 +90,7 @@
   100% { opacity: 1; }
 }
 
-.gearset-item-name span {
+.gearset-item-animated span {
   position: absolute;
   display: block;
   left: 0;
@@ -96,7 +99,7 @@
   animation: item-name 10s infinite;
 }
 
-.gearset-item-name span.delay {
+.gearset-item-animated span.delay {
   opacity: 0;
   animation-delay: -5s;
 }

@@ -23,3 +23,7 @@ export function Plus() {
 export function Target() {
   return <i className="icon icon-target">&#xe05e;</i>
 }
+
+export function ILvl() {
+  return <i className="icon icon-ilvl">&#xe033;</i>
+}
