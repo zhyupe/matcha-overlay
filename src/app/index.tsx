@@ -147,6 +147,7 @@ function App() {
       }
 
       const event = {
+        time: new Date(line[1]),
         type,
         version: logVersion,
         content,

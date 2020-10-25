@@ -32,9 +32,13 @@ function Gearset({ title, list }: { title: string; list: List<GearsetDTO> }) {
   )
 }
 
+type TimedGearsetDTO = GearsetDTO & {
+  time: number
+}
+
 export function GearsetOverlay({ eventEmitter, active, setActive }: OverlayProps) {
-  const [mine, setMine] = useState(List<GearsetDTO>())
-  const [others, setOthers] = useState(List<GearsetDTO>())
+  const [mine, setMine] = useState(List<TimedGearsetDTO>())
+  const [others, setOthers] = useState(List<TimedGearsetDTO>())
 
   useEffect(() => {
     const handleLog = function (log: MatchaEvent<GearsetDTO>) {
@@ -44,7 +48,22 @@ export function GearsetOverlay({ eventEmitter, active, setActive }: OverlayProps
         setActive()
       }
 
-      ;(info.self ? setMine : setOthers)((list) => list.set(info.slot, info))
+      ;(info.self ? setMine : setOthers)((list) => {
+        const time = log.time.getTime()
+        const isClear = info.item === 0
+
+        if (isClear) {
+          const oldItem = list.get(info.slot)
+          if (!oldItem || time - oldItem.time < 100) {
+            return list
+          }
+        }
+
+        return list.set(info.slot, {
+          ...info,
+          time,
+        })
+      })
     }
 
     eventEmitter.on('Gearset', handleLog)

@@ -16,22 +16,30 @@ export function AvgLevel({ list }: { list: List<GearsetDTO> }) {
     }
 
     const itemIds = list.map((item) => (item && item.item ? item.item : 0)).toArray()
-    if (itemIds.length > 12) {
-      itemIds.length = 12
+    if (itemIds.length > 13) {
+      itemIds.length = 13
     }
 
     Promise.all(itemIds.map((item) => (item ? queryItem(item) : null)))
       .then((items) => {
-        const totalLevel = items.reduce((sum, item, i) => {
+        let totalLevel = items.reduce((sum, item, i) => {
           if (sum === InvalidAvgILvl || (itemIds[i] && !item)) {
             return InvalidAvgILvl
           }
 
           return item ? sum + item.l : sum
         }, 0)
-        const divider = items[1] ? 13 : 12
 
-        setILvl(Math.floor(totalLevel / divider))
+        if (totalLevel === InvalidAvgILvl) {
+          setILvl(InvalidAvgILvl)
+          return
+        }
+
+        if (!itemIds[1] && items[0]) {
+          totalLevel += items[0].l
+        }
+
+        setILvl(Math.floor(totalLevel / 13))
       })
       .catch(() => {
         setILvl(InvalidAvgILvl)

@@ -8,6 +8,7 @@ export interface LogEvent extends NgldMessage {
 }
 
 export interface MatchaEvent<T = string> {
+  time: Date
   type: string
   version: string
   content: T

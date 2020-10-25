@@ -40,7 +40,7 @@ function Materias({ materias, slot, overmeld }: { materias: GearsetMateria[]; sl
   }
 
   const icons = []
-  for (let i = 0; i <= materias.length; ++i) {
+  for (let i = 0; i < materias.length; ++i) {
     const { type, tier } = materias[i]
 
     if (type >= materiaMap.length) {
