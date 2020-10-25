@@ -17,7 +17,7 @@
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
-    "predeploy": "npm version patch --no-git-tag-version && npm run build",
+    "predeploy": "npm run build",
     "staging": "npm run build -- --staging && bash ./deploy.sh --staging",
     "deploy": "bash ./deploy.sh",
     "lint": "eslint --ext .js,.ts,.tsx src",
