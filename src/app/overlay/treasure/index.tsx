@@ -5,15 +5,6 @@ import { Alert } from '../../../components/alert'
 import { TreasureData } from './data'
 import './index.css'
 
-function parseLog(logData: number[]): TreasureSpotDTO {
-  const [item, location, isNew] = logData
-  return {
-    item,
-    location,
-    isNew: isNew === 1,
-  }
-}
-
 export function TreasureOverlay({ eventEmitter, active, setActive }: OverlayProps) {
   const [info, setInfo] = useState<TreasureSpotDTO>()
   const mapString = useMemo<string | null>(() => {
@@ -29,7 +20,7 @@ export function TreasureOverlay({ eventEmitter, active, setActive }: OverlayProp
 
   useEffect(() => {
     const handleLog = function (log: MatchaEvent<TreasureSpotDTO>) {
-      const data = Array.isArray(log.content) ? parseLog(log.content) : log.content
+      const data = log.content
 
       if ((info && data.item === info.item && data.location === info.location) || (!info && data.item === 0)) {
         return

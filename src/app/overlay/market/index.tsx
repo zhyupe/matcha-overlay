@@ -14,18 +14,6 @@ import { MatchaEvent, OverlayProps } from '../../interface'
 import { getConfig, setConfig } from '../../../lib/config'
 import { Close, Target, HQ } from '../../../components/icon'
 
-// [00:16:01.787] 00:0000:Matcha-MarketBoard:[1060,"萌芽池",5703,"魔晶石",[1800,2,0],[1800,3,0]]
-function parseLog(logData: any[]): MarketLogInfo | null {
-  const [mode, serverId, , itemId, , ...data] = logData
-  return {
-    type: 'data',
-    mode,
-    server: { id: serverId },
-    item: { id: itemId },
-    data,
-  }
-}
-
 function updatePriceRow(records: List<MarketPriceRecord>, data: MarketRecord[]): List<MarketPriceRecord> {
   const ret = data.reduce((records, { price, quantity, hq }) => {
     const index = records.findIndex((record) => record.get('price') === price)
@@ -75,82 +63,6 @@ export function MarketOverlay({ eventEmitter, active, setActive }: OverlayProps)
   }
 
   useEffect(() => {
-    /**
-     * @deprecated
-     */
-    const handleLog = function (log: MatchaEvent<any[]>) {
-      const info = parseLog(log.content)
-      if (info === null) return
-
-      if (!active) {
-        setActive()
-      }
-      setWorlds((servers) => {
-        if (!servers.includes(info.server.id)) {
-          return servers.push(info.server.id)
-        } else {
-          return servers
-        }
-      })
-
-      setItems((items) => {
-        const index = items.findIndex((item) => item.get('id') === info.item.id)
-        if (index === -1) {
-          if (info.mode !== 'data') return items
-
-          return items.push(
-            MarketItemRecord({
-              ...info.item,
-              rows: Map<number, List<MarketPriceRecord>>().set(
-                info.server.id,
-                updatePriceRow(
-                  List(),
-                  info.data.map(([price, quantity, hq]) => ({
-                    price,
-                    quantity,
-                    hq: hq !== 0,
-                  })),
-                ),
-              ),
-            }),
-          )
-        }
-
-        return items.update(index, (item) =>
-          item.update('rows', (rows) => {
-            if (info.mode === 'count') {
-              return rows.set(info.server.id, List<MarketPriceRecord>())
-            }
-
-            if (rows.has(info.server.id)) {
-              return rows.update(info.server.id, (records) =>
-                updatePriceRow(
-                  records,
-                  info.data.map(([price, quantity, hq]) => ({
-                    price,
-                    quantity,
-                    hq: hq !== 0,
-                  })),
-                ),
-              )
-            } else {
-              return rows.set(
-                info.server.id,
-                updatePriceRow(
-                  List<MarketPriceRecord>(),
-                  info.data.map(([price, quantity, hq]) => ({
-                    price,
-                    quantity,
-                    hq: hq !== 0,
-                  })),
-                ),
-              )
-            }
-          }),
-        )
-      })
-    }
-
     const handleCount = function (log: MatchaEvent<MarketBoardItemListingCountDTO>) {
       const data = log.content
 
@@ -208,12 +120,10 @@ export function MarketOverlay({ eventEmitter, active, setActive }: OverlayProps)
 
     // [MarketBoardItemListingCount] {"item":12604,"world":1044,"count":10,"EventType":6}
     // [MarketBoardItemListing] {"item":12604,"world":0,"data":[{"price":1750,"quantity":39,"hq":false}],"EventType":5}
-    eventEmitter.on('MarketBoard', handleLog)
     eventEmitter.on('MarketBoardItemListing', handleListing)
     eventEmitter.on('MarketBoardItemListingCount', handleCount)
 
     return () => {
-      eventEmitter.off('MarketBoard', handleLog)
       eventEmitter.off('MarketBoardItemListing', handleListing)
       eventEmitter.off('MarketBoardItemListingCount', handleCount)
     }

@@ -7,22 +7,12 @@ import { Alert } from '../../../components/alert'
 
 const emptyTable = () => [0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-function parseLog(logData: number[]): MiniCactpotDTO {
-  const [isNew, column, row, value] = logData
-  return {
-    isNewGame: isNew === 1,
-    x: Math.max(0, Math.min(2, column)),
-    y: Math.max(0, Math.min(2, row)),
-    value: Math.max(1, Math.min(9, value)),
-  }
-}
-
 export function CactpotOverlay({ eventEmitter, active, setActive }: OverlayProps) {
   const [table, setTable] = useState(emptyTable)
 
   useEffect(() => {
-    const handleLog = function (log: MatchaEvent<MiniCactpotDTO | number[]>) {
-      const info = Array.isArray(log.content) ? parseLog(log.content) : log.content
+    const handleLog = function (log: MatchaEvent<MiniCactpotDTO>) {
+      const info = log.content
 
       if (!active) {
         setActive()
