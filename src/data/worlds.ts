@@ -1,122 +1,308 @@
-export const CNWorlds: Record<number, { chs: string; en: string; group: number }> = {
+export const Worlds: Record<number, { name?: string; en: string }> = {
+  23: {
+    en: 'Asura',
+  },
+  24: {
+    en: 'Belias',
+  },
+  28: {
+    en: 'Pandaemonium',
+  },
+  29: {
+    en: 'Shinryu',
+  },
+  30: {
+    en: 'Unicorn',
+  },
+  31: {
+    en: 'Yojimbo',
+  },
+  32: {
+    en: 'Zeromus',
+  },
+  33: {
+    en: 'Twintania',
+  },
+  34: {
+    en: 'Brynhildr',
+  },
+  35: {
+    en: 'Famfrit',
+  },
+  36: {
+    en: 'Lich',
+  },
+  37: {
+    en: 'Mateus',
+  },
+  39: {
+    en: 'Omega',
+  },
+  40: {
+    en: 'Jenova',
+  },
+  41: {
+    en: 'Zalera',
+  },
+  42: {
+    en: 'Zodiark',
+  },
+  43: {
+    en: 'Alexander',
+  },
+  44: {
+    en: 'Anima',
+  },
+  45: {
+    en: 'Carbuncle',
+  },
+  46: {
+    en: 'Fenrir',
+  },
+  47: {
+    en: 'Hades',
+  },
+  48: {
+    en: 'Ixion',
+  },
+  49: {
+    en: 'Kujata',
+  },
+  50: {
+    en: 'Typhon',
+  },
+  51: {
+    en: 'Ultima',
+  },
+  52: {
+    en: 'Valefor',
+  },
+  53: {
+    en: 'Exodus',
+  },
+  54: {
+    en: 'Faerie',
+  },
+  55: {
+    en: 'Lamia',
+  },
+  56: {
+    en: 'Phoenix',
+  },
+  57: {
+    en: 'Siren',
+  },
+  58: {
+    en: 'Garuda',
+  },
+  59: {
+    en: 'Ifrit',
+  },
+  60: {
+    en: 'Ramuh',
+  },
+  61: {
+    en: 'Titan',
+  },
+  62: {
+    en: 'Diabolos',
+  },
+  63: {
+    en: 'Gilgamesh',
+  },
+  64: {
+    en: 'Leviathan',
+  },
+  65: {
+    en: 'Midgardsormr',
+  },
+  66: {
+    en: 'Odin',
+  },
+  67: {
+    en: 'Shiva',
+  },
+  68: {
+    en: 'Atomos',
+  },
+  69: {
+    en: 'Bahamut',
+  },
+  70: {
+    en: 'Chocobo',
+  },
+  71: {
+    en: 'Moogle',
+  },
+  72: {
+    en: 'Tonberry',
+  },
+  73: {
+    en: 'Adamantoise',
+  },
+  74: {
+    en: 'Coeurl',
+  },
+  75: {
+    en: 'Malboro',
+  },
+  76: {
+    en: 'Tiamat',
+  },
+  77: {
+    en: 'Ultros',
+  },
+  78: {
+    en: 'Behemoth',
+  },
+  79: {
+    en: 'Cactuar',
+  },
+  80: {
+    en: 'Cerberus',
+  },
+  81: {
+    en: 'Goblin',
+  },
+  82: {
+    en: 'Mandragora',
+  },
+  83: {
+    en: 'Louisoix',
+  },
+  85: {
+    en: 'Spriggan',
+  },
+  90: {
+    en: 'Aegis',
+  },
+  91: {
+    en: 'Balmung',
+  },
+  92: {
+    en: 'Durandal',
+  },
+  93: {
+    en: 'Excalibur',
+  },
+  94: {
+    en: 'Gungnir',
+  },
+  95: {
+    en: 'Hyperion',
+  },
+  96: {
+    en: 'Masamune',
+  },
+  97: {
+    en: 'Ragnarok',
+  },
+  98: {
+    en: 'Ridill',
+  },
+  99: {
+    en: 'Sargatanas',
+  },
+  161: {
+    en: 'Chocobo',
+  },
+  166: {
+    en: 'Moogle',
+  },
   1042: {
-    chs: '拉诺西亚',
+    name: '拉诺西亚',
     en: 'LaNuoXiYa',
-    group: 1,
   },
   1043: {
-    chs: '紫水栈桥',
+    name: '紫水栈桥',
     en: 'ZiShuiZhanQiao',
-    group: 3,
   },
   1044: {
-    chs: '幻影群岛',
+    name: '幻影群岛',
     en: 'HuanYingQunDao',
-    group: 1,
   },
   1045: {
-    chs: '摩杜纳',
+    name: '摩杜纳',
     en: 'MoDuNa',
-    group: 3,
   },
   1060: {
-    chs: '萌芽池',
+    name: '萌芽池',
     en: 'MengYaChi',
-    group: 1,
   },
   1076: {
-    chs: '白金幻象',
+    name: '白金幻象',
     en: 'BaiJinHuanXiang',
-    group: 2,
   },
   1081: {
-    chs: '神意之地',
+    name: '神意之地',
     en: 'ShenYiZhiDi',
-    group: 1,
   },
   1106: {
-    chs: '静语庄园',
+    name: '静语庄园',
     en: 'JingYuZhuangYuan',
-    group: 3,
   },
   1113: {
-    chs: '旅人栈桥',
+    name: '旅人栈桥',
     en: 'LvRenZhanQiao',
-    group: 2,
   },
   1121: {
-    chs: '拂晓之间',
+    name: '拂晓之间',
     en: 'FuXiaoZhiJian',
-    group: 2,
   },
   1166: {
-    chs: '龙巢神殿',
+    name: '龙巢神殿',
     en: 'Longchaoshendian',
-    group: 2,
   },
   1167: {
-    chs: '红玉海',
+    name: '红玉海',
     en: 'HongYuHai',
-    group: 1,
   },
   1168: {
-    chs: '黄金港',
+    name: '黄金港',
     en: 'HuangJinGang',
-    group: 0,
   },
   1169: {
-    chs: '延夏',
+    name: '延夏',
     en: 'YanXia',
-    group: 3,
   },
   1170: {
-    chs: '潮风亭',
+    name: '潮风亭',
     en: 'ChaoFengTing',
-    group: 2,
   },
   1171: {
-    chs: '神拳痕',
+    name: '神拳痕',
     en: 'ShenQuanHen',
-    group: 2,
   },
   1172: {
-    chs: '白银乡',
+    name: '白银乡',
     en: 'BaiYinXiang',
-    group: 2,
   },
   1173: {
-    chs: '宇宙和音',
+    name: '宇宙和音',
     en: 'YuZhouHeYin',
-    group: 1,
   },
   1174: {
-    chs: '沃仙曦染',
+    name: '沃仙曦染',
     en: 'WoXianXiRan',
-    group: 1,
   },
   1175: {
-    chs: '晨曦王座',
+    name: '晨曦王座',
     en: 'ChenXiWangZuo',
-    group: 1,
   },
   1176: {
-    chs: '梦羽宝境',
+    name: '梦羽宝境',
     en: 'MengYuBaoJing',
-    group: 2,
   },
   1177: {
-    chs: '海猫茶屋',
+    name: '海猫茶屋',
     en: 'HaiMaoChaWu',
-    group: 3,
   },
   1178: {
-    chs: '柔风海湾',
+    name: '柔风海湾',
     en: 'RouFengHaiWan',
-    group: 3,
   },
   1179: {
-    chs: '琥珀原',
+    name: '琥珀原',
     en: 'HuPoYuan',
-    group: 3,
   },
 }

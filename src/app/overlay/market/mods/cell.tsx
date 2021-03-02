@@ -3,7 +3,7 @@ import { MarketItemRecord, MarketPriceRecord } from '../interface'
 import { HQ } from '../../../../components/icon'
 import './cell.css'
 import { queryItem } from '../../../../lib/store/item'
-import { CNWorlds } from '../../../../data/worlds'
+import { Worlds } from '../../../../data/worlds'
 
 function Amount({ quantity, hq }: { quantity: number; hq: number }) {
   return (
@@ -101,5 +101,6 @@ Cell.ItemName = function ItemName({ item }: { item: number }) {
 }
 
 Cell.WorldName = function WorldName({ id }: { id: number }) {
-  return <th>{CNWorlds[id]?.chs || id}</th>
+  const world = Worlds[id]
+  return <th>{world?.name || world?.en || id}</th>
 }
