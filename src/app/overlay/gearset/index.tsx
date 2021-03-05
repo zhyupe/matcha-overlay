@@ -6,11 +6,11 @@ import { GearsetPart } from './mods/part'
 import { AvgLevel } from './mods/avg-ilvl'
 import './index.css'
 
-function Gearset({ title, list }: { title: string; list: List<GearsetDTO> }) {
+function Gearset({ title, list, language }: { title: string; list: List<GearsetDTO>; language: string }) {
   return (
     <div className="gearset-wrap">
       <h3>
-        {title} <AvgLevel list={list} />
+        {title} <AvgLevel list={list} language={language} />
       </h3>
       {list.isEmpty() ? (
         <div className="gearset-empty">暂无配装数据</div>
@@ -18,12 +18,12 @@ function Gearset({ title, list }: { title: string; list: List<GearsetDTO> }) {
         <div className="gearset-container">
           <div className="gearset-left">
             {[0, 2, 3, 4, 5, 6, 7].map((index) => (
-              <GearsetPart key={index} part={list.get(index)} />
+              <GearsetPart key={index} part={list.get(index)} language={language} />
             ))}
           </div>
           <div className="gearset-right">
             {[1, 8, 9, 10, 11, 12, 13].map((index) => (
-              <GearsetPart key={index} part={list.get(index)} />
+              <GearsetPart key={index} part={list.get(index)} language={language} />
             ))}
           </div>
         </div>
@@ -36,7 +36,7 @@ type TimedGearsetDTO = GearsetDTO & {
   time: number
 }
 
-export function GearsetOverlay({ eventEmitter, active, setActive }: OverlayProps) {
+export function GearsetOverlay({ language, eventEmitter, active, setActive }: OverlayProps) {
   const [mine, setMine] = useState(List<TimedGearsetDTO>())
   const [others, setOthers] = useState(List<TimedGearsetDTO>())
 
@@ -76,8 +76,8 @@ export function GearsetOverlay({ eventEmitter, active, setActive }: OverlayProps
 
   return (
     <div className="overlay overlay-gearset">
-      <Gearset title="我的装备" list={mine} />
-      <Gearset title="他人装备" list={others} />
+      <Gearset title="我的装备" language={language} list={mine} />
+      <Gearset title="他人装备" language={language} list={others} />
     </div>
   )
 }

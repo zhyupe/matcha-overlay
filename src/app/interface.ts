@@ -16,6 +16,7 @@ export interface MatchaEvent<T = string> {
 
 export interface OverlayProps {
   version?: string
+  language: string
   active: boolean
   setActive: () => void
   eventEmitter: EventEmitter

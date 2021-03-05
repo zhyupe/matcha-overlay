@@ -2,6 +2,12 @@ import axios from 'axios'
 import { debounce } from 'debounce'
 import { Cache } from '../cache'
 
+interface QueryTask {
+  id: number
+  language: string
+  resolve: (record: ItemRecord | PromiseLike<ItemRecord>) => any
+  reject: (e: Error) => any
+}
 export interface ItemInfo {
   ID: number
   Icon: string
@@ -9,13 +15,17 @@ export interface ItemInfo {
   IsAdvancedMeldingPermitted: number
   MateriaSlotCount: number
   Name_chs: string
+  Name_en: string
+  Name_de: string
+  Name_fr: string
+  Name_ja: string
 }
 
 export interface ItemRecord {
   /**
    * Name
    */
-  n: string
+  n: Record<string, string>
   /**
    * Icon
    */
@@ -47,7 +57,10 @@ export interface XivapiPagedResponse<T> {
   Results: T[]
 }
 
-export const xivapiRoot = 'https://cafemaker.wakingsands.com'
+export const xivapiRoot = {
+  global: 'https://xivapi.com',
+  china: 'https://cafemaker.wakingsands.com',
+}
 const itemCache = new Cache<number, ItemRecord>('gearset-item')
 const queryColumns: Array<keyof ItemInfo> = [
   'ID',
@@ -56,28 +69,32 @@ const queryColumns: Array<keyof ItemInfo> = [
   'MateriaSlotCount',
   'IsAdvancedMeldingPermitted',
   'Name_chs',
+  'Name_en',
+  'Name_de',
+  'Name_fr',
+  'Name_ja',
 ]
 
-let itemQueryList: Array<{
-  id: number
-  resolve: (record?: ItemRecord | PromiseLike<ItemRecord>) => any
-  reject: (e: Error) => any
-}> = []
+let itemQueryList: QueryTask[] = []
 
-const doQuery = debounce(function () {
-  const list = itemQueryList.slice()
-  itemQueryList = []
+const queryXivapi = (root: string, list: QueryTask[]) => {
+  if (list.length === 0) return
 
   const ids = Array.from(new Set(list.map(({ id }) => id))).join(',')
-
   axios
     .get<XivapiPagedResponse<ItemInfo>>(
-      `${xivapiRoot}/item?columns=${encodeURIComponent(queryColumns.join(','))}&ids=${encodeURIComponent(ids)}`,
+      `${root}/item?columns=${encodeURIComponent(queryColumns.join(','))}&ids=${encodeURIComponent(ids)}`,
     )
     .then((res) => {
       for (const result of res.data.Results) {
         const record = {
-          n: result.Name_chs,
+          n: {
+            zh: result.Name_chs,
+            en: result.Name_en,
+            de: result.Name_de,
+            fr: result.Name_fr,
+            ja: result.Name_ja,
+          },
           i: result.Icon,
           s: result.MateriaSlotCount,
           a: result.IsAdvancedMeldingPermitted,
@@ -96,21 +113,40 @@ const doQuery = debounce(function () {
         }
       }
 
-      list.forEach((item) => item.resolve())
+      list.forEach((item) => item.reject(new Error('Not Found')))
     })
     .catch((e) => {
       list.forEach((item) => item.reject(e))
     })
+}
+
+const doQuery = debounce(function () {
+  const list = itemQueryList.slice()
+  itemQueryList = []
+
+  queryXivapi(
+    xivapiRoot.global,
+    list.filter((item) => item.language !== 'zh'),
+  )
+  queryXivapi(
+    xivapiRoot.china,
+    list.filter((item) => item.language === 'zh'),
+  )
 }, 200)
 
-export function queryItem(id: number): Promise<ItemRecord> {
+export function queryItem(id: number, language: string): Promise<ItemRecord> {
+  const queryLanguage = ['en', 'de', 'fr', 'ja', 'zh'].includes(language) ? language : 'en'
   const fromCache = itemCache.get(id)
-  if (fromCache && typeof fromCache.l === 'number') {
+  if (fromCache && typeof fromCache.l === 'number' && typeof fromCache.n === 'object' && fromCache.n[queryLanguage]) {
     return Promise.resolve(fromCache)
   }
 
   return new Promise((resolve, reject) => {
-    itemQueryList.push({ id, resolve, reject })
+    itemQueryList.push({ id, language: queryLanguage, resolve, reject })
     doQuery()
   })
+}
+
+export function itemName(item: ItemRecord, language: string) {
+  return item.n[language] || item.n.en
 }

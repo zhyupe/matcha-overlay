@@ -34,7 +34,7 @@ function updatePriceRow(records: List<MarketPriceRecord>, data: MarketRecord[]):
   return ret
 }
 
-export function MarketOverlay({ eventEmitter, active, setActive }: OverlayProps) {
+export function MarketOverlay({ language, eventEmitter, active, setActive }: OverlayProps) {
   const [worlds, setWorlds] = useState(List<number>())
   const [items, setItems] = useState(List<MarketItemRecord>())
   const [transpose, toggleTranspose] = useReducer<ReducerWithoutAction<boolean>, undefined>(
@@ -139,7 +139,7 @@ export function MarketOverlay({ eventEmitter, active, setActive }: OverlayProps)
     }
 
     const id = item.get('id')
-    return <Cell.ItemName key={id} item={id} />
+    return <Cell.ItemName key={id} item={id} language={language} />
   }
 
   const columnType = transpose ? 'world' : 'item'

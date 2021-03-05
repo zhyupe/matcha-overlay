@@ -11,7 +11,7 @@ import { MarketOverlay } from './overlay/market'
 import { TreasureOverlay } from './overlay/treasure'
 import { ActWsNotice } from './notice/actws'
 import { WelcomeNotice } from './notice/welcome'
-import { LockClosed, LockOpen, TargetBind } from '../components/icon'
+import { LockClosed, LockOpen } from '../components/icon'
 
 interface Tab {
   title: string | null
@@ -114,6 +114,7 @@ function App() {
   const [minified, setMinified] = useState(false)
   const [activeTab, setActiveTab] = useState('welcome')
   const [version, setVersion] = useState<string>()
+  const [language, setLanguage] = useState<string>('zh')
   const [lock, setLock] = useState<boolean>(false)
 
   useEffect(() => {
@@ -134,8 +135,9 @@ function App() {
 
       const type = label.substr(typePos + 1)
 
-      const versionPos = label.indexOf('#')
-      const logVersion = versionPos === -1 ? 'Legacy' : label.substr(versionPos + 1, typePos - versionPos - 1)
+      const [, logVersion, logLanguage] = label.substr(0, typePos).split('#')
+      const normalizedVersion = logVersion || 'Legacy'
+      const normalizedLanguage = logLanguage || 'zh'
 
       let content = line[4]
       try {
@@ -151,7 +153,8 @@ function App() {
         content,
       }
 
-      setVersion(logVersion)
+      setVersion(normalizedVersion)
+      setLanguage(normalizedLanguage)
       eventEmitter.emit(type, event)
     })
 
@@ -179,6 +182,7 @@ function App() {
             {...{
               key,
               version,
+              language,
               eventEmitter,
               active: !minified && key === activeTab,
               setActive: () => minified || lock || setActiveTab(key),

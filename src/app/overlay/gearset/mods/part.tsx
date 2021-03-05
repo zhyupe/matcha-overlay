@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { GearsetDTO, GearsetMateria } from '../interface'
 import { HQ, Glamour, ILvl } from '../../../../components/icon'
-import { queryItem, ItemRecord, xivapiRoot } from '../../../../lib/store/item'
+import { queryItem, ItemRecord, xivapiRoot, itemName } from '../../../../lib/store/item'
 
 const materiaMap = [
   '', // Skip index 0
@@ -79,7 +79,7 @@ function Materias({ materias, slot, overmeld }: { materias: GearsetMateria[]; sl
   )
 }
 
-export function GearsetPart({ part }: { part?: GearsetDTO }) {
+export function GearsetPart({ part, language }: { part?: GearsetDTO; language: string }) {
   const [record, setRecord] = useState<ItemRecord | null>()
   const [glamour, setGlamour] = useState<ItemRecord | null>()
 
@@ -90,17 +90,17 @@ export function GearsetPart({ part }: { part?: GearsetDTO }) {
     if (!part) return
 
     if (part.item) {
-      queryItem(part.item)
+      queryItem(part.item, language)
         .then((newRecord) => setRecord(newRecord))
         .catch(() => 0)
     }
 
     if (part.glamour) {
-      queryItem(part.glamour)
+      queryItem(part.glamour, language)
         .then((newRecord) => setGlamour(newRecord))
         .catch(() => 0)
     }
-  }, [part])
+  }, [language, part])
 
   if (!part || !part.item) {
     return <div className="gearset-item gearset-item-empty">空栏位</div>
@@ -115,11 +115,11 @@ export function GearsetPart({ part }: { part?: GearsetDTO }) {
       <div className="gearset-item-icon">{record ? <img alt="" src={`${xivapiRoot}${record.i}`} /> : null}</div>
       <div className={`gearset-item-name ${glamour ? 'gearset-item-animated' : ''}`}>
         <span>
-          {record.n} {part.hq ? <HQ /> : null}
+          {itemName(record, language)} {part.hq ? <HQ /> : null}
         </span>
         {glamour ? (
           <span className="delay">
-            <Glamour /> {glamour.n}
+            <Glamour /> {itemName(glamour, language)}
           </span>
         ) : null}
       </div>

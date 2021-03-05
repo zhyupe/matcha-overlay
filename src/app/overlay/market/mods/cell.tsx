@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { MarketItemRecord, MarketPriceRecord } from '../interface'
 import { HQ } from '../../../../components/icon'
 import './cell.css'
-import { queryItem } from '../../../../lib/store/item'
+import { itemName, queryItem } from '../../../../lib/store/item'
 import { Worlds } from '../../../../data/worlds'
 
 function Amount({ quantity, hq }: { quantity: number; hq: number }) {
@@ -84,14 +84,14 @@ Cell.Empty = function Empty() {
   )
 }
 
-Cell.ItemName = function ItemName({ item }: { item: number }) {
+Cell.ItemName = function ItemName({ item, language }: { item: number; language: string }) {
   const [name, setName] = useState<string>('')
   useEffect(() => {
     setName('载入中')
-    queryItem(item)
-      .then((record) => setName(record.n))
-      .catch(() => 0)
-  }, [item])
+    queryItem(item, language)
+      .then((record) => setName(itemName(record, language)))
+      .catch(() => item)
+  }, [item, language])
 
   return (
     <th key={item} className={name.length >= 6 ? 'small' : ''}>
