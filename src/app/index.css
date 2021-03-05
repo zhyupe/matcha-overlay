@@ -38,7 +38,8 @@
 }
 
 .header > .tab {
-  padding: 5px 10px;
+  line-height: 20px;
+  padding: 4px 10px;
   border-bottom: 2px solid transparent;
 }
 
@@ -53,6 +54,7 @@
 
 .header-lock {
   margin-left: 5px;
+  margin-bottom: 2px;
   color: #fff8;
 }
 

@@ -40,10 +40,12 @@ code {
 }
 
 .button-circle {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
   padding: 0;
   height: 24px;
   width: 24px;
-  text-align: center;
 }
 
 ::-webkit-scrollbar {
@@ -70,4 +72,13 @@ code {
 .icon {
   font-family: FFXIV;
   font-style: normal;
+}
+
+i.icon {
+  line-height: 1em;
+}
+
+svg.icon {
+  width: 16px;
+  vertical-align: middle;
 }

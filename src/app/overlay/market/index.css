@@ -20,6 +20,11 @@
   display: inline-block;
 }
 
-.overlay-market .transpose.button-active {
+.overlay-market .buttons {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.overlay-market .transpose.button-active .icon {
   transform: rotate(90deg);
 }

@@ -11,7 +11,7 @@ import { MarketOverlay } from './overlay/market'
 import { TreasureOverlay } from './overlay/treasure'
 import { ActWsNotice } from './notice/actws'
 import { WelcomeNotice } from './notice/welcome'
-import { TargetBind } from '../components/icon'
+import { LockClosed, LockOpen, TargetBind } from '../components/icon'
 
 interface Tab {
   title: string | null
@@ -84,9 +84,7 @@ function Header({ isActWS, minified, setMinified, activeTab, setActiveTab, lock,
         <span className={`tab left ${activeTabItem.right ? '' : ' active'}`}>
           {activeTabItem.right ? '功能' : activeTabItem.title}
           <Draggable onClick={() => setLock(!lock)}>
-            <span className={`header-lock${lock ? ' locked' : ''}`}>
-              <TargetBind />
-            </span>
+            <span className={`header-lock${lock ? ' locked' : ''}`}>{lock ? <LockClosed /> : <LockOpen />}</span>
           </Draggable>
         </span>
       </Draggable>

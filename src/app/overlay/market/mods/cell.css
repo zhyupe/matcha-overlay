@@ -1,30 +1,30 @@
-.quantity {
+.overlay-market .quantity {
   margin-left: 2px;
   font-size: .875em;
 }
 
-.group {
+.overlay-market .quantity .icon-hq {
+  margin-right: 2px;
+  font-size: .875em;
+}
+
+.overlay-market .group {
   color: #FFFA;
   font-size: .875em;
 }
 
-.lowest {
+.overlay-market .lowest {
   color: #b7ca32
 }
 
-.hq {
+.overlay-market .hq {
   margin-left: 2px;
 }
 
-.icon-hq {
-  margin-right: 2px;
-  height: .875em;
-}
-
-.lowest .icon-hq path {
+.overlay-market .lowest .icon-hq path {
   fill: #b7ca32;
 }
 
-.group .icon-hq path {
+.overlay-market .group .icon-hq path {
   fill: #FFFA;
 }

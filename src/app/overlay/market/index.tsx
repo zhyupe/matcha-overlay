@@ -11,7 +11,7 @@ import {
 import { Cell } from './mods/cell'
 import { MatchaEvent, OverlayProps } from '../../interface'
 import { getConfig, setConfig } from '../../../lib/config'
-import { Close, Target, HQ } from '../../../components/icon'
+import { HQ, SwitchHorizontal, Trash } from '../../../components/icon'
 
 function updatePriceRow(records: List<MarketPriceRecord>, data: MarketRecord[]): List<MarketPriceRecord> {
   const ret = data.reduce((records, { price, quantity, hq }) => {
@@ -159,23 +159,25 @@ export function MarketOverlay({ eventEmitter, active, setActive }: OverlayProps)
       <thead>
         <tr>
           <th style={{ width: 100 }}>
-            <button
-              className={`transpose button button-circle ${transpose ? 'button-active' : ''}`}
-              onClick={toggleTranspose}
-              style={{ marginRight: 10 }}
-            >
-              <Target />
-            </button>
-            <button
-              className={`button button-circle ${hqOnly ? 'button-active' : ''}`}
-              onClick={toggleHQOnly}
-              style={{ marginRight: 10 }}
-            >
-              <HQ />
-            </button>
-            <button className="button button-circle" onClick={reset}>
-              <Close />
-            </button>
+            <div className="buttons">
+              <button
+                className={`transpose button button-circle ${transpose ? 'button-active' : ''}`}
+                onClick={toggleTranspose}
+                style={{ marginRight: 10 }}
+              >
+                <SwitchHorizontal />
+              </button>
+              <button
+                className={`button button-circle ${hqOnly ? 'button-active' : ''}`}
+                onClick={toggleHQOnly}
+                style={{ marginRight: 10 }}
+              >
+                <HQ />
+              </button>
+              <button className="button button-circle" onClick={reset}>
+                <Trash />
+              </button>
+            </div>
           </th>
           {firstRow.isEmpty() ? columnRender(null) : firstRow.map(columnRender)}
         </tr>
