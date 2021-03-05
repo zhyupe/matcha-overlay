@@ -5,7 +5,7 @@ import './index.css'
 const year = new Date().getFullYear()
 const build = process.env.build
 
-export function WelcomeNotice({ version, active }: OverlayProps) {
+export function WelcomeNotice({ version, language, active }: OverlayProps) {
   if (!active) return null
 
   return (
@@ -21,11 +21,10 @@ export function WelcomeNotice({ version, active }: OverlayProps) {
         </li>
       </ol>
       <p>
-        适配版本：{(window as any).TARGET_MATCHA_VERSION}，本地版本：
-        {version || '<等待数据>'}
+        本地版本：{version || '<等待数据>'} / 数据语言：{language}
       </p>
       <p className="copyright">
-        &copy; {year} ReiwaTech / Build: {build}
+        &copy; {year} FFCafe / Build: {build}
       </p>
     </div>
   )
