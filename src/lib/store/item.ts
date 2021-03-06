@@ -89,7 +89,7 @@ const queryXivapi = (root: string, list: QueryTask[]) => {
       for (const result of res.data.Results) {
         const record = {
           n: {
-            zh: result.Name_chs,
+            chs: result.Name_chs,
             en: result.Name_en,
             de: result.Name_de,
             fr: result.Name_fr,
@@ -126,16 +126,16 @@ const doQuery = debounce(function () {
 
   queryXivapi(
     xivapiRoot.global,
-    list.filter((item) => item.language !== 'zh'),
+    list.filter((item) => item.language !== 'chs'),
   )
   queryXivapi(
     xivapiRoot.china,
-    list.filter((item) => item.language === 'zh'),
+    list.filter((item) => item.language === 'chs'),
   )
 }, 200)
 
 export function queryItem(id: number, language: string): Promise<ItemRecord> {
-  const queryLanguage = ['en', 'de', 'fr', 'ja', 'zh'].includes(language) ? language : 'en'
+  const queryLanguage = ['en', 'de', 'fr', 'ja', 'chs'].includes(language) ? language : 'en'
   const fromCache = itemCache.get(id)
   if (fromCache && typeof fromCache.l === 'number' && typeof fromCache.n === 'object' && fromCache.n[queryLanguage]) {
     return Promise.resolve(fromCache)

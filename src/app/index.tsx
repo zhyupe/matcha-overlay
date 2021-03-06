@@ -114,7 +114,7 @@ function App() {
   const [minified, setMinified] = useState(false)
   const [activeTab, setActiveTab] = useState('welcome')
   const [version, setVersion] = useState<string>()
-  const [language, setLanguage] = useState<string>('zh')
+  const [language, setLanguage] = useState<string>('chs')
   const [lock, setLock] = useState<boolean>(false)
 
   useEffect(() => {
@@ -137,7 +137,7 @@ function App() {
 
       const [, logVersion, logLanguage] = label.substr(0, typePos).split('#')
       const normalizedVersion = logVersion || 'Legacy'
-      const normalizedLanguage = logLanguage || 'zh'
+      const normalizedLanguage = logLanguage || 'chs'
 
       let content = line[4]
       try {
