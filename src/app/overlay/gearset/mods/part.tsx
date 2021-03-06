@@ -110,9 +110,10 @@ export function GearsetPart({ part, language }: { part?: GearsetDTO; language: s
     return <div className="gearset-item gearset-item-empty">载入中，请稍候</div>
   }
 
+  const root = language === 'chs' ? xivapiRoot.china : xivapiRoot.global
   return (
     <div className="gearset-item">
-      <div className="gearset-item-icon">{record ? <img alt="" src={`${xivapiRoot}${record.i}`} /> : null}</div>
+      <div className="gearset-item-icon">{record ? <img alt="" src={`${root}${record.i}`} /> : null}</div>
       <div className={`gearset-item-name ${glamour ? 'gearset-item-animated' : ''}`}>
         <span>
           {itemName(record, language)} {part.hq ? <HQ /> : null}
