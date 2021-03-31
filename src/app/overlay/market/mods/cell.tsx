@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactNode } from 'react'
+import React, { useState, useEffect } from 'react'
 import { MarketItemRecord, MarketPriceRecord } from '../interface'
 import { HQ } from '../../../../components/icon'
 import './cell.css'
