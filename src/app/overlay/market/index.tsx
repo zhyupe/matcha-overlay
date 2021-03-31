@@ -40,7 +40,7 @@ export function MarketOverlay({ language, eventEmitter, active, setActive }: Ove
   const [transpose, toggleTranspose] = useReducer<ReducerWithoutAction<boolean>, undefined>(
     (prev) => {
       const value = !prev
-      setConfig('market-transpose', `${value}`)
+      setConfig('market-transpose', value ? 'true' : 'false')
       return value
     },
     undefined,
@@ -49,7 +49,7 @@ export function MarketOverlay({ language, eventEmitter, active, setActive }: Ove
   const [hqOnly, toggleHQOnly] = useReducer<ReducerWithoutAction<boolean>, undefined>(
     (prev) => {
       const value = !prev
-      setConfig('market-hq-only', `${value}`)
+      setConfig('market-hq-only', value ? 'true' : 'false')
       return value
     },
     undefined,

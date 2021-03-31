@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, ReactNode } from 'react'
 import { MarketItemRecord, MarketPriceRecord } from '../interface'
 import { HQ } from '../../../../components/icon'
 import './cell.css'
@@ -14,7 +14,7 @@ function Amount({ quantity, hq }: { quantity: number; hq: number }) {
   )
 }
 
-export function Cell({ world, item, hqOnly }: { world: number; item: MarketItemRecord; hqOnly: boolean }) {
+export function Cell({ world, item, hqOnly }: { world: number; item: MarketItemRecord; hqOnly: boolean }): JSX.Element {
   let records = item.get('rows').get(world)
   if (records && hqOnly) {
     records = records
@@ -55,8 +55,8 @@ export function Cell({ world, item, hqOnly }: { world: number; item: MarketItemR
   return (
     <td className={isGlobalLowest ? 'lowest' : ''}>
       <div className="single">
-        {localLowest.price.toLocaleString()}
-        <Amount quantity={localLowest.quantity} hq={localLowest.hq} />
+        {(localLowest.price as number).toLocaleString()}
+        <Amount quantity={localLowest.quantity as number} hq={localLowest.hq as number} />
       </div>
       <div className="group">
         ~

@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 
-export function Draggable({ children, onClick }: { children: any; onClick: Function }) {
+export function Draggable({ children, onClick }: { children: any; onClick: () => void }): any {
   const [mouseDown, setMouseDown] = useState(0)
 
+  // eslint-disable-next-line
   return React.Children.map(children, (child) => {
     return React.cloneElement(child, {
       onMouseDown() {

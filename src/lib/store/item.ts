@@ -113,10 +113,14 @@ const queryXivapi = (root: string, list: QueryTask[]) => {
         }
       }
 
-      list.forEach((item) => item.reject(new Error('Not Found')))
+      list.forEach((item) => {
+        item.reject(new Error('Not Found'))
+      })
     })
     .catch((e) => {
-      list.forEach((item) => item.reject(e))
+      list.forEach((item) => {
+        item.reject(e)
+      })
     })
 }
 
@@ -147,6 +151,6 @@ export function queryItem(id: number, language: string): Promise<ItemRecord> {
   })
 }
 
-export function itemName(item: ItemRecord, language: string) {
+export function itemName(item: ItemRecord, language: string): string {
   return item.n[language] || item.n.en
 }
