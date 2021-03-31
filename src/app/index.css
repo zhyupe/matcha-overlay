@@ -22,6 +22,16 @@
   box-shadow: 0 0 5px #0003;
 }
 
+.logo {
+  height: 30px;
+  background-color: #b7ca32;
+  border-radius: 50%;
+}
+
+.logo path {
+  fill: #fffc;
+}
+
 .header {
   display: flex;
   height: 40px;
@@ -70,8 +80,6 @@
 
   display: flex;
   flex-wrap: wrap;
-  /* border-top: 1px solid #b7ca32aa;
-  border-bottom: 1px solid #b7ca32aa; */
   background: #b7ca32ee;
 }
 
@@ -94,10 +102,7 @@
 
 .tag {
   padding: 1px 5px;
-  /* border: 1px solid #b7ca32; */
-  /* border-radius: 2px; */
   color: #b7ca32;
-  /* font-size: 0.875em; */
 }
 
 .overlay {

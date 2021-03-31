@@ -12,6 +12,7 @@ import { TreasureOverlay } from './overlay/treasure'
 import { ActWsNotice } from './notice/actws'
 import { WelcomeNotice } from './notice/welcome'
 import { LockClosed, LockOpen } from '../components/icon'
+import { getAppSeason } from '../lib/season'
 
 interface Tab {
   title: string | null
@@ -141,6 +142,7 @@ function App() {
 
       let content = line[4]
       try {
+        // eslint-disable-next-line
         content = JSON.parse(content)
       } catch (e) {
         // ignore
@@ -162,7 +164,7 @@ function App() {
   }, [eventEmitter, isActWS])
 
   return (
-    <div className={`app app-${minified ? 'minified' : 'wrap'}`}>
+    <div className={`app app-${minified ? 'minified' : 'wrap'}${getAppSeason()}`}>
       <Header
         {...{
           isActWS,
