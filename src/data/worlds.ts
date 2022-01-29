@@ -398,5 +398,25 @@ export const Worlds: Record<number, { region: string; name?: string; en: string 
     region: 'cn',
     name: '琥珀原',
     en: 'HuPoYuan',
+  },  
+  1192: {
+    region: 'cn',
+    name: '水晶塔',
+    en: 'SHuiJingTa2',
+  },
+  1183: {
+    region: 'cn',
+    name: '银泪湖',
+    en: 'YinLeiHu2',
+  },
+  1180: {
+    region: 'cn',
+    name: '太阳海岸',
+    en: 'TaiYangHaiAn2',
+  },
+  1186: {
+    region: 'cn',
+    name: '伊修加德',
+    en: 'YiXiuJiaDe2',
   },
 }
