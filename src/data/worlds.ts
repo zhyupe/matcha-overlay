@@ -1,4 +1,10 @@
-export const Worlds: Record<number, { region: string; name?: string; en: string }> = {
+export interface IWorldData {
+  region: string
+  name?: string
+  en: string
+}
+
+export const Worlds: Record<number, IWorldData> = {
   23: {
     region: 'global',
     en: 'Asura',
@@ -339,11 +345,6 @@ export const Worlds: Record<number, { region: string; name?: string; en: string 
     name: '红玉海',
     en: 'HongYuHai',
   },
-  1168: {
-    region: 'cn',
-    name: '黄金港',
-    en: 'HuangJinGang',
-  },
   1169: {
     region: 'cn',
     name: '延夏',
@@ -399,4 +400,29 @@ export const Worlds: Record<number, { region: string; name?: string; en: string 
     name: '琥珀原',
     en: 'HuPoYuan',
   },
+  1180: {
+    region: 'cn',
+    name: '太阳海岸',
+    en: 'TaiYangHaiAn2',
+  },
+  1183: {
+    region: 'cn',
+    name: '银泪湖',
+    en: 'YinLeiHu2',
+  },
+  1186: {
+    region: 'cn',
+    name: '伊修加德',
+    en: 'YiXiuJiaDe2',
+  },
+  1192: {
+    region: 'cn',
+    name: '水晶塔',
+    en: 'ShuiJingTa2',
+  },
+  1193: {
+    region: 'cn',
+    name: '红茶川',
+    en: 'HongChaChuan2',
+  }
 }
