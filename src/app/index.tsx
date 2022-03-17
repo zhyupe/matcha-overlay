@@ -13,6 +13,7 @@ import { ActWsNotice } from './notice/actws'
 import { WelcomeNotice } from './notice/welcome'
 import { LockClosed, LockOpen } from '../components/icon'
 import { getAppSeason } from '../lib/season'
+import { useConfigBoolean } from '../lib/config'
 
 interface Tab {
   title: string | null
@@ -112,7 +113,7 @@ function Header({ isActWS, minified, setMinified, activeTab, setActiveTab, lock,
 function App() {
   const isActWS = window.location.search.includes('HOST_PORT')
   const eventEmitter = useMemo(() => new EventEmitter(), [])
-  const [minified, setMinified] = useState(false)
+  const [minified, { set: setMinified }] = useConfigBoolean('app-minified', false)
   const [activeTab, setActiveTab] = useState('welcome')
   const [version, setVersion] = useState<string>()
   const [language, setLanguage] = useState<string>('chs')

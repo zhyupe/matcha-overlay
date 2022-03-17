@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer, ReducerWithoutAction } from 'react'
+import { useState, useEffect } from 'react'
 import './index.css'
 import { List, Map } from 'immutable'
 import {
@@ -10,7 +10,7 @@ import {
 } from './interface'
 import { Cell } from './mods/cell'
 import { MatchaEvent, OverlayProps } from '../../interface'
-import { getConfig, setConfig } from '../../../lib/config'
+import { useConfigBoolean } from '../../../lib/config'
 import { HQ, SwitchHorizontal, Trash } from '../../../components/icon'
 
 function updatePriceRow(records: List<MarketPriceRecord>, data: MarketRecord[]): List<MarketPriceRecord> {
@@ -37,24 +37,8 @@ function updatePriceRow(records: List<MarketPriceRecord>, data: MarketRecord[]):
 export function MarketOverlay({ language, eventEmitter, active, setActive }: OverlayProps) {
   const [worlds, setWorlds] = useState(List<number>())
   const [items, setItems] = useState(List<MarketItemRecord>())
-  const [transpose, toggleTranspose] = useReducer<ReducerWithoutAction<boolean>, undefined>(
-    (prev) => {
-      const value = !prev
-      setConfig('market-transpose', value ? 'true' : 'false')
-      return value
-    },
-    undefined,
-    () => getConfig('market-transpose') === 'true',
-  )
-  const [hqOnly, toggleHQOnly] = useReducer<ReducerWithoutAction<boolean>, undefined>(
-    (prev) => {
-      const value = !prev
-      setConfig('market-hq-only', value ? 'true' : 'false')
-      return value
-    },
-    undefined,
-    () => getConfig('market-hq-only') === 'true',
-  )
+  const [transpose, { toggle: toggleTranspose }] = useConfigBoolean('market-transpose')
+  const [hqOnly, { toggle: toggleHQOnly }] = useConfigBoolean('market-hq-only')
 
   const reset = () => {
     setWorlds((servers) => servers.clear())
