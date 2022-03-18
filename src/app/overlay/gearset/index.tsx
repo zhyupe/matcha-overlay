@@ -17,7 +17,7 @@ function Gearset({ title, list, language }: { title: string; list: List<GearsetD
       ) : (
         <div className="gearset-container">
           <div className="gearset-left">
-            {[0, 2, 3, 4, 5, 6, 7].map((index) => (
+            {[0, 2, 3, 4, 6, 7].map((index) => (
               <GearsetPart key={index} part={list.get(index)} language={language} />
             ))}
           </div>
