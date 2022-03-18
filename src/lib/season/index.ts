@@ -1,24 +1,36 @@
-import './cocoa.scss'
+import './mofish.scss'
 
-const now = new Date()
+const useAprilStyle = (() => {
+  const now = new Date()
+  return now.getMonth() + 1 === 4 && now.getDate() === 1
+})()
+
 export const getAppSeason = (): string => {
-  if (now.getMonth() + 1 === 4 && now.getDate() === 1) {
-    return ' app-season-cocoa'
+  if (useAprilStyle) {
+    return ' app-season-mofish'
+  }
+
+  return ''
+}
+
+export const getAppIcon = (): string => {
+  if (useAprilStyle) {
+    return 'mofish'
   }
 
   return ''
 }
 
 export const getSeasonTitle = (short = false): string | null => {
-  if (now.getMonth() + 1 === 4 && now.getDate() === 1) {
-    return short ? 'Cocoa' : '可可 Cocoa'
+  if (useAprilStyle) {
+    return short ? 'Mofish' : '摸鱼 Mofish'
   }
 
   return null
 }
 
 export const getSeasonFooter = (): string | null => {
-  if (now.getMonth() + 1 === 4 && now.getDate() === 1) {
+  if (useAprilStyle) {
     return " / Aprils' Special"
   }
 

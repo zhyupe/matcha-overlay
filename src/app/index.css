@@ -23,7 +23,9 @@
 }
 
 .logo {
+  flex-shrink: 0;
   height: 30px;
+  width: 30px;
   background-color: #b7ca32;
   border-radius: 50%;
 }

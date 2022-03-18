@@ -1,0 +1,61 @@
+$cocoa-color: #9cd0f1;
+
+.app-season-mofish {
+  .button-active, .button:hover {
+    color: $cocoa-color;
+    border-color: $cocoa-color;
+  }
+
+  &.app {
+    border-color: rgba($cocoa-color, 0.66)
+  }
+
+  .logo {
+    background-color: $cocoa-color;
+  }
+
+  .header > .tab.active {
+    border-color: $cocoa-color;
+  }
+
+  .header-lock.locked {
+    color: $cocoa-color;
+  }
+
+  .header-menu {
+    background: rgba($cocoa-color, 0.93);
+  }
+
+  .header-menu::before {
+    border-bottom-color: rgba($cocoa-color, 0.8);
+  }
+
+  .tag {
+    color: $cocoa-color;
+  }
+
+  .cactpot-input.highlight {
+    border-color: $cocoa-color;
+    color: $cocoa-color;
+  }
+  
+  .cactpot-max {
+    color: $cocoa-color;
+  }
+
+  .gearset-wrap h3 {
+    color: $cocoa-color;
+  }
+
+  .overlay-market .lowest {
+    color: $cocoa-color;
+  }
+  
+  .overlay-market .lowest .icon-hq path {
+    fill: $cocoa-color;
+  }
+
+  .alert-title {
+    color: $cocoa-color;
+  }
+}
