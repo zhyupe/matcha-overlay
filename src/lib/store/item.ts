@@ -61,7 +61,9 @@ export const xivapiRoot = {
   global: 'https://xivapi.com',
   china: 'https://cafemaker.wakingsands.com',
 }
-const itemCache = new Cache<number, ItemRecord>('gearset-item')
+const itemCache = new Cache<number, ItemRecord>('gearset-item', {
+  version: '2022.02.25',
+})
 const queryColumns: Array<keyof ItemInfo> = [
   'ID',
   'Icon',
