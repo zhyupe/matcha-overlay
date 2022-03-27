@@ -1,7 +1,7 @@
 name: Build and Deploy
 on: [push]
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
@@ -9,11 +9,30 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Cache Node Dependencies 🎶
+        id: cache
+        uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: ${{runner.OS}}-npm-caches-${{ hashFiles('yarn.lock') }}
+
       - name: Install and Build 🔧
         run: |
           yarn install
           yarn build
 
+      - name: Upload artifact 🎁
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: build/
+
+  deploy-github-pages:
+    needs: build
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: build
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.0
         with:
@@ -21,12 +40,34 @@ jobs:
           folder: build
           clean: true
 
-      - name: Deploy Aliyun 🚀
-        uses: fangbinwei/aliyun-oss-website-action@v1
+  # deploy-aliyun:
+  #   needs: build
+  #   steps:
+  #     - uses: actions/download-artifact@v3
+  #       with:
+  #         name: build
+  #     - name: Deploy Aliyun 🚀
+  #       uses: fangbinwei/aliyun-oss-website-action@v1
+  #       with:
+  #           accessKeyId: ${{ secrets.ACCESS_KEY_ID }}
+  #           accessKeySecret: ${{ secrets.ACCESS_KEY_SECRET }}
+  #           bucket: ${{ secrets.OSS_BUCKET }}
+  #           endpoint: ${{ secrets.OSS_ENDPOINT }}
+  #           folder: build
+  #           htmlCacheControl: s-maxage=600
+
+  deploy-tencent-cloud:
+    needs: build
+    steps:
+      - uses: actions/download-artifact@v3
         with:
-            accessKeyId: ${{ secrets.ACCESS_KEY_ID }}
-            accessKeySecret: ${{ secrets.ACCESS_KEY_SECRET }}
-            bucket: ${{ secrets.OSS_BUCKET }}
-            endpoint: ${{ secrets.OSS_ENDPOINT }}
-            folder: build
-            htmlCacheControl: s-maxage=600
+          name: build
+      - name: Deploy TencentCloud 🚀
+        uses: TencentCloud/cos-action@v1
+        with:
+          secret_id: ${{ secrets.COS_SECRET_ID }}
+          secret_key: ${{ secrets.COS_SECRET_KEY }}
+          cos_bucket: ${{ secrets.COS_BUCKET }}
+          cos_region: "ap-chengdu"
+          local_path: build
+          clean: true
