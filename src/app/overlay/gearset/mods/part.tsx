@@ -32,7 +32,7 @@ const materiaMap = [
   '咏唱',
 ]
 
-const tierNumbers = '壹贰叁肆伍陆柒捌'
+const tierNumbers = '壹贰叁肆伍陆柒捌玖拾'
 
 function Materias({ materias, slot, overmeld }: { materias: GearsetMateria[]; slot: number; overmeld: boolean }) {
   if (materias.some(({ type }) => type >= materiaMap.length)) {
