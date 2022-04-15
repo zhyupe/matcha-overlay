@@ -420,9 +420,9 @@ export const Worlds: Record<number, IWorldData> = {
     name: '水晶塔',
     en: 'ShuiJingTa2',
   },
-  1193: {
+  1201: {
     region: 'cn',
     name: '红茶川',
     en: 'HongChaChuan2',
-  },
+  }
 }

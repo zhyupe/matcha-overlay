@@ -1,40 +1,30 @@
-import React, { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { MiniCactpotDTO } from './interface'
-import { MatchaEvent, OverlayProps } from '../../interface'
+import { OverlayProps } from '../../interface'
 import { Table } from './mods/table'
 import './index.css'
 import { Alert } from '../../../components/alert'
+import { useEvent } from '../../../lib/event'
 
 const emptyTable = () => [0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 export function CactpotOverlay({ eventEmitter, active, setActive }: OverlayProps) {
   const [table, setTable] = useState(emptyTable)
 
-  useEffect(() => {
-    const handleLog = function (log: MatchaEvent<MiniCactpotDTO>) {
-      const info = log.content
+  useEvent<MiniCactpotDTO>(eventEmitter, 'MiniCactpot', (info) => {
+    if (!active) {
+      setActive()
+    }
 
-      if (!active) {
-        setActive()
+    const index = 3 * info.y + info.x
+    setTable((table) => {
+      if (info.isNewGame) {
+        table = emptyTable()
       }
 
-      const index = 3 * info.y + info.x
-      setTable((table) => {
-        if (info.isNewGame) {
-          table = emptyTable()
-        }
-
-        return [...table.slice(0, index), info.value, ...table.slice(index + 1)]
-      })
-    }
-
-    eventEmitter.on('Cactpot', handleLog)
-    eventEmitter.on('MiniCactpot', handleLog)
-    return () => {
-      eventEmitter.off('Cactpot', handleLog)
-      eventEmitter.off('MiniCactpot', handleLog)
-    }
-  }, [active, eventEmitter, setActive])
+      return [...table.slice(0, index), info.value, ...table.slice(index + 1)]
+    })
+  })
 
   if (!active) return null
 

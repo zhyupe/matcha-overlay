@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import './index.css'
 import { List, Map } from 'immutable'
 import {
@@ -9,9 +9,10 @@ import {
   MarketBoardItemListingDTO,
 } from './interface'
 import { Cell } from './mods/cell'
-import { MatchaEvent, OverlayProps } from '../../interface'
+import { OverlayProps } from '../../interface'
 import { useConfigBoolean } from '../../../lib/config'
 import { HQ, SwitchHorizontal, Trash } from '../../../components/icon'
+import { useEvent } from '../../../lib/event'
 
 function updatePriceRow(records: List<MarketPriceRecord>, data: MarketRecord[]): List<MarketPriceRecord> {
   const ret = data.reduce((records, { price, quantity, hq }) => {
@@ -45,72 +46,56 @@ export function MarketOverlay({ language, eventEmitter, active, setActive }: Ove
     setItems((items) => items.clear())
   }
 
-  useEffect(() => {
-    const handleCount = function (log: MatchaEvent<MarketBoardItemListingCountDTO>) {
-      const data = log.content
-
-      setItems((items) => {
-        const index = items.findIndex((item) => item.get('id') === data.item)
-        if (index === -1) {
-          return items
-        }
-
-        return items.update(index, (item) =>
-          item.update('rows', (rows) => {
-            return rows.set(data.world, List<MarketPriceRecord>())
-          }),
-        )
-      })
+  useEvent<MarketBoardItemListingDTO>(eventEmitter, 'MarketBoardItemListing', (data) => {
+    if (!active) {
+      setActive()
     }
 
-    const handleListing = function (log: MatchaEvent<MarketBoardItemListingDTO>) {
-      if (!active) {
-        setActive()
+    setWorlds((servers) => {
+      if (!servers.includes(data.world)) {
+        return servers.push(data.world)
+      } else {
+        return servers
+      }
+    })
+
+    setItems((items) => {
+      const index = items.findIndex((item) => item.get('id') === data.item)
+      if (index === -1) {
+        return items.push(
+          MarketItemRecord({
+            id: data.item,
+            rows: Map<number, List<MarketPriceRecord>>().set(data.world, updatePriceRow(List(), data.data)),
+          }),
+        )
       }
 
-      const data = log.content
+      return items.update(index, (item) =>
+        item.update('rows', (rows) => {
+          if (rows.has(data.world)) {
+            return rows.update(data.world, (records) => updatePriceRow(records, data.data))
+          } else {
+            return rows.set(data.world, updatePriceRow(List<MarketPriceRecord>(), data.data))
+          }
+        }),
+      )
+    })
+  })
 
-      setWorlds((servers) => {
-        if (!servers.includes(data.world)) {
-          return servers.push(data.world)
-        } else {
-          return servers
-        }
-      })
+  useEvent<MarketBoardItemListingCountDTO>(eventEmitter, 'MarketBoardItemListingCount', (data) => {
+    setItems((items) => {
+      const index = items.findIndex((item) => item.get('id') === data.item)
+      if (index === -1) {
+        return items
+      }
 
-      setItems((items) => {
-        const index = items.findIndex((item) => item.get('id') === data.item)
-        if (index === -1) {
-          return items.push(
-            MarketItemRecord({
-              id: data.item,
-              rows: Map<number, List<MarketPriceRecord>>().set(data.world, updatePriceRow(List(), data.data)),
-            }),
-          )
-        }
-
-        return items.update(index, (item) =>
-          item.update('rows', (rows) => {
-            if (rows.has(data.world)) {
-              return rows.update(data.world, (records) => updatePriceRow(records, data.data))
-            } else {
-              return rows.set(data.world, updatePriceRow(List<MarketPriceRecord>(), data.data))
-            }
-          }),
-        )
-      })
-    }
-
-    // [MarketBoardItemListingCount] {"item":12604,"world":1044,"count":10,"EventType":6}
-    // [MarketBoardItemListing] {"item":12604,"world":0,"data":[{"price":1750,"quantity":39,"hq":false}],"EventType":5}
-    eventEmitter.on('MarketBoardItemListing', handleListing)
-    eventEmitter.on('MarketBoardItemListingCount', handleCount)
-
-    return () => {
-      eventEmitter.off('MarketBoardItemListing', handleListing)
-      eventEmitter.off('MarketBoardItemListingCount', handleCount)
-    }
-  }, [active, eventEmitter, setActive])
+      return items.update(index, (item) =>
+        item.update('rows', (rows) => {
+          return rows.set(data.world, List<MarketPriceRecord>())
+        }),
+      )
+    })
+  })
 
   if (!active) return null
 
