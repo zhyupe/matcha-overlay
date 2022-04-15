@@ -8,7 +8,7 @@ import { Draggable } from '../components/draggable'
 import { CactpotOverlay } from './overlay/cactpot'
 import { GearsetOverlay } from './overlay/gearset'
 import { MarketOverlay } from './overlay/market'
-import { TreasureOverlay } from './overlay/treasure'
+import { MapEventOverlay } from './overlay/map-event'
 import { ActWsNotice } from './notice/actws'
 import { WelcomeNotice } from './notice/welcome'
 import { LockClosed, LockOpen } from '../components/icon'
@@ -35,8 +35,8 @@ const tabs: Record<string, Tab> = {
     Component: CactpotOverlay,
   },
   treasure: {
-    title: '宝物地图',
-    Component: TreasureOverlay,
+    title: '地图事件',
+    Component: MapEventOverlay,
   },
   welcome: {
     title: '关于',

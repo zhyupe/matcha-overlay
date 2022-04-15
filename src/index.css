@@ -82,3 +82,12 @@ svg.icon {
   width: 16px;
   vertical-align: middle;
 }
+
+.space-between {
+  display: flex;
+  justify-content: space-between;
+}
+
+.clickable {
+  cursor: pointer;
+}

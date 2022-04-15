@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 export interface IWorldData {
   region: string
   name?: string

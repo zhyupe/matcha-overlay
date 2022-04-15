@@ -4,43 +4,51 @@
   @typescript-eslint/no-unsafe-member-access, 
   @typescript-eslint/no-unsafe-return */
 
+import { MapInfo } from '../components/map'
 import './index.css'
 
 declare let YZWF: any
 
 const $ = (id: string): HTMLElement => document.getElementById(id) as HTMLElement
-const posHTML = (num: number) => {
-  const [a, b] = num.toFixed(1).split('.')
-  return `${a}<small>.${b}</small>`
-}
 
 const title = $('title')
-const pos = $('pos')
 const wrap = $('eorzea-map')
-const iconUrl = YZWF.eorzeaMap.loader.getIconUrl('ui/icon/060000/060561.tex')
 
-let map: any = null
-const onHashChange = () => {
-  const [id, x, y] = window.location.hash
-    .slice(1)
-    .split(',')
-    .map((a) => +a)
+let instance: any = null
+let state: MapInfo = { map: 1 }
 
-  if (!map) return
-  map.loadMapKey(id).then(() => {
-    const marker = YZWF.eorzeaMap.simpleMarker(x, y, iconUrl, map.mapInfo)
-    map.addMaker(marker)
+const nextState = ({ map, markers }: MapInfo) => {
+  instance.loadMapKey(map).then(() => {
+    title.textContent = instance.mapInfo.placeName
 
-    title.textContent = map.mapInfo.placeName
-    pos.innerHTML = `X:${posHTML(x)} Y:${posHTML(y)}`
+    if (!markers || markers.length === 0) return
 
-    setTimeout(() => map.setView(map.mapToLatLng2D(x, y), -1), 300)
+    for (const { x, y, icon } of markers) {
+      const iconUrl = YZWF.eorzeaMap.loader.getIconUrl(`ui/icon/${icon.substring(0, 2)}0000/${icon}.tex`)
+      const marker = YZWF.eorzeaMap.simpleMarker(x, y, iconUrl, instance.mapInfo)
+      instance.addMaker(marker)
+    }
+
+    const main = markers[0]
+    setTimeout(() => instance.setView(instance.mapToLatLng2D(main.x, main.y), -1), 300)
   })
 }
 
 YZWF.eorzeaMap.create(wrap).then((_map: any) => {
-  map = _map
-  onHashChange()
+  instance = _map
+  nextState(state)
 })
 
-window.addEventListener('hashchange', onHashChange)
+window.addEventListener('error', (e) => {
+  e.preventDefault()
+})
+
+window.addEventListener('message', (e) => {
+  if (e.origin !== window.location.origin) return
+
+  if (instance) {
+    nextState(e.data)
+  } else {
+    state = e.data
+  }
+})

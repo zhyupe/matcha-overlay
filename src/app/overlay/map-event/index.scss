@@ -1,0 +1,33 @@
+.overlay-map-event {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+
+  > .map-points {
+    flex: 1 1 200px;
+    padding-right: 10px;
+    margin-left: 10px;
+    font-size: 14px;
+    overflow-y: scroll;
+
+    > div {
+      padding: 5px 0;
+    }
+  }
+  
+  > .map-container {
+    flex: 5;
+    overflow: hidden;
+  }
+
+  .point .position {
+    display: inline-block;
+  }
+}
+
+.overlay-map-event iframe {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: 0;
+}
