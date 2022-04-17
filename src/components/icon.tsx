@@ -28,6 +28,18 @@ export function ILvl() {
   return <i className="icon icon-ilvl">&#xe033;</i>
 }
 
+export function Instance1() {
+  return <i className="icon icon-instance-1">&#xe0b1;</i>
+}
+
+export function Instance2() {
+  return <i className="icon icon-instance-2">&#xe0b2;</i>
+}
+
+export function Instance3() {
+  return <i className="icon icon-instance-3">&#xe0b3;</i>
+}
+
 export function LockClosed() {
   return (
     <svg className="icon icon-lock-closed" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
