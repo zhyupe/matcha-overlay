@@ -2,8 +2,16 @@
 
 export interface IWorldData {
   region: string
+  dc?: number
   name?: string
   en: string
+}
+
+export enum DC {
+  陆行鸟 = 1,
+  莫古力 = 6,
+  猫小胖 = 7,
+  豆豆柴 = 8,
 }
 
 export const Worlds: Record<number, IWorldData> = {
@@ -289,141 +297,169 @@ export const Worlds: Record<number, IWorldData> = {
   },
   1042: {
     region: 'cn',
+    dc: 1,
     name: '拉诺西亚',
     en: 'LaNuoXiYa',
   },
   1043: {
     region: 'cn',
+    dc: 7,
     name: '紫水栈桥',
     en: 'ZiShuiZhanQiao',
   },
   1044: {
     region: 'cn',
+    dc: 1,
     name: '幻影群岛',
     en: 'HuanYingQunDao',
   },
   1045: {
     region: 'cn',
+    dc: 7,
     name: '摩杜纳',
     en: 'MoDuNa',
   },
   1060: {
     region: 'cn',
+    dc: 1,
     name: '萌芽池',
     en: 'MengYaChi',
   },
   1076: {
     region: 'cn',
+    dc: 6,
     name: '白金幻象',
     en: 'BaiJinHuanXiang',
   },
   1081: {
     region: 'cn',
+    dc: 1,
     name: '神意之地',
     en: 'ShenYiZhiDi',
   },
   1106: {
     region: 'cn',
+    dc: 7,
     name: '静语庄园',
     en: 'JingYuZhuangYuan',
   },
   1113: {
     region: 'cn',
+    dc: 6,
     name: '旅人栈桥',
     en: 'LvRenZhanQiao',
   },
   1121: {
     region: 'cn',
+    dc: 6,
     name: '拂晓之间',
     en: 'FuXiaoZhiJian',
   },
   1166: {
     region: 'cn',
+    dc: 6,
     name: '龙巢神殿',
     en: 'Longchaoshendian',
   },
   1167: {
     region: 'cn',
+    dc: 1,
     name: '红玉海',
     en: 'HongYuHai',
   },
   1169: {
     region: 'cn',
+    dc: 7,
     name: '延夏',
     en: 'YanXia',
   },
   1170: {
     region: 'cn',
+    dc: 6,
     name: '潮风亭',
     en: 'ChaoFengTing',
   },
   1171: {
     region: 'cn',
+    dc: 6,
     name: '神拳痕',
     en: 'ShenQuanHen',
   },
   1172: {
     region: 'cn',
+    dc: 6,
     name: '白银乡',
     en: 'BaiYinXiang',
   },
   1173: {
     region: 'cn',
+    dc: 1,
     name: '宇宙和音',
     en: 'YuZhouHeYin',
   },
   1174: {
     region: 'cn',
+    dc: 1,
     name: '沃仙曦染',
     en: 'WoXianXiRan',
   },
   1175: {
     region: 'cn',
+    dc: 1,
     name: '晨曦王座',
     en: 'ChenXiWangZuo',
   },
   1176: {
     region: 'cn',
+    dc: 6,
     name: '梦羽宝境',
     en: 'MengYuBaoJing',
   },
   1177: {
     region: 'cn',
+    dc: 7,
     name: '海猫茶屋',
     en: 'HaiMaoChaWu',
   },
   1178: {
     region: 'cn',
+    dc: 7,
     name: '柔风海湾',
     en: 'RouFengHaiWan',
   },
   1179: {
     region: 'cn',
+    dc: 7,
     name: '琥珀原',
     en: 'HuPoYuan',
   },
   1180: {
     region: 'cn',
+    dc: 8,
     name: '太阳海岸',
     en: 'TaiYangHaiAn2',
   },
   1183: {
     region: 'cn',
+    dc: 8,
     name: '银泪湖',
     en: 'YinLeiHu2',
   },
   1186: {
     region: 'cn',
+    dc: 8,
     name: '伊修加德',
     en: 'YiXiuJiaDe2',
   },
   1192: {
     region: 'cn',
+    dc: 8,
     name: '水晶塔',
     en: 'ShuiJingTa2',
   },
   1201: {
     region: 'cn',
+    dc: 8,
     name: '红茶川',
     en: 'HongChaChuan2',
   }
