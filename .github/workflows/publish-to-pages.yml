@@ -24,14 +24,14 @@ jobs:
       - name: Upload artifact 🎁
         uses: actions/upload-artifact@v3
         with:
-          name: build
-          path: build/
+          name: dist
+          path: dist/
 
       - name: Deploy to Github Pages 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.0
         with:
           branch: gh-pages
-          folder: build
+          folder: dist
           clean: true
 
   # deploy-aliyun:
@@ -40,8 +40,8 @@ jobs:
   #   steps:
   #     - uses: actions/download-artifact@v3
   #       with:
-  #         name: build
-  #         path: build/
+  #         name: dist
+  #         path: dist/
   #     - name: Deploy Aliyun 🚀
   #       uses: fangbinwei/aliyun-oss-website-action@v1
   #       with:
@@ -49,7 +49,7 @@ jobs:
   #           accessKeySecret: ${{ secrets.ACCESS_KEY_SECRET }}
   #           bucket: ${{ secrets.OSS_BUCKET }}
   #           endpoint: ${{ secrets.OSS_ENDPOINT }}
-  #           folder: build
+  #           folder: dist
   #           htmlCacheControl: s-maxage=600
 
   deploy-tencent-cloud:
@@ -58,8 +58,8 @@ jobs:
     steps:
       - uses: actions/download-artifact@v3
         with:
-          name: build
-          path: build/
+          name: dist
+          path: dist/
       - name: Deploy to TencentCloud 🚀
         uses: TencentCloud/cos-action@v1
         with:
@@ -67,5 +67,5 @@ jobs:
           secret_key: ${{ secrets.COS_SECRET_KEY }}
           cos_bucket: ${{ secrets.COS_BUCKET }}
           cos_region: "ap-chengdu"
-          local_path: build
+          local_path: dist
           clean: true
