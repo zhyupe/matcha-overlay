@@ -560,6 +560,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/events@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@types/events@npm:3.0.0"
+  checksum: 9a424c2da210957d5636e0763e8c9fc3aaeee35bf411284ddec62a56a6abe31de9c7c2e713dabdd8a76ff98b47db2bd52f61310be6609641d6234cc842ecbbe3
+  languageName: node
+  linkType: hard
+
 "@types/json-schema@npm:^7.0.9":
   version: 7.0.11
   resolution: "@types/json-schema@npm:7.0.11"
@@ -2839,6 +2846,7 @@ __metadata:
   resolution: "matcha-overlay@workspace:."
   dependencies:
     "@types/debounce": ^1.2.0
+    "@types/events": ^3.0.0
     "@types/lru-cache": ^5.1.0
     "@types/react": ^17.0.3
     "@types/react-dom": ^17.0.3
