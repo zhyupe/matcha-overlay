@@ -13,9 +13,9 @@ jobs:
         id: cache
         uses: actions/cache@v3
         with:
-          path:
-          - .pnp.*
-          - .yarn/cache
+          path: |
+            .pnp.*
+            .yarn/cache
           key: ${{runner.OS}}-yarn-caches-${{ hashFiles('yarn.lock') }}
 
       - name: Create env file 🍕
