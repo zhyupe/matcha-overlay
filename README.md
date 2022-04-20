@@ -8,7 +8,7 @@ An overlay for FFXIV providing market recorder, treasure spot and more function.
 | Provider     | URL                                      |
 | ------------ | ---------------------------------------- |
 | Github Pages | https://zhyupe.github.io/matcha-overlay/ |
-| FFCafe       | https://ffcafe.org/matcha/overlay/       |
+| FFCafe       | https://matcha-overlay.ffcafe.cn/        |
 
 A proper version of **Cafe.Matcha** plugin is required. At this time, the plugin is only
 available to Chinese servers and can be acquired in [CafeACT](https://ffcafe.org/act/)
