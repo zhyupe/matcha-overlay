@@ -31,3 +31,33 @@
   background: transparent;
   border: 0;
 }
+
+.map-post-moogle {
+  .icon-edit {
+    margin-left: 2px;
+    margin-bottom: 2px;
+  }
+
+  &-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  
+    li {
+      display: flex;
+      justify-content: space-between;
+    }
+  }
+}
+
+.map-event-world .icon {
+  font-size: .75em;
+  margin-left: 2px;
+}
+
+.dialog {
+  background: rgba(#b7ca32, .5);
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 5px;
+}
