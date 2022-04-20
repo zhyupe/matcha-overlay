@@ -29,3 +29,25 @@ body, html, .erozea-map-outer {
   right: 10px;
   font-style: italic;
 }
+
+.marker-tooltip {
+  background: #0008;
+  color: #fff;
+  border: 0;
+  padding: 0 10px;
+  margin-bottom: 10px;
+  box-shadow: none;
+
+  font-size: 14px;
+  line-height: 24px;
+  border-radius: 12px;
+}
+
+.marker-tooltip::before {
+  display: none;
+}
+
+.marker-tooltip .icon {
+  font-size: .75em;
+  margin-left: 2px;
+}

@@ -1,0 +1,19 @@
+@font-face {
+  font-family: FFXIV;
+  src: url(../../assets/ffxiv.ttf) format("truetype"), url(../../assets/ffxiv.woff) format("woff");
+  unicode-range: U+e020-e0db
+}
+
+.icon {
+  font-family: FFXIV;
+  font-style: normal;
+}
+
+i.icon {
+  line-height: 1em;
+}
+
+svg.icon {
+  width: 16px;
+  vertical-align: middle;
+}

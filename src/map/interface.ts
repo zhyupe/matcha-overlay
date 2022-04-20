@@ -2,6 +2,7 @@ export interface Marker {
   icon: MapIcon
   x: number
   y: number
+  title?: string
 }
 
 // https://xivapi.com/docs/Icons?set=icons060000

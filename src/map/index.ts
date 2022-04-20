@@ -1,6 +1,7 @@
 import { create, EoMap, loader, simpleMarker } from './eorzea-map'
 import { MapInfo } from '../components/map'
 import './index.css'
+import '../components/icon/index.css'
 
 const $ = (id: string) => document.getElementById(id)!
 
@@ -16,9 +17,23 @@ const nextState = ({ map, markers }: MapInfo) => {
 
     if (!markers || markers.length === 0) return
 
-    for (const { x, y, icon } of markers) {
+    for (const { x, y, icon, title } of markers) {
       const iconUrl = loader.getIconUrl(`ui/icon/${icon.substring(0, 2)}0000/${icon}.tex`)
       const marker = simpleMarker(x, y, iconUrl, instance.mapInfo)
+
+      if (title) {
+        marker
+          .bindTooltip(
+            title.replace(/\[icon:(\d+)\]/g, (_, i) => `<i class="icon">&#${i};</i>`),
+            {
+              permanent: true,
+              direction: 'top',
+              className: 'marker-tooltip',
+            },
+          )
+          .openTooltip()
+      }
+
       instance.addMarker(marker)
     }
 
