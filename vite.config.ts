@@ -1,6 +1,8 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vite'
+import { readFileSync } from 'fs'
 import react from '@vitejs/plugin-react'
-const pkg = require('./package.json')
+
+const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'))
 
 const buildTime = Date.now() - new Date(2020, 0, 1).getTime()
 export default defineConfig({
@@ -12,8 +14,8 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: 'index.html',
-        map: 'map.html'
-      }
+        map: 'map.html',
+      },
     },
-  }
+  },
 })

@@ -2,17 +2,7 @@ module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
   ignorePatterns: ['dist', 'node_modules', '!.prettierrc.js', '!.eslintrc.js'],
-  extends: [
-    'react-app',
-    'eslint:recommended',
-    'eslint-config-prettier',
-    'plugin:prettier/recommended',
-    'plugin:@typescript-eslint/eslint-recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:@typescript-eslint/recommended-requiring-type-checking',
-    'prettier',
-  ],
-  plugins: ['@typescript-eslint'],
+  extends: ['react-app', 'eslint:recommended', 'eslint-config-prettier', 'plugin:prettier/recommended', 'prettier'],
   rules: {
     'no-console': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
