@@ -11,10 +11,12 @@ jobs:
 
       - name: Cache Node Dependencies 🎶
         id: cache
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         with:
-          path: node_modules
-          key: ${{runner.OS}}-npm-caches-${{ hashFiles('yarn.lock') }}
+          path:
+          - .pnp.*
+          - .yarn/cache
+          key: ${{runner.OS}}-yarn-caches-${{ hashFiles('yarn.lock') }}
 
       - name: Create env file 🍕
         run: |
