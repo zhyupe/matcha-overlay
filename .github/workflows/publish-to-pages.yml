@@ -16,6 +16,12 @@ jobs:
           path: node_modules
           key: ${{runner.OS}}-npm-caches-${{ hashFiles('yarn.lock') }}
 
+      - name: Create env file 🍕
+        run: |
+          touch .env
+          echo POST_MOOGLE_API="${{ secrets.POST_MOOGLE_API }}" >> .env
+          echo POST_MOOGLE_NATS="${{ secrets.POST_MOOGLE_NATS }}" >> .env
+
       - name: Install and Build 🔧
         run: |
           yarn install
