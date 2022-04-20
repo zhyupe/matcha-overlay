@@ -1,4 +1,6 @@
-import { Dispatch, SetStateAction, useState } from 'react'
+/* eslint-disable no-redeclare */
+import { Dispatch, SetStateAction, useMemo } from 'react'
+import { atom, RecoilState, useRecoilState } from 'recoil'
 
 export function getConfig<T = unknown>(key: string, defaultValue?: T): T | undefined {
   console.log('[config:get]', key)
@@ -13,16 +15,42 @@ export function getConfig<T = unknown>(key: string, defaultValue?: T): T | undef
   return defaultValue
 }
 
+export function getConfigWithInit<T = unknown>(key: string, defaultValue: () => T): T {
+  let value = getConfig<T>(key)
+  if (!value) {
+    value = defaultValue()
+    setConfig(key, value)
+  }
+
+  return value
+}
+
 export function setConfig<T = unknown>(key: string, value: T): void {
   console.log('[config:set]', key, value)
   window.localStorage.setItem(`config:${key}`, JSON.stringify(value))
 }
 
+const atomMap = new Map<string, RecoilState<any>>()
+
+export function useConfig<T = unknown>(key: string): [T | undefined, Dispatch<SetStateAction<T>>]
+export function useConfig<T = unknown>(key: string, defaultValue: T): [T, Dispatch<SetStateAction<T>>]
 export function useConfig<T = unknown>(
   key: string,
   defaultValue?: T,
 ): [T | undefined, Dispatch<SetStateAction<T | undefined>>] {
-  const [value, setValue] = useState(() => getConfig(key, defaultValue))
+  const state = useMemo(() => {
+    let cached = atomMap.get(key)
+    if (!cached) {
+      cached = atom({
+        key,
+        default: getConfig(key, defaultValue),
+      })
+      atomMap.set(key, cached)
+    }
+    return cached
+  }, [key, defaultValue])
+
+  const [value, setValue] = useRecoilState<T | undefined>(state)
 
   return [
     value,
@@ -45,7 +73,7 @@ export function useConfigBoolean(
 ): [
   boolean,
   {
-    set: Dispatch<SetStateAction<boolean | undefined>>
+    set: Dispatch<SetStateAction<boolean>>
     toggle: () => void
     setTrue: () => void
     setFalse: () => void
