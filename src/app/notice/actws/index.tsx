@@ -1,5 +1,3 @@
-import React from 'react'
-
 export function ActWsNotice() {
   return (
     <div style={{ padding: '0 10px' }}>

@@ -1,4 +1,3 @@
-import React from 'react'
 import { getAppIcon } from '../lib/season'
 
 const path: Record<string, string> = {

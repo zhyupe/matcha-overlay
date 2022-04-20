@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 export function Draggable({ children, onClick }: { children: any; onClick: () => void }): any {
   const [mouseDown, setMouseDown] = useState(0)

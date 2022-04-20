@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import './index.css'
 import { addOverlayListener, startOverlayEvents } from '../ngld'
 import { LogEvent, OverlayProps } from './interface'

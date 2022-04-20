@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { List } from 'immutable'
 import { ILvl } from '../../../../components/icon'
 import { GearsetDTO } from '../interface'

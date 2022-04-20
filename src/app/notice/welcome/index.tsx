@@ -1,4 +1,3 @@
-import React from 'react'
 import { getSeasonFooter, getSeasonTitle } from '../../../lib/season'
 import { OverlayProps } from '../../interface'
 import './index.css'

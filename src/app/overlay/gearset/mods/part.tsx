@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { GearsetDTO, GearsetMateria } from '../interface'
 import { HQ, Glamour, ILvl } from '../../../../components/icon'
 import { queryItem, ItemRecord, xivapiRoot, itemName } from '../../../../lib/store/item'
