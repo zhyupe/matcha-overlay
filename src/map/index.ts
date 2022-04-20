@@ -1,40 +1,33 @@
-/* eslint-disable 
-  @typescript-eslint/no-unsafe-assignment, 
-  @typescript-eslint/no-unsafe-call, 
-  @typescript-eslint/no-unsafe-member-access, 
-  @typescript-eslint/no-unsafe-return */
-
+import { create, EoMap, loader, simpleMarker } from './eorzea-map'
 import { MapInfo } from '../components/map'
 import './index.css'
 
-declare let YZWF: any
-
-const $ = (id: string): HTMLElement => document.getElementById(id) as HTMLElement
+const $ = (id: string) => document.getElementById(id)!
 
 const title = $('title')
 const wrap = $('eorzea-map')
 
-let instance: any = null
+let instance: EoMap
 let state: MapInfo = { map: 1 }
 
 const nextState = ({ map, markers }: MapInfo) => {
-  instance.loadMapKey(map).then(() => {
+  void instance.loadMapKey(map).then(() => {
     title.textContent = instance.mapInfo.placeName
 
     if (!markers || markers.length === 0) return
 
     for (const { x, y, icon } of markers) {
-      const iconUrl = YZWF.eorzeaMap.loader.getIconUrl(`ui/icon/${icon.substring(0, 2)}0000/${icon}.tex`)
-      const marker = YZWF.eorzeaMap.simpleMarker(x, y, iconUrl, instance.mapInfo)
-      instance.addMaker(marker)
+      const iconUrl = loader.getIconUrl(`ui/icon/${icon.substring(0, 2)}0000/${icon}.tex`)
+      const marker = simpleMarker(x, y, iconUrl, instance.mapInfo)
+      instance.addMarker(marker)
     }
 
     const main = markers[0]
-    setTimeout(() => instance.setView(instance.mapToLatLng2D(main.x, main.y), -1), 300)
+    setTimeout(() => instance.setView(instance.mapToLatLng2D(main.x, main.y), -1), 10)
   })
 }
 
-YZWF.eorzeaMap.create(wrap).then((_map: any) => {
+void create(wrap).then((_map) => {
   instance = _map
   nextState(state)
 })
