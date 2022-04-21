@@ -1,0 +1,38 @@
+$switch-size: 16px;
+$switch-border: 2px;
+$switch-height: $switch-size + 2 * $switch-border;
+$switch-width: 2 * $switch-size + 2 * $switch-border;
+
+$switch-color: #b7ca32;
+$switch-transition: .2s ease-out;
+
+.switch {
+  width: $switch-width;
+  height: $switch-height;
+  background-color: rgba(0, 0, 0, .2);
+  border-radius: $switch-height / 2;
+  padding: $switch-border;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: background-color $switch-transition;
+
+  &::before {
+    display: block;
+    content: "";
+    width: $switch-size;
+    height: $switch-size;
+    margin-left: 0;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 2px #0008 inset;
+    transition: margin $switch-transition;
+  }
+
+  &.active {
+    background-color: $switch-color;
+
+    &::before {
+      margin-left: $switch-size;
+    }
+  }
+}

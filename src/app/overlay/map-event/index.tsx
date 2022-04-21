@@ -11,8 +11,11 @@ import { PostMoogleFate, PostMoogleState, usePostMoogle } from './data-source/po
 import { DC, Worlds } from '../../../data/worlds'
 import { FFXIVFate, IFFXIVFate } from '../../../data/fates'
 import { useConfig, useConfigBoolean } from '../../../lib/config'
-import { Edit, Instance1, Instance2, Instance3, InstanceOffset } from '../../../components/icon'
+import { Edit, Instance1, Instance2, Instance3, InstanceOffset, Question } from '../../../components/icon'
 import { useTimer } from '../../../lib/hook'
+import { Switch } from '../../../components/switch'
+import { Dialog } from '../../../components/dialog'
+import { RadioGroup } from '../../../components/radio-group'
 
 function Point({ point, empty = '未知' }: { point: PointInfo | null; empty?: string }) {
   const [name, x, y] = useMemo(() => {
@@ -127,9 +130,31 @@ function EventTimer({ from, to }: { from: number; to: number }) {
   return <span>{timeString}</span>
 }
 
+function ListeningFates({ fate, isDefault }: { fate: number[]; isDefault: boolean }) {
+  const name = (id: number) => <span className="tag">{FFXIVFate[id]?.name || `FATE:${id}`}</span>
+
+  return (
+    <div>
+      {fate.length === 0 ? '未设置' : null}
+      {fate.length <= 2 ? (
+        <>
+          {name(fate[0])}和{name(fate[1])}
+        </>
+      ) : (
+        <>
+          {name(fate[0])}等 {fate.length} 个
+        </>
+      )}
+      <span title={`${isDefault ? '默认设置，' : ''}请在抹茶 Matcha 插件内修改或设置`}>
+        <Question />
+      </span>
+    </div>
+  )
+}
+
 function PostMoogle({ data, onClick }: { data: PostMoogleState; onClick: MapAction }) {
   const [setting, setSetting] = useState(false)
-  const [enabled, { setTrue, setFalse }] = useConfigBoolean('post-moogle-enabled')
+  const [enabled, { setTrue, setFalse, set: setEnabled }] = useConfigBoolean('post-moogle-enabled')
   const [dc, setDC] = useConfig('post-moogle-dc', 0)
   const [time, setTime] = useState(0)
 
@@ -171,21 +196,50 @@ function PostMoogle({ data, onClick }: { data: PostMoogleState; onClick: MapActi
         <PostMoogleStatus data={data} onClick={() => setSetting(!setting)} />
       </div>
       {setting ? (
-        <div className="map-post-moogle-setting dialog dialog-top-right">
-          <div className="button-group">
-            <button onClick={() => updateDC(0)}>关闭 {0 === dc ? '〇' : '×'}</button>
-            {Object.entries(DC).map(([key, value]) => {
-              if (typeof value === 'string') return null
-
-              return (
-                <button key={key} onClick={() => updateDC(value)}>
-                  {key} {value === dc ? '〇' : '×'}
-                </button>
-              )
-            })}
+        <Dialog className="map-post-moogle-setting" direction="top-right">
+          <div className="space-between">
+            <span>启用</span>
+            <Switch value={enabled} onChange={setEnabled} />
           </div>
-        </div>
-      ) : (
+          <div className="space-between">
+            <span style={{ flexShrink: 0 }}>大区</span>
+            <RadioGroup
+              value={dc}
+              onChange={updateDC}
+              data={[
+                { value: 0, label: '未设置' },
+                ...Object.entries(DC)
+                  .filter(([, value]) => typeof value !== 'string')
+                  .map(([key, value]) => ({
+                    value: value as number,
+                    label: key,
+                  })),
+              ]}
+            />
+          </div>
+          {enabled ? (
+            <div className="space-between">
+              <span style={{ flexShrink: 0 }}>危命任务</span>
+              <ListeningFates isDefault={data.config.isDefault} fate={data.config.fates} />
+            </div>
+          ) : null}
+          <div>
+            {'跨服广播是一项实验性功能，可以帮助您获取当前大区内的活动内容。' +
+              '此功能可能会包含不准确或恶意投放的信息，也可能在不另行通知的情况下变更或中止。'}
+          </div>
+          <div>
+            {'抹茶 Matcha 鼓励您以开放包容的心态参与游戏内活动。' +
+              '请积极邀请其他玩家参与并为他们保留充足的时间。' +
+              '如您已集齐相关奖励，请优先让未集齐奖励的玩家参与活动。'}
+          </div>
+          <div>
+            {'抹茶 Matcha 反对任何基于游戏内活动信息的交易行为。' +
+              '请勿将通过广播功能获得的信息用于任何形式的交易行为。'}
+          </div>
+        </Dialog>
+      ) : null}
+
+      {enabled ? (
         <ul className="map-post-moogle-list">
           {data.data.map((item) => {
             const fateInfo = FFXIVFate[item.fate]
@@ -217,7 +271,7 @@ function PostMoogle({ data, onClick }: { data: PostMoogleState; onClick: MapActi
             )
           })}
         </ul>
-      )}
+      ) : null}
     </div>
   )
 }

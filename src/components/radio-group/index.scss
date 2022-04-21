@@ -1,0 +1,24 @@
+$active-color: #b7ca32;
+
+.radio-group {
+  button {
+    outline: 0;
+    border: 1px solid #fff;
+    line-height: 1.4em;
+    border-radius: 0.7em;
+    padding: 0 0.7em;
+    background-color: transparent;
+    color: #fff;
+    cursor: pointer;
+
+    &.active {
+      border-color: $active-color;
+      background-color: $active-color;
+      color: #000;
+    }
+  }
+
+  button:not(:first-child) {
+    margin-left: 5px;
+  }
+}

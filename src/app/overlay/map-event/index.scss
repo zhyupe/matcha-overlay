@@ -1,4 +1,5 @@
 .overlay-map-event {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: stretch;
@@ -38,6 +39,22 @@
     margin-bottom: 2px;
   }
 
+  &-setting {
+    position: absolute !important;
+    z-index: 10;
+    right: 15px;
+    width: 600px;
+    max-width: calc(100vw - 50px);
+
+    .space-between > :last-child {
+      text-align: right;
+    }
+
+    > div:not(:last-child) {
+      margin-bottom: 5px;
+    }
+  }
+
   &-list {
     margin: 0;
     padding: 0;
@@ -53,11 +70,4 @@
 .map-event-world .icon {
   font-size: .75em;
   margin-left: 2px;
-}
-
-.dialog {
-  background: rgba(#b7ca32, .5);
-  margin-top: 10px;
-  padding: 10px;
-  border-radius: 5px;
 }
