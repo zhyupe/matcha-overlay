@@ -76,6 +76,7 @@
 
 .header-menu {
   position: absolute;
+  z-index: 100;
   top: 50px;
   left: 2px;
   right: 2px;
