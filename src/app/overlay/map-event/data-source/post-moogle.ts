@@ -113,7 +113,7 @@ const connect = debounce(async (cb: (err: Error | null, conn: NatsConnection, cl
     console.error(error)
     console.log(`[nats] Connection closed with error, retry in 10s`)
 
-    setTimeout(connect, 10e3)
+    setTimeout(() => connect(cb), 10e3)
   } else if (!manuallyClosed) {
     console.log(`[nats] Connection unexpectly closed, retry`)
     void connect(cb)
