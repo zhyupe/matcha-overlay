@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { EventEmitter } from 'events'
 import { connect as natsConnect, NatsConnection, jwtAuthenticator, Subscription, Msg, JSONCodec } from 'nats.ws'
 import { useEffect, useMemo, useState } from 'react'
@@ -8,6 +9,9 @@ import { useEvent } from '../../../../lib/event'
 import { createUser, fromSeed, KeyPair } from 'nkeys.js'
 import { v4 as uuidv4 } from 'uuid'
 import { useLatest, useTimer } from '../../../../lib/hook'
+import { List } from 'immutable'
+import { speak } from '../../../../lib/tts'
+import { FFXIVFate } from '../../../../data/fates'
 
 export interface FateWatchListChangedDTO {
   world: number
@@ -182,21 +186,31 @@ function useConnection(enabled: boolean, topics: string[], handler: (message: Ms
   }, [connection, topics])
 }
 
+export enum ReportStage {
+  Prepare = 'prepare',
+  Ongoing = 'ongoing',
+  End = 'end',
+}
+
 export interface PostMoogleFate {
   dc: number
   fate: number
   world: number
   instance: number
+  startTime: number
+  duration: number
+  stage: ReportStage
 }
 
 export type PostMoogleItem<T> = T & {
-  receiveTime: number
+  _receivedAt: number
+  _subject: string
 }
 
 export interface PostMoogleState {
   enabled: boolean
   config: PostMoogleConfig
-  data: PostMoogleItem<PostMoogleFate>[]
+  data: List<PostMoogleItem<PostMoogleFate>>
   enable: () => void
   disable: () => void
 }
@@ -205,8 +219,9 @@ const hasServer = !!apiServer && !!natsServer
 const codec = JSONCodec()
 export function usePostMoogle(eventEmitter: EventEmitter): PostMoogleState {
   const [enabled, { setTrue, setFalse }] = useConfigBoolean('post-moogle-enabled')
+  const [tts] = useConfigBoolean('post-moogle-tts')
   const config = usePostMoogleConfig(eventEmitter)
-  const [data, setData] = useState<PostMoogleItem<PostMoogleFate>[]>([])
+  const [data, setData] = useState(List<PostMoogleItem<PostMoogleFate>>())
 
   const topics = useMemo(() => {
     return config.fates.map((fate) => `${topicPrefix}.dc${config.dc}.fate${fate}.*`)
@@ -216,23 +231,52 @@ export function usePostMoogle(eventEmitter: EventEmitter): PostMoogleState {
   useConnection(ready, topics, (msg) => {
     if (msg.subject.includes('.fate')) {
       const json = codec.decode(msg.data) as PostMoogleFate
-      setData((data) => [
-        {
-          receiveTime: Date.now(),
+
+      const isEnd = json.stage === ReportStage.End
+      setData((data) => {
+        const index = data.findIndex((item) => item._subject === msg.subject)
+
+        if (isEnd) {
+          return index === -1 ? data : data.remove(index)
+        }
+
+        const updater = (item?: PostMoogleItem<PostMoogleFate>) => ({
+          _receivedAt: Date.now(),
+          _subject: msg.subject,
+          ...item,
           ...json,
-        },
-        ...data,
-      ])
+          startTime: json.startTime || item?.startTime || 0,
+          duration: json.duration || item?.duration || 0,
+          stage:
+            json.stage === ReportStage.Ongoing || item?.stage === ReportStage.Ongoing
+              ? ReportStage.Ongoing
+              : ReportStage.Prepare,
+        })
+
+        if (index === -1) {
+          if (tts) {
+            speak(
+              `${Worlds[json.world]?.name} ${json.instance ? `${json.instance}线` : ''} ${FFXIVFate[json.fate]?.name}`,
+            )
+          }
+
+          return data.push(updater())
+        }
+
+        return data.update(index, updater)
+      })
     }
   })
 
   // FIXME: replace with real messages of fate ends
-  useTimer(5000, ready && data.length !== 0, () => {
+  useTimer(5000, ready && !data.isEmpty(), () => {
     const now = Date.now()
     setData((data) =>
       data.filter((item) => {
-        const passed = now - item.receiveTime
-        return passed < (currentCollectingFate.includes(item.fate) ? 30 * 60e3 : 15 * 60e3)
+        const startTime = item.startTime ? item.startTime * 1000 : item._receivedAt
+        const duration = (item.duration || 15 * 60) * 1000
+
+        return now <= startTime + duration
       }),
     )
   })

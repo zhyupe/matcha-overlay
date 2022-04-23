@@ -145,9 +145,7 @@ function ListeningFates({ fate, isDefault }: { fate: number[]; isDefault: boolea
           {name(fate[0])}等 {fate.length} 个
         </>
       )}
-      <span title={`${isDefault ? '默认设置，' : ''}请在抹茶 Matcha 插件内修改或设置`}>
-        <Question />
-      </span>
+      <div>{`${isDefault ? '默认设置，' : ''}请在抹茶 Matcha 插件内修改或设置`}</div>
     </div>
   )
 }
@@ -155,6 +153,7 @@ function ListeningFates({ fate, isDefault }: { fate: number[]; isDefault: boolea
 function PostMoogle({ data, onClick }: { data: PostMoogleState; onClick: MapAction }) {
   const [setting, setSetting] = useState(false)
   const [enabled, { setTrue, setFalse, set: setEnabled }] = useConfigBoolean('post-moogle-enabled')
+  const [tts, { set: setTTS }] = useConfigBoolean('post-moogle-tts')
   const [dc, setDC] = useConfig('post-moogle-dc', 0)
   const [time, setTime] = useState(0)
 
@@ -217,6 +216,10 @@ function PostMoogle({ data, onClick }: { data: PostMoogleState; onClick: MapActi
               ]}
             />
           </div>
+          <div className="space-between">
+            <span>语音播报</span>
+            <Switch value={tts} onChange={setTTS} />
+          </div>
           {enabled ? (
             <div className="space-between">
               <span style={{ flexShrink: 0 }}>危命任务</span>
@@ -245,7 +248,7 @@ function PostMoogle({ data, onClick }: { data: PostMoogleState; onClick: MapActi
             const fateInfo = FFXIVFate[item.fate]
             const worldInfo = Worlds[item.world]
 
-            const key = `${item.world}-${item.instance}-${item.fate}-${item.receiveTime}`
+            const key = item._subject
             const clickable = fateInfo && fateInfo.map && fateInfo.x && fateInfo.y
 
             return (
@@ -266,7 +269,7 @@ function PostMoogle({ data, onClick }: { data: PostMoogleState; onClick: MapActi
                   {fateInfo?.name || item.fate}
                 </div>
 
-                <EventTimer from={item.receiveTime} to={time} />
+                <EventTimer from={item.startTime ? item.startTime * 1000 : item._receivedAt} to={time} />
               </li>
             )
           })}
