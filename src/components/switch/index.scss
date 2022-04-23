@@ -9,7 +9,7 @@ $switch-transition: .2s ease-out;
 .switch {
   width: $switch-width;
   height: $switch-height;
-  background-color: rgba(0, 0, 0, .2);
+  background-color: rgba(#FFF, .2);
   border-radius: $switch-height / 2;
   padding: $switch-border;
   box-sizing: border-box;

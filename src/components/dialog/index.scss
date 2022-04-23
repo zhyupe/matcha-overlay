@@ -1,9 +1,12 @@
+$dialog-bgcolor: rgba(#000, .5);
+
 .dialog {
   position: relative;
-  background: rgba(#000, .25);
+  background: $dialog-bgcolor;
   margin-top: 10px;
   padding: 10px;
   border-radius: 5px;
+  box-shadow: 0 0 2px #FFFA;
 
   $dialog-arrow-size: 8px;
   &::before {
@@ -17,7 +20,7 @@
     &-#{$y}-#{$x}::before {
       #{$x}: 5px;
       #{$y}: -$dialog-arrow-size * 2;
-      border-#{$border}-color: rgba(#000, .25);
+      border-#{$border}-color: $dialog-bgcolor;
     }
   }
 
