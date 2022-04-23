@@ -17,6 +17,7 @@ function VersionCheck({ version }: { version: string | undefined }) {
     const appointed = parseVersion(appointedVersion)
 
     for (let i = 0; i < 4; ++i) {
+      if (current[i] > appointed[i]) return false
       if (current[i] < appointed[i]) return true
     }
 
