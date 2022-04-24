@@ -33,6 +33,9 @@ export function WelcomeNotice({ version, language, active }: OverlayProps) {
   return (
     <div className="notice-welcome">
       <p>欢迎使用 {getSeasonTitle(true) || 'Matcha'} 悬浮窗。点击左上角图标可进入最小化模式。</p>
+      <p>
+        <span className="tag">[新]</span>跨服广播测试中，请访问 {'<功能>-<地图事件>'} 开启
+      </p>
       <p>如遇功能异常，请检查：</p>
       <ol>
         <li>
