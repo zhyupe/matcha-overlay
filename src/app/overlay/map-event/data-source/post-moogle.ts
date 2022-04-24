@@ -171,6 +171,8 @@ function useConnection(enabled: boolean, topics: string[], handler: (message: Ms
     }
 
     for (const key of topics) {
+      if (subscribed.has(key)) continue
+
       const sub = connection.subscribe(key)
       console.log(`[nats][topic:${key}] Subscribing ...`)
       subscribed.set(key, sub)

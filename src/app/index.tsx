@@ -126,7 +126,7 @@ function App() {
       return
     }
 
-    addOverlayListener('LogLine', ({ line }: LogEvent) => {
+    const handler = (line: string[]) => {
       if (!line || line.length !== 5 || line[0] !== '00') return
 
       const label = line[3]
@@ -159,7 +159,14 @@ function App() {
       setVersion(normalizedVersion)
       setLanguage(normalizedLanguage)
       eventEmitter.emit(type, event)
-    })
+    }
+
+    addOverlayListener('LogLine', ({ line }: LogEvent) => handler(line))
+
+    const { hostname } = window.location
+    if (hostname === '127.0.0.1' || hostname === 'localhost') {
+      ;(window as any)._dev_mock = (log: string) => handler(log.split('|'))
+    }
 
     startOverlayEvents()
   }, [eventEmitter, isActWS])
