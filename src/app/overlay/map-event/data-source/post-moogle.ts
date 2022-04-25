@@ -12,6 +12,7 @@ import { useLatest, useTimer } from '../../../../lib/hook'
 import { List } from 'immutable'
 import { speak } from '../../../../lib/tts'
 import { FFXIVFate } from '../../../../data/fates'
+import { track } from '../../../../lib/track'
 
 export interface FateWatchListChangedDTO {
   world: number
@@ -130,7 +131,7 @@ function useConnection(enabled: boolean, topics: string[], handler: (message: Ms
   const [connection, setConnection] = useState<NatsConnection>()
   const handlerRef = useLatest(handler)
 
-  const [subscribed] = useState(new Map<string, Subscription>())
+  const [subscribed] = useState(() => new Map<string, Subscription>())
 
   useEffect(() => {
     if (!enabled) {
@@ -155,7 +156,7 @@ function useConnection(enabled: boolean, topics: string[], handler: (message: Ms
         closeConnection()
       }
     }
-  }, [enabled])
+  }, [enabled, subscribed])
 
   useEffect(() => {
     if (!connection || connection.isClosed()) {
@@ -185,7 +186,7 @@ function useConnection(enabled: boolean, topics: string[], handler: (message: Ms
         subscribed.delete(key)
       })
     }
-  }, [connection, topics])
+  }, [connection, topics, subscribed, handlerRef])
 }
 
 export enum ReportStage {
@@ -269,6 +270,15 @@ export function usePostMoogle(eventEmitter: EventEmitter): PostMoogleState {
       })
     }
   })
+
+  useEffect(() => {
+    if (ready) {
+      track('postmoogle', {
+        event_category: 'realtime',
+        event_label: `cn_dc${config.dc}_tts${tts ? '1' : '0'}`,
+      })
+    }
+  }, [ready, config.dc, tts])
 
   // FIXME: replace with real messages of fate ends
   useTimer(5000, ready && !data.isEmpty(), () => {
