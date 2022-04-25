@@ -157,10 +157,7 @@ function App() {
         content,
       }
 
-      if (normalizedVersion !== version) {
-        setVersion(normalizedVersion)
-        trackVersion('plugin', normalizedVersion)
-      }
+      setVersion(normalizedVersion)
       setLanguage(normalizedLanguage)
       eventEmitter.emit(type, event)
     }
@@ -174,6 +171,11 @@ function App() {
 
     startOverlayEvents()
   }, [eventEmitter, isActWS])
+
+  useEffect(() => {
+    if (!version) return
+    trackVersion('plugin', version)
+  }, [version])
 
   return (
     <div className={`app app-${minified ? 'minified' : 'wrap'}${getAppSeason()}`}>
