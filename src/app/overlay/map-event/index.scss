@@ -3,6 +3,7 @@
   display: flex;
   justify-content: center;
   align-items: stretch;
+  overflow-x: hidden;
 
   > .map-points {
     flex: 1 1 200px;
