@@ -14,6 +14,7 @@ import { WelcomeNotice } from './notice/welcome'
 import { LockClosed, LockOpen } from '../components/icon'
 import { getAppSeason } from '../lib/season'
 import { useConfigBoolean } from '../lib/config'
+import { trackVersion } from '../lib/track'
 
 interface Tab {
   title: string | null
@@ -156,7 +157,10 @@ function App() {
         content,
       }
 
-      setVersion(normalizedVersion)
+      if (normalizedVersion !== version) {
+        setVersion(normalizedVersion)
+        trackVersion('plugin', normalizedVersion)
+      }
       setLanguage(normalizedLanguage)
       eventEmitter.emit(type, event)
     }
