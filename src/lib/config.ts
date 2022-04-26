@@ -1,9 +1,10 @@
 /* eslint-disable no-redeclare */
 import { Dispatch, SetStateAction, useMemo } from 'react'
 import { atom, RecoilState, useRecoilState } from 'recoil'
+import { debug } from './log'
 
 export function getConfig<T = unknown>(key: string, defaultValue?: T): T | undefined {
-  console.log('[config:get]', key)
+  debug('[config:get]', key)
   const stored = window.localStorage.getItem(`config:${key}`)
   if (stored) {
     try {
@@ -26,7 +27,7 @@ export function getConfigWithInit<T = unknown>(key: string, defaultValue: () => 
 }
 
 export function setConfig<T = unknown>(key: string, value: T): void {
-  console.log('[config:set]', key, value)
+  debug('[config:set]', key, value)
   window.localStorage.setItem(`config:${key}`, JSON.stringify(value))
 }
 

@@ -13,6 +13,7 @@ import { List } from 'immutable'
 import { speak } from '../../../../lib/tts'
 import { FFXIVFate } from '../../../../data/fates'
 import { track } from '../../../../lib/track'
+import { debug } from '../../../../lib/log'
 
 export interface FateWatchListChangedDTO {
   world: number
@@ -116,14 +117,14 @@ const connect = debounce(async (cb: (err: Error | null, conn: NatsConnection, cl
   const error = await conn.closed()
   if (error) {
     console.error(error)
-    console.log(`[nats] Connection closed with error, retry in 10s`)
+    debug(`[nats] Connection closed with error, retry in 10s`)
 
     setTimeout(() => connect(cb), 10e3)
   } else if (!manuallyClosed) {
-    console.log(`[nats] Connection unexpectly closed, retry`)
+    debug(`[nats] Connection unexpectly closed, retry`)
     void connect(cb)
   } else {
-    console.log(`[nats] Connection closed`)
+    debug(`[nats] Connection closed`)
   }
 })
 
@@ -145,14 +146,14 @@ function useConnection(enabled: boolean, topics: string[], handler: (message: Ms
 
       closeConnection = _close
 
-      console.log(`[nats] New connection established. Clearing subscribed.`)
+      debug(`[nats] New connection established. Clearing subscribed.`)
       subscribed.clear()
       setConnection(conn)
     })
 
     return () => {
       if (closeConnection) {
-        console.log(`[nats] Closing connection.`)
+        debug(`[nats] Closing connection.`)
         closeConnection()
       }
     }
@@ -166,7 +167,7 @@ function useConnection(enabled: boolean, topics: string[], handler: (message: Ms
     for (const [key, sub] of subscribed) {
       if (topics.includes(key)) continue
 
-      console.log(`[nats][topic:${key}] Unsubscribing ...`)
+      debug(`[nats][topic:${key}] Unsubscribing ...`)
       subscribed.delete(key)
       sub.unsubscribe()
     }
@@ -175,14 +176,14 @@ function useConnection(enabled: boolean, topics: string[], handler: (message: Ms
       if (subscribed.has(key)) continue
 
       const sub = connection.subscribe(key)
-      console.log(`[nats][topic:${key}] Subscribing ...`)
+      debug(`[nats][topic:${key}] Subscribing ...`)
       subscribed.set(key, sub)
       ;(async () => {
         for await (const m of sub) {
           handlerRef.current(m)
         }
       })().catch((err) => {
-        console.log(`[nats][topic:${key}] Error: ${err.code} ${err.message}`)
+        debug(`[nats][topic:${key}] Error: ${err.code} ${err.message}`)
         subscribed.delete(key)
       })
     }
