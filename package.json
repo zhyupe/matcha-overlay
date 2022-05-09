@@ -1,6 +1,6 @@
 {
   "name": "matcha-overlay",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "private": true,
   "dependencies": {
     "axios": "^0.21.1",
