@@ -1,0 +1,62 @@
+$theme: #b7ca32;
+
+.overlay-cactpot {
+  display: flex;
+  height: auto;
+  align-items: stretch;
+
+  table {
+    padding-bottom: 34px;
+  }
+
+  th {
+    width: 50px;
+    padding: 5px 10px;
+    line-height: 24px;
+    height: 24px;
+    text-align: center;
+  }
+  
+  td {
+    padding: 10px;
+    text-align: center;
+  }
+  
+  ul {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    list-style: none;
+  }
+
+  li {
+    display: flex;
+    align-items: center;
+
+    .cactpot-input {
+      flex-shrink: 0;
+      margin-right: 10px;
+    }
+  }
+}
+
+.cactpot-input {
+  display: inline-block;
+  height: 30px;
+  width: 30px;
+  line-height: 30px;
+  border: 1px solid #fff;
+  color: #fff;
+  border-radius: 50%;
+  vertical-align: middle;
+  text-align: center;
+
+  &.suggested {
+    border-color: $theme;
+    background-color: $theme;
+  }
+}
+
+.cactpot-max {
+  color: $theme;
+}

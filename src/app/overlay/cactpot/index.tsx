@@ -1,15 +1,14 @@
 import { useState } from 'react'
-import { MiniCactpotDTO } from './interface'
+import { GameState, MiniCactpotDTO } from './interface'
 import { OverlayProps } from '../../interface'
-import { Table } from './mods/table'
-import './index.css'
+import { InputBody, Table } from './mods/table'
+import './index.scss'
 import { Alert } from '../../../components/alert'
 import { useEvent } from '../../../lib/event'
-
-const emptyTable = () => [0, 0, 0, 0, 0, 0, 0, 0, 0]
+import { makeEmptyState } from './libs/constant'
 
 export function CactpotOverlay({ eventEmitter, active, setActive }: OverlayProps) {
-  const [table, setTable] = useState(emptyTable)
+  const [table, setTable] = useState(makeEmptyState)
 
   useEvent<MiniCactpotDTO>(eventEmitter, 'MiniCactpot', (info) => {
     if (!active) {
@@ -19,10 +18,10 @@ export function CactpotOverlay({ eventEmitter, active, setActive }: OverlayProps
     const index = 3 * info.y + info.x
     setTable((table) => {
       if (info.isNewGame) {
-        table = emptyTable()
+        table = makeEmptyState()
       }
 
-      return [...table.slice(0, index), info.value, ...table.slice(index + 1)]
+      return [...table.slice(0, index), info.value, ...table.slice(index + 1)] as GameState
     })
   })
 
@@ -35,6 +34,17 @@ export function CactpotOverlay({ eventEmitter, active, setActive }: OverlayProps
   return (
     <div className="overlay overlay-cactpot">
       <Table input={table} />
+      <ul>
+        <li>
+          <InputBody unknown /> 未翻开格子
+        </li>
+        <li>
+          <InputBody value={1} /> 已翻开格子
+        </li>
+        <li>
+          <InputBody suggested /> 推荐格子
+        </li>
+      </ul>
     </div>
   )
 }
