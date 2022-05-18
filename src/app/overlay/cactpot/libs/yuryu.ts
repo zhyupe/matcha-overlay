@@ -10,7 +10,10 @@ const maxRevealedNums = 4
 const EPS = 0.00001
 
 const reverse = function (array: number[], begin: number, end: number) {
-  return [...array.slice(0, begin), ...array.slice(begin, end).reverse(), ...array.slice(end)]
+  var rev = array.slice(begin, end).reverse()
+  for (var i = 0; i < rev.length; i++) {
+    array[begin + i] = rev[i]
+  }
 }
 
 const next_permutation = function (array: number[]) {
