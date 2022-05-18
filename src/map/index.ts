@@ -18,7 +18,7 @@ const nextState = ({ map, markers }: MapInfo) => {
     if (!markers || markers.length === 0) return
 
     for (const { x, y, icon, title } of markers) {
-      const iconUrl = loader.getIconUrl(`ui/icon/${icon.substring(0, 2)}0000/${icon}.tex`)
+      const iconUrl = loader.getIconUrl(`ui/icon/${icon.substring(0, 3)}000/${icon}.tex`)
       const marker = simpleMarker(x, y, iconUrl, instance.mapInfo)
 
       if (title) {
