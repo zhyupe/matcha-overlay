@@ -71,3 +71,12 @@ code {
 .clickable {
   cursor: pointer;
 }
+
+.notice {
+  margin: 10px 5px;
+  padding: 5px 10px;
+  border: 1px solid #b7ca32;
+  line-height: 1.5;
+  border-radius: 5px;
+  background: rgba(0, 0, 0, .4);
+}

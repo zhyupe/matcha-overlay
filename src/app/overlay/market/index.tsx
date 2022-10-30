@@ -124,59 +124,67 @@ export function MarketOverlay({ language, eventEmitter, active, setActive }: Ove
   ) => JSX.Element
 
   return (
-    <table className="overlay-market">
-      <thead>
-        <tr>
-          <th style={{ width: 100 }}>
-            <div className="buttons">
-              <button
-                className={`transpose button button-circle ${transpose ? 'button-active' : ''}`}
-                onClick={toggleTranspose}
-                style={{ marginRight: 10 }}
-              >
-                <SwitchHorizontal />
-              </button>
-              <button
-                className={`button button-circle ${hqOnly ? 'button-active' : ''}`}
-                onClick={toggleHQOnly}
-                style={{ marginRight: 10 }}
-              >
-                <HQ />
-              </button>
-              <button className="button button-circle" onClick={reset}>
-                <Trash />
-              </button>
-            </div>
-          </th>
-          {firstRow.isEmpty() ? columnRender(null) : firstRow.map(columnRender)}
-        </tr>
-      </thead>
-      <tbody>
-        {firstColumn.isEmpty() ? (
+    <>
+      <div className="notice">
+        <span className="tag" style={{ paddingLeft: 0 }}>
+          [公告]
+        </span>
+        由于 Universalis 服务异常，目前跨服物价查询功能不可用。请耐心等待维护者修复服务。
+      </div>
+      <table className="overlay-market">
+        <thead>
           <tr>
-            {rowRender(null)}
-            {firstRow.isEmpty() ? <Cell.Empty /> : firstRow.map((_) => <Cell.Empty />)}
+            <th style={{ width: 100 }}>
+              <div className="buttons">
+                <button
+                  className={`transpose button button-circle ${transpose ? 'button-active' : ''}`}
+                  onClick={toggleTranspose}
+                  style={{ marginRight: 10 }}
+                >
+                  <SwitchHorizontal />
+                </button>
+                <button
+                  className={`button button-circle ${hqOnly ? 'button-active' : ''}`}
+                  onClick={toggleHQOnly}
+                  style={{ marginRight: 10 }}
+                >
+                  <HQ />
+                </button>
+                <button className="button button-circle" onClick={reset}>
+                  <Trash />
+                </button>
+              </div>
+            </th>
+            {firstRow.isEmpty() ? columnRender(null) : firstRow.map(columnRender)}
           </tr>
-        ) : (
-          firstColumn.map((row) => {
-            return (
-              <tr>
-                {rowRender(row as MarketItemRecord)}
-                {firstRow.isEmpty() ? (
-                  <Cell.Empty />
-                ) : (
-                  firstRow.map((column) => {
-                    const item = (rowType === 'world' ? column : row) as MarketItemRecord
-                    const world = (rowType === 'world' ? row : column) as number
+        </thead>
+        <tbody>
+          {firstColumn.isEmpty() ? (
+            <tr>
+              {rowRender(null)}
+              {firstRow.isEmpty() ? <Cell.Empty /> : firstRow.map((_) => <Cell.Empty />)}
+            </tr>
+          ) : (
+            firstColumn.map((row) => {
+              return (
+                <tr>
+                  {rowRender(row as MarketItemRecord)}
+                  {firstRow.isEmpty() ? (
+                    <Cell.Empty />
+                  ) : (
+                    firstRow.map((column) => {
+                      const item = (rowType === 'world' ? column : row) as MarketItemRecord
+                      const world = (rowType === 'world' ? row : column) as number
 
-                    return <Cell key={`${world}-${item.get('id')}`} world={world} item={item} hqOnly={hqOnly} />
-                  })
-                )}
-              </tr>
-            )
-          })
-        )}
-      </tbody>
-    </table>
+                      return <Cell key={`${world}-${item.get('id')}`} world={world} item={item} hqOnly={hqOnly} />
+                    })
+                  )}
+                </tr>
+              )
+            })
+          )}
+        </tbody>
+      </table>
+    </>
   )
 }
