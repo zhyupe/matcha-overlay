@@ -1,4 +1,4 @@
-import './mofish.scss'
+import './methane.scss'
 
 const useAprilStyle = (() => {
   const now = new Date()
@@ -7,7 +7,7 @@ const useAprilStyle = (() => {
 
 export const getAppSeason = (): string => {
   if (useAprilStyle) {
-    return ' app-season-mofish'
+    return ' app-season-methane'
   }
 
   return ''
@@ -15,7 +15,7 @@ export const getAppSeason = (): string => {
 
 export const getAppIcon = (): string => {
   if (useAprilStyle) {
-    return 'mofish'
+    return 'methane'
   }
 
   return ''
@@ -23,7 +23,7 @@ export const getAppIcon = (): string => {
 
 export const getSeasonTitle = (short = false): string | null => {
   if (useAprilStyle) {
-    return short ? 'Mofish' : '摸鱼 Mofish'
+    return short ? 'Methane Egg' : '甲烷矿蛋'
   }
 
   return null

@@ -9,6 +9,11 @@ const path: Record<string, string> = {
 
 export function Logo({ ...props }) {
   const appIcon = getAppIcon() || 'matcha'
+
+  if (appIcon === 'methane') {
+    return <img className="logo" {...props} src="https://cafemaker.wakingsands.com/i/021000/021314_hr1.png" alt="" />
+  }
+
   return (
     <svg className="logo" viewBox="0 0 400 400" {...props}>
       <path d={path[appIcon]} />

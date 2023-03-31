@@ -1,0 +1,65 @@
+$methane-color: #92cc39;
+
+.app-season-methane {
+  .button-active, .button:hover {
+    color: $methane-color;
+    border-color: $methane-color;
+  }
+
+  &.app {
+    border-color: rgba($methane-color, 0.66);
+  }
+
+  &.app-minified {
+    background-color: #5a5952
+  }
+
+  .logo {
+    background-color: $methane-color;
+  }
+
+  .header > .tab.active {
+    border-color: $methane-color;
+  }
+
+  .header-lock.locked {
+    color: $methane-color;
+  }
+
+  .header-menu {
+    background: rgba($methane-color, 0.93);
+  }
+
+  .header-menu::before {
+    border-bottom-color: rgba($methane-color, 0.8);
+  }
+
+  .tag {
+    color: $methane-color;
+  }
+
+  .cactpot-input.highlight {
+    border-color: $methane-color;
+    color: $methane-color;
+  }
+  
+  .cactpot-max {
+    color: $methane-color;
+  }
+
+  .gearset-wrap h3 {
+    color: $methane-color;
+  }
+
+  .overlay-market .lowest {
+    color: $methane-color;
+  }
+  
+  .overlay-market .lowest .icon-hq path {
+    fill: $methane-color;
+  }
+
+  .alert-title {
+    color: $methane-color;
+  }
+}
