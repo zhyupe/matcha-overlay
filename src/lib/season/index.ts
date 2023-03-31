@@ -1,6 +1,10 @@
 import './methane.scss'
 
 const useAprilStyle = (() => {
+  if (localStorage.getItem('force-april-style') === 'true') {
+    return true
+  }
+
   const now = new Date()
   return now.getMonth() + 1 === 4 && now.getDate() === 1
 })()
