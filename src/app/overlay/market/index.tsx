@@ -125,12 +125,6 @@ export function MarketOverlay({ language, eventEmitter, active, setActive }: Ove
 
   return (
     <>
-      <div className="notice">
-        <span className="tag" style={{ paddingLeft: 0 }}>
-          [公告]
-        </span>
-        由于 Universalis 服务异常，目前跨服物价查询功能不可用。请耐心等待维护者修复服务。
-      </div>
       <table className="overlay-market">
         <thead>
           <tr>
