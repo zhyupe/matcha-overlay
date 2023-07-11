@@ -37,12 +37,5 @@ export type MarketPriceRecord = Record<{
 }>
 export const MarketPriceRecord = Record({ price: 0, quantity: 0, hq: 0 })
 
-export type MarketItemRecord = Record<
-  MarketItem & {
-    rows: Map<number, List<MarketPriceRecord>>
-  }
->
-export const MarketItemRecord = Record({
-  id: 0,
-  rows: Map<number, List<MarketPriceRecord>>(),
-})
+export type MarketItemMap = Map<number, List<MarketPriceRecord>>
+export type MarketItemsMap = Map<number, MarketItemMap>

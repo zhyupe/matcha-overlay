@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { MarketItemRecord } from '../interface'
+import { MarketItemMap } from '../interface'
 import { HQ } from '../../../../components/icon'
 import './cell.css'
 import { itemName, queryItem } from '../../../../lib/store/item'
@@ -15,7 +15,7 @@ function Amount({ quantity, hq }: { quantity: number; hq: number }) {
   )
 }
 
-export function Cell({ world, item, hqOnly }: { world: number; item: MarketItemRecord; hqOnly: boolean }): JSX.Element {
+export function Cell({ world, item, hqOnly }: { world: number; item: MarketItemMap; hqOnly: boolean }): JSX.Element {
   const localCheapest = useLocalCheapest(item, world, hqOnly)
   const globalCheapest = useGlobalCheapest(item, hqOnly)
   const firstGroup = useFirstGroup(item, world, hqOnly)
