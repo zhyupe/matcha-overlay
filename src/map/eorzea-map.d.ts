@@ -1,4 +1,3 @@
-/* eslint-disable no-redeclare */
 import * as L from 'leaflet'
 
 interface IRegion {

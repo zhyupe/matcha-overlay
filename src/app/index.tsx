@@ -122,8 +122,7 @@ function App() {
 
   useEffect(() => {
     if (isActWS) {
-      // eslint-disable-next-line
-      (window as any).__OverlayPlugin_ws_faker = () => {}
+      ;(window as any).__OverlayPlugin_ws_faker = () => {}
       return
     }
 
@@ -144,7 +143,6 @@ function App() {
 
       let content = line[4]
       try {
-        // eslint-disable-next-line
         content = JSON.parse(content)
       } catch (e) {
         // ignore

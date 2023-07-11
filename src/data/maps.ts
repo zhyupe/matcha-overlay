@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 export interface IMapData {
   name: string
   sizeFactor: number

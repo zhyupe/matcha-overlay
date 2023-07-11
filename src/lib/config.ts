@@ -1,4 +1,3 @@
-/* eslint-disable no-redeclare */
 import { Dispatch, SetStateAction, useMemo } from 'react'
 import { atom, RecoilState, useRecoilState } from 'recoil'
 import { debug } from './log'

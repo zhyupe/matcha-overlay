@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { EventEmitter } from 'events'
 import { connect as natsConnect, NatsConnection, jwtAuthenticator, Subscription, Msg, JSONCodec } from 'nats.ws'
 import { useEffect, useMemo, useState } from 'react'
