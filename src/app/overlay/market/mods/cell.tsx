@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
-import { MarketItemRecord, MarketPriceRecord } from '../interface'
+import { MarketItemRecord } from '../interface'
 import { HQ } from '../../../../components/icon'
 import './cell.css'
 import { itemName, queryItem } from '../../../../lib/store/item'
 import { Worlds } from '../../../../data/worlds'
+import { useFirstGroup, useGlobalCheapest, useLocalCheapest } from './calc'
 
 function Amount({ quantity, hq }: { quantity: number; hq: number }) {
   return (
@@ -15,48 +16,20 @@ function Amount({ quantity, hq }: { quantity: number; hq: number }) {
 }
 
 export function Cell({ world, item, hqOnly }: { world: number; item: MarketItemRecord; hqOnly: boolean }): JSX.Element {
-  let records = item.get('rows').get(world)
-  if (records && hqOnly) {
-    records = records
-      .filter((record) => record.get('hq') !== 0)
-      .map((record) =>
-        MarketPriceRecord({
-          price: record.get('price'),
-          quantity: record.get('hq'),
-          hq: record.get('hq'),
-        }),
-      )
-  }
+  const localCheapest = useLocalCheapest(item, world, hqOnly)
+  const globalCheapest = useGlobalCheapest(item, hqOnly)
+  const firstGroup = useFirstGroup(item, world, hqOnly)
 
-  if (!records || records.count() === 0) {
+  if (!localCheapest || !firstGroup) {
     return <td className="no-record">-</td>
   }
 
-  const localLowest = (records.get(0) as MarketPriceRecord).toJS()
-  const firstGroup = records.reduce(
-    (ret, record) => {
-      if (ret.quantity >= 99) return ret
-
-      const recordQuantity = record.get('quantity')
-      return {
-        totalPrice: ret.totalPrice + record.get('price') * recordQuantity,
-        quantity: ret.quantity + recordQuantity,
-        hq: ret.hq + record.get('hq'),
-      }
-    },
-    { totalPrice: 0, quantity: 0, hq: 0 },
-  )
-
-  const isGlobalLowest = item.get('rows').every((records) => {
-    const lowest = hqOnly ? records.find((record) => record.get('hq') !== 0) : records.get(0)
-    return !lowest || lowest.get('price') >= localLowest.price
-  })
-
+  const isGlobalCheapest = localCheapest.price === globalCheapest
   return (
-    <td className={isGlobalLowest ? 'lowest' : ''}>
+    <td className={isGlobalCheapest ? 'lowest' : ''}>
       <div className="single">
-        {(localLowest.price as number).toLocaleString()}
-        <Amount quantity={localLowest.quantity as number} hq={localLowest.hq as number} />
+        {localCheapest.price.toLocaleString()}
+        <Amount quantity={localCheapest.quantity} hq={localCheapest.hq} />
       </div>
       <div className="group">
         ~
