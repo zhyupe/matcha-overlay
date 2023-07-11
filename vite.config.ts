@@ -1,7 +1,7 @@
 import 'dotenv/config'
 import { defineConfig } from 'vite'
 import { readFileSync } from 'fs'
-import react from '@vitejs/plugin-react'
+import react from '@vitejs/plugin-react-swc'
 
 const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'))
 
