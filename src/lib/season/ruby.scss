@@ -1,8 +1,9 @@
 $ruby-color: #e02a47;
+$ruby-color-light: #e6576d;
 
 .app-season-ruby {
   .button-active, .button:hover {
-    color: $ruby-color;
+    color: $ruby-color-light;
     border-color: $ruby-color;
   }
 
@@ -23,7 +24,7 @@ $ruby-color: #e02a47;
   }
 
   .header-lock.locked {
-    color: $ruby-color;
+    color: $ruby-color-light;
   }
 
   .header-menu {
@@ -35,31 +36,31 @@ $ruby-color: #e02a47;
   }
 
   .tag {
-    color: $ruby-color;
+    color: $ruby-color-light;
   }
 
   .cactpot-input.highlight {
     border-color: $ruby-color;
-    color: $ruby-color;
+    color: $ruby-color-light;
   }
   
   .cactpot-max {
-    color: $ruby-color;
+    color: $ruby-color-light;
   }
 
   .gearset-wrap h3 {
-    color: $ruby-color;
+    color: $ruby-color-light;
   }
 
   .overlay-market .lowest {
-    color: $ruby-color;
+    color: $ruby-color-light;
   }
   
   .overlay-market .lowest .icon-hq path {
-    fill: $ruby-color;
+    fill: $ruby-color-light;
   }
 
   .alert-title {
-    color: $ruby-color;
+    color: $ruby-color-light;
   }
 }
