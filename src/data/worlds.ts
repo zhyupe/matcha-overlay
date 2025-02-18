@@ -15,6 +15,14 @@ export enum DC {
 }
 
 export const Worlds: Record<number, IWorldData> = {
+  21: {
+    region: 'global',
+    en: 'Ravana',
+  },
+  22: {
+    region: 'global',
+    en: 'Bismarck',
+  },
   23: {
     region: 'global',
     en: 'Asura',
@@ -247,6 +255,18 @@ export const Worlds: Record<number, IWorldData> = {
     region: 'global',
     en: 'Spriggan',
   },
+  86: {
+    region: 'global',
+    en: 'Sephirot',
+  },
+  87: {
+    region: 'global',
+    en: 'Sophia',
+  },
+  88: {
+    region: 'global',
+    en: 'Zurvan',
+  },
   90: {
     region: 'global',
     en: 'Aegis',
@@ -287,13 +307,37 @@ export const Worlds: Record<number, IWorldData> = {
     region: 'global',
     en: 'Sargatanas',
   },
-  161: {
+  400: {
     region: 'global',
-    en: 'Chocobo',
+    en: 'Sagittarius',
   },
-  166: {
+  401: {
     region: 'global',
-    en: 'Moogle',
+    en: 'Phantom',
+  },
+  402: {
+    region: 'global',
+    en: 'Alpha',
+  },
+  403: {
+    region: 'global',
+    en: 'Raiden',
+  },
+  404: {
+    region: 'global',
+    en: 'Marilith',
+  },
+  405: {
+    region: 'global',
+    en: 'Seraph',
+  },
+  406: {
+    region: 'global',
+    en: 'Halicarnassus',
+  },
+  407: {
+    region: 'global',
+    en: 'Maduin',
   },
   1042: {
     region: 'cn',
@@ -462,5 +506,25 @@ export const Worlds: Record<number, IWorldData> = {
     dc: 8,
     name: '红茶川',
     en: 'HongChaChuan2',
-  }
+  },
+  2075: {
+    region: 'global',
+    en: '카벙클',
+  },
+  2076: {
+    region: 'global',
+    en: '초코보',
+  },
+  2077: {
+    region: 'global',
+    en: '모그리',
+  },
+  2078: {
+    region: 'global',
+    en: '톤베리',
+  },
+  2080: {
+    region: 'global',
+    en: '펜리르',
+  },
 }

@@ -1,6 +1,4 @@
-import { writeFileSync } from 'fs'
-import { fileURLToPath } from 'url'
-import prettier from 'prettier'
+import { json, write } from './common.mjs'
 
 function toMapCoordinate2D(value, sizeFactor, offset) {
   const c = sizeFactor / 100
@@ -10,7 +8,6 @@ function toMapCoordinate2D(value, sizeFactor, offset) {
   return val.toFixed(1)
 }
 
-const target = fileURLToPath(new URL('../src/data/treasures.ts', import.meta.url))
 ;(async () => {
   const rankRes = await (await fetch('https://xivapi.com/TreasureHuntRank?columns=ID,KeyItemNameTargetID')).json()
   const map = new Map()
@@ -78,14 +75,7 @@ const target = fileURLToPath(new URL('../src/data/treasures.ts', import.meta.url
   y: number
 }
 
-export const TreasureData: Record<string, ITreasureData[]> = ${JSON.stringify(data, null, 2).replace(/"(\w+)"/g, '$1')}`
+export const TreasureData: Record<string, ITreasureData[]> = ${json(data)}`
 
-  writeFileSync(
-    target,
-    prettier.format(code, {
-      filepath: target,
-      semi: false,
-      singleQuote: true,
-    }),
-  )
+  write('treasures', code)
 })()
