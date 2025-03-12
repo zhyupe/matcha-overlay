@@ -32,7 +32,7 @@ const materiaMap = [
   '咏唱',
 ]
 
-const tierNumbers = '壹贰叁肆伍陆柒捌玖拾'
+const tierNumbers = ['壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖', '拾', '拾壹', '拾贰']
 
 function Materias({ materias, slot, overmeld }: { materias: GearsetMateria[]; slot: number; overmeld: boolean }) {
   if (materias.some(({ type }) => type >= materiaMap.length)) {
@@ -53,7 +53,7 @@ function Materias({ materias, slot, overmeld }: { materias: GearsetMateria[]; sl
     }
 
     icons.push({
-      icon: `icon/materia/slot_${i >= slot ? 'overmeld' : 'normal'}_grade0${tier}.png`,
+      icon: `icon/materia/slot_${i >= slot ? 'overmeld' : 'normal'}_grade${tier.toString().padStart(2, '0')}.png`,
       name: `${materiaMap[type]}魔晶石${tierNumbers[tier]}型`,
     })
   }
