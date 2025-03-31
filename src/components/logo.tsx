@@ -1,8 +1,14 @@
-import { getAppIcon } from '../lib/season'
+import { useContext } from 'react'
+import { SeasonContext } from '../lib/season'
 
 export function Logo({ ...props }) {
-  const { type, value } = getAppIcon()
+  const { icon } = useContext(SeasonContext)
 
+  if (!icon) {
+    return null
+  }
+
+  const { type, value } = icon
   if (type === 'img') {
     return <img className="logo" {...props} src={value} alt="" />
   }

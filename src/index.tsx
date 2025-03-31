@@ -4,6 +4,7 @@ import App from './app'
 import { RecoilRoot } from 'recoil'
 import { StrictMode } from 'react'
 import { trackVersion } from './lib/track'
+import { SeasonProvider } from './lib/season'
 
 const build = process.env.build
 trackVersion('overlay', build!)
@@ -13,7 +14,9 @@ const root = createRoot(container!)
 root.render(
   <StrictMode>
     <RecoilRoot>
-      <App />
+      <SeasonProvider>
+        <App />
+      </SeasonProvider>
     </RecoilRoot>
   </StrictMode>,
 )

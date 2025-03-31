@@ -1,3 +1,5 @@
+@use "sass:math";
+
 $switch-size: 16px;
 $switch-border: 2px;
 $switch-height: $switch-size + 2 * $switch-border;
@@ -10,7 +12,7 @@ $switch-transition: .2s ease-out;
   width: $switch-width;
   height: $switch-height;
   background-color: rgba(#FFF, .2);
-  border-radius: $switch-height / 2;
+  border-radius: math.div($switch-height, 2);
   padding: $switch-border;
   box-sizing: border-box;
   cursor: pointer;

@@ -1,6 +1,6 @@
-import { useMemo } from 'react'
+import { useContext, useMemo } from 'react'
 import { Dialog } from '../../../components/dialog'
-import { getSeasonFooter, getSeasonTitle } from '../../../lib/season'
+import { SeasonContext } from '../../../lib/season'
 import { OverlayProps } from '../../interface'
 import './index.css'
 
@@ -28,18 +28,19 @@ function VersionCheck({ version }: { version: string | undefined }) {
 }
 
 export function WelcomeNotice({ version, language, active }: OverlayProps) {
+  const { title, titleEn, footer } = useContext(SeasonContext)
   if (!active) return null
 
   return (
     <div className="notice-welcome">
-      <p>欢迎使用 {getSeasonTitle(true) || 'Matcha'} 悬浮窗。点击左上角图标可进入最小化模式。</p>
+      <p>欢迎使用 {titleEn} 悬浮窗。点击左上角图标可进入最小化模式。</p>
       <p>如遇功能异常，请检查：</p>
       <ol>
         <li>
           悬浮窗在<span className="tag">ngld 悬浮窗插件</span>中正确设置
         </li>
         <li>
-          已经安装最新版本的<span className="tag">{getSeasonTitle() || '抹茶 Matcha'}</span>插件
+          已经安装最新版本的<span className="tag">{title}</span>插件
         </li>
       </ol>
       <p>
@@ -48,7 +49,7 @@ export function WelcomeNotice({ version, language, active }: OverlayProps) {
       <VersionCheck version={version} />
       <p className="copyright">
         &copy; {year} FFCafe / Build: {build}
-        {getSeasonFooter()}
+        {footer}
       </p>
     </div>
   )

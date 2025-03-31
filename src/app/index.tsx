@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useContext } from 'react'
 import './index.css'
 import { addOverlayListener, startOverlayEvents } from '../ngld'
 import { LogEvent, OverlayProps } from './interface'
@@ -12,9 +12,9 @@ import { MapEventOverlay } from './overlay/map-event'
 import { ActWsNotice } from './notice/actws'
 import { WelcomeNotice } from './notice/welcome'
 import { LockClosed, LockOpen } from '../components/icon'
-import { getAppSeason } from '../lib/season'
 import { useConfigBoolean } from '../lib/config'
 import { trackVersion } from '../lib/track'
+import { SeasonContext } from '../lib/season'
 
 interface Tab {
   title: string | null
@@ -119,6 +119,7 @@ function App() {
   const [version, setVersion] = useState<string>()
   const [language, setLanguage] = useState<string>('chs')
   const [lock, setLock] = useState<boolean>(false)
+  const { className, style } = useContext(SeasonContext)
 
   useEffect(() => {
     if (isActWS) {
@@ -176,7 +177,7 @@ function App() {
   }, [version])
 
   return (
-    <div className={`app app-${minified ? 'minified' : 'wrap'}${getAppSeason()}`}>
+    <div className={`app app-${minified ? 'minified' : 'wrap'} ${className}`} style={style}>
       <Header
         {...{
           isActWS,

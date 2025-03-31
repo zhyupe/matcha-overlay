@@ -1,0 +1,90 @@
+$main-color: #952bff;
+$main-color-light: #ffdc2b;
+
+$shadow-move: 2px;
+
+@keyframes shadow {
+  0% {
+    box-shadow: 0 0 10px 1px $main-color,  $shadow-move $shadow-move 5px $main-color-light;
+  }
+  25% {
+    box-shadow: 0 0 10px 1px $main-color,  $shadow-move (-$shadow-move) 5px $main-color-light;
+  }
+  50% {
+    box-shadow: 0 0 10px 1px $main-color,  (-$shadow-move) (-$shadow-move) 5px $main-color-light;
+  }
+  75% {
+    box-shadow: 0 0 10px 1px $main-color,  (-$shadow-move) $shadow-move 5px $main-color-light;
+  }
+  100% {
+    box-shadow: 0 0 10px 1px $main-color,  $shadow-move $shadow-move 5px $main-color-light;
+  }
+}
+
+.app-season-2025 {
+  .button-active, .button:hover {
+    color: $main-color-light;
+    border-color: $main-color;
+  }
+
+  &.app {
+    border-color: $main-color-light;
+  }
+
+  &.app-minified {
+    border-color: transparent;
+    background-color: transparent;
+    background-image: none !important;
+
+  }
+
+  .logo {
+    animation: shadow 5s infinite;
+    background-color: $main-color;
+  }
+
+  .header > .tab.active {
+    border-color: $main-color;
+  }
+
+  .header-lock.locked {
+    color: $main-color-light;
+  }
+
+  .header-menu {
+    background: rgba($main-color, 0.93);
+  }
+
+  .header-menu::before {
+    border-bottom-color: rgba($main-color, 0.8);
+  }
+
+  .tag {
+    color: $main-color-light;
+  }
+
+  .cactpot-input.highlight {
+    border-color: $main-color;
+    color: $main-color-light;
+  }
+  
+  .cactpot-max {
+    color: $main-color-light;
+  }
+
+  .gearset-wrap h3 {
+    color: $main-color-light;
+  }
+
+  .overlay-market .lowest {
+    color: $main-color-light;
+  }
+  
+  .overlay-market .lowest .icon-hq path {
+    fill: $main-color-light;
+  }
+
+  .alert-title {
+    color: $main-color-light;
+  }
+}
