@@ -8,8 +8,13 @@ const matchaIcon = {
 }
 
 const useAprilStyle = (() => {
-  if (localStorage.getItem('force-april-style') === 'true') {
+  const setting = localStorage.getItem('force-april-style')
+  if (setting === 'true') {
     return true
+  }
+
+  if (setting === 'false') {
+    return false
   }
 
   const now = new Date()

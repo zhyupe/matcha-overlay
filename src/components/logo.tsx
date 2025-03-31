@@ -10,12 +10,18 @@ export function Logo({ ...props }) {
 
   const { type, value } = icon
   if (type === 'img') {
-    return <img className="logo" {...props} src={value} alt="" />
+    return (
+      <div className="logo">
+        <img {...props} src={value} alt="" />
+      </div>
+    )
   }
 
   return (
-    <svg className="logo" viewBox="0 0 400 400" {...props}>
-      <path d={value} />
-    </svg>
+    <div className="logo">
+      <svg viewBox="0 0 400 400" {...props}>
+        <path d={value} />
+      </svg>
+    </div>
   )
 }

@@ -5,19 +5,10 @@ $shadow-move: 2px;
 
 @keyframes shadow {
   0% {
-    box-shadow: 0 0 10px 1px $main-color,  $shadow-move $shadow-move 5px $main-color-light;
-  }
-  25% {
-    box-shadow: 0 0 10px 1px $main-color,  $shadow-move (-$shadow-move) 5px $main-color-light;
-  }
-  50% {
-    box-shadow: 0 0 10px 1px $main-color,  (-$shadow-move) (-$shadow-move) 5px $main-color-light;
-  }
-  75% {
-    box-shadow: 0 0 10px 1px $main-color,  (-$shadow-move) $shadow-move 5px $main-color-light;
+    transform: rotate(0);
   }
   100% {
-    box-shadow: 0 0 10px 1px $main-color,  $shadow-move $shadow-move 5px $main-color-light;
+    transform: rotate(360deg);
   }
 }
 
@@ -39,8 +30,24 @@ $shadow-move: 2px;
   }
 
   .logo {
-    animation: shadow 5s infinite;
-    background-color: $main-color;
+    position: relative;
+
+    img, svg {
+      background-color: $main-color;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 50%;
+      pointer-events: none;
+      box-shadow: 0 0 10px 1px $main-color, $shadow-move $shadow-move 5px $main-color-light;
+      animation: shadow linear 5s infinite;
+    }
   }
 
   .header > .tab.active {
