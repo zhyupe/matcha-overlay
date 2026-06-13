@@ -105,6 +105,14 @@ function Materias({
   )
 }
 
+const formatIconUrl = (path: string) => {
+  if (path.startsWith('/i/')) {
+    return `${xivapiRoot.china}${path}`
+  }
+
+  return `${xivapiRoot.china}/api/asset?path=${encodeURIComponent(path)}`
+}
+
 export function GearsetPart({
   part,
   language,
@@ -142,11 +150,11 @@ export function GearsetPart({
     return <div className="gearset-item gearset-item-empty">载入中，请稍候</div>
   }
 
-  const root = language === 'chs' ? xivapiRoot.china : xivapiRoot.global
+  const icon = formatIconUrl(record.i)
   return (
     <div className="gearset-item">
       <div className="gearset-item-icon">
-        {record ? <img alt="" src={`${root}${record.i}`} /> : null}
+        <img alt="" src={icon} />
       </div>
       <div
         className={`gearset-item-name ${glamour ? 'gearset-item-animated' : ''}`}

@@ -1,4 +1,3 @@
-import axios from 'axios'
 import { debounce } from 'debounce'
 import { Cache } from '../cache'
 
@@ -8,17 +7,33 @@ interface QueryTask {
   resolve: (record: ItemRecord | PromiseLike<ItemRecord>) => any
   reject: (e: Error) => any
 }
-export interface ItemInfo {
-  ID: number
-  Icon: string
-  LevelItem: number
-  IsAdvancedMeldingPermitted: number
+
+export type Language = 'chs' | 'tc' | 'en' | 'de' | 'fr' | 'ja' | 'ko'
+
+type ItemNameFields = {
+  [K in `Name@lang(${Language})`]: string
+}
+
+interface ItemIcon {
+  id: number
+  path: string
+  path_hr1?: string
+}
+
+type ItemReference =
+  | number
+  | XivapiV2Reference<unknown>
+  | {
+      id?: number
+      row_id?: number
+      value?: number
+    }
+
+export type ItemInfo = ItemNameFields & {
+  Icon: ItemIcon | string
+  LevelItem: ItemReference
+  IsAdvancedMeldingPermitted: boolean
   MateriaSlotCount: number
-  Name_chs: string
-  Name_en: string
-  Name_de: string
-  Name_fr: string
-  Name_ja: string
 }
 
 export interface ItemRecord {
@@ -44,106 +59,120 @@ export interface ItemRecord {
   l: number
 }
 
+export interface XivapiV2Row<T> {
+  row_id: number
+  subrow_id?: number
+  fields: T
+}
+
+export interface XivapiV2Reference<T> extends XivapiV2Row<T> {
+  sheet: string
+  value: number
+}
+
 export interface XivapiPagedResponse<T> {
-  Pagination: {
-    Page: number
-    PageNext: number
-    PagePrev: number
-    PageTotal: number
-    Results: number
-    ResultsPerPage: number
-    ResultsTotal: number
-  }
-  Results: T[]
+  rows: XivapiV2Row<T>[]
 }
 
 export const xivapiRoot = {
-  global: 'https://xivapi.com',
-  china: 'https://cafemaker.wakingsands.com',
+  global: 'https://v2.xivapi.com',
+  china: 'https://xivapi-v2.xivcdn.com',
 }
 const itemCache = new Cache<number, ItemRecord>('gearset-item', {
-  version: '2022.02.25',
+  version: '2026.06.13',
 })
-const queryColumns: Array<keyof ItemInfo> = [
-  'ID',
+
+const languages: Language[] = ['chs', 'tc', 'en', 'de', 'fr', 'ja', 'ko']
+const queryLanguages = new Set<string>(languages)
+
+const nameField = (lang: string) => `Name@lang(${lang})`
+
+const normalizeIcon = (icon: ItemInfo['Icon']) => {
+  if (typeof icon === 'string') {
+    return icon
+  }
+
+  return icon.path_hr1 || icon.path
+}
+
+const normalizeReference = (reference: ItemReference) => {
+  if (typeof reference === 'number') return reference
+
+  return (
+    reference.value ??
+    ('id' in reference ? reference.id : undefined) ??
+    reference.row_id ??
+    0
+  )
+}
+
+const queryColumns = [
   'Icon',
-  'LevelItem',
+  'LevelItem.id',
   'MateriaSlotCount',
   'IsAdvancedMeldingPermitted',
-  'Name_chs',
-  'Name_en',
-  'Name_de',
-  'Name_fr',
-  'Name_ja',
+  ...languages.map(nameField),
 ]
-
 let itemQueryList: QueryTask[] = []
 
-const queryXivapi = (root: string, list: QueryTask[]) => {
+const queryXivapi = async (root: string, list: QueryTask[]) => {
   if (list.length === 0) return
 
-  const ids = Array.from(new Set(list.map(({ id }) => id))).join(',')
-  axios
-    .get<XivapiPagedResponse<ItemInfo>>(
-      `${root}/item?columns=${encodeURIComponent(queryColumns.join(','))}&ids=${encodeURIComponent(ids)}`,
-    )
-    .then((res) => {
-      for (const result of res.data.Results) {
-        const record = {
-          n: {
-            chs: result.Name_chs,
-            en: result.Name_en,
-            de: result.Name_de,
-            fr: result.Name_fr,
-            ja: result.Name_ja,
-          },
-          i: result.Icon,
-          s: result.MateriaSlotCount,
-          a: result.IsAdvancedMeldingPermitted,
-          l: result.LevelItem,
-        }
+  const ids = Array.from(new Set(list.map(({ id }) => id)))
+  const search = new URLSearchParams({
+    fields: queryColumns.join(','),
+    rows: ids.join(','),
+  })
 
-        itemCache.set(result.ID, record)
-        for (let i = 0; i < list.length; ) {
-          if (list[i].id !== result.ID) {
-            ++i
-            continue
-          }
-
-          list[i].resolve(record)
-          list.splice(i, 1)
-        }
+  try {
+    const res = await fetch(`${root}/api/sheet/Item?${search}`)
+    const data = (await res.json()) as XivapiPagedResponse<ItemInfo>
+    for (const result of data.rows) {
+      const { fields } = result
+      const record = {
+        n: Object.fromEntries(
+          languages.map((language) => [
+            language,
+            fields[`Name@lang(${language})`],
+          ]),
+        ),
+        i: normalizeIcon(fields.Icon),
+        s: fields.MateriaSlotCount,
+        a: fields.IsAdvancedMeldingPermitted ? 1 : 0,
+        l: normalizeReference(fields.LevelItem),
       }
 
-      list.forEach((item) => {
-        item.reject(new Error('Not Found'))
-      })
+      itemCache.set(result.row_id, record)
+      for (let i = 0; i < list.length; ) {
+        if (list[i].id !== result.row_id) {
+          ++i
+          continue
+        }
+
+        list[i].resolve(record)
+        list.splice(i, 1)
+      }
+    }
+
+    list.forEach((item) => {
+      item.reject(new Error('Not Found'))
     })
-    .catch((e) => {
-      list.forEach((item) => {
-        item.reject(e)
-      })
+  } catch (e) {
+    list.forEach((item) => {
+      item.reject(e as Error)
     })
+  }
 }
 
 const doQuery = debounce(() => {
   const list = itemQueryList.slice()
   itemQueryList = []
 
-  queryXivapi(
-    xivapiRoot.global,
-    list.filter((item) => item.language !== 'chs'),
-  )
-  queryXivapi(
-    xivapiRoot.china,
-    list.filter((item) => item.language === 'chs'),
-  )
+  queryXivapi(xivapiRoot.china, list)
 }, 200)
 
 export function queryItem(id: number, language: string): Promise<ItemRecord> {
-  const queryLanguage = ['en', 'de', 'fr', 'ja', 'chs'].includes(language)
-    ? language
-    : 'en'
+  const queryLanguage = queryLanguages.has(language) ? language : 'en'
   const fromCache = itemCache.get(id)
   if (
     fromCache &&
