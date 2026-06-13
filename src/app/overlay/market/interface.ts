@@ -1,4 +1,4 @@
-import { type List, type Map, Record } from 'immutable'
+import { type Map as ImmutableMap, type List, Record } from 'immutable'
 
 export interface MarketItem {
   id: number
@@ -37,5 +37,5 @@ export type MarketPriceRecord = Record<{
 }>
 export const MarketPriceRecord = Record({ price: 0, quantity: 0, hq: 0 })
 
-export type MarketItemMap = Map<number, List<MarketPriceRecord>>
-export type MarketItemsMap = Map<number, MarketItemMap>
+export type MarketItemMap = ImmutableMap<number, List<MarketPriceRecord>>
+export type MarketItemsMap = ImmutableMap<number, MarketItemMap>

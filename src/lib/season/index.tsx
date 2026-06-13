@@ -55,13 +55,21 @@ const draw = () => {
   const canvasY = createCanvas(size, size)
   const canvasP = createCanvas(size, size)
 
-  const ctxY = canvasY.getContext('2d')!
+  const ctxY = canvasY.getContext('2d')
+  if (!ctxY) {
+    throw new Error('Missing Context2D')
+  }
+
   ctxY.strokeStyle = '#ffdc2b'
   ctxY.lineWidth = 2
   ctxY.fillStyle = '#282c34'
   ctxY.fillRect(0, 0, size, size)
 
-  const ctxP = canvasP.getContext('2d')!
+  const ctxP = canvasP.getContext('2d')
+  if (!ctxP) {
+    throw new Error('Missing Context2D')
+  }
+
   ctxP.strokeStyle = '#952bff'
   ctxP.lineWidth = 20
   ctxP.fillStyle = '#282c34'
@@ -80,7 +88,11 @@ const draw = () => {
   }
 
   const bgCanvas = createCanvas(size, size)
-  const bgCtx = bgCanvas.getContext('2d')!
+  const bgCtx = bgCanvas.getContext('2d')
+  if (!bgCtx) {
+    throw new Error('Missing Context2D')
+  }
+
   bgCtx.globalAlpha = 0.3
   bgCtx.strokeStyle = '#ffdc2b'
   bgCtx.drawImage(canvasY, 0, 0)
@@ -93,7 +105,7 @@ const draw = () => {
 }
 
 export const SeasonContext = createContext<ISeason>({})
-export function SeasonProvider({ children }: PropsWithChildren<{}>) {
+export function SeasonProvider({ children }: PropsWithChildren) {
   const value = useMemo<ISeason>(() => {
     if (!useAprilStyle) {
       return {

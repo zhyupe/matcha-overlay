@@ -16,5 +16,5 @@ export function useTimer(time: number, enabled: boolean, handler: () => void) {
 
     const timer = setInterval(() => ref.current(), time)
     return () => clearInterval(timer)
-  }, [time, enabled])
+  }, [time, enabled, ref])
 }

@@ -67,7 +67,7 @@ export function Table({ input }: { input: GameState }) {
           ))}
         </tr>
         {tableRow.map((key, row) => (
-          <tr key={row}>
+          <tr key={key}>
             <SumCell state={state} index={key} />
             {[0, 1, 2].map((column) => {
               const index = row * 3 + column

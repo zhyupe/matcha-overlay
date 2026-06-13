@@ -1,5 +1,6 @@
 import { type Dispatch, type SetStateAction, useMemo } from 'react'
 import { atom, type RecoilState, useRecoilState } from 'recoil'
+import { tryParseJson } from './json'
 import { debug } from './log'
 
 export function getConfig<T = unknown>(
@@ -9,11 +10,7 @@ export function getConfig<T = unknown>(
   debug('[config:get]', key)
   const stored = window.localStorage.getItem(`config:${key}`)
   if (stored) {
-    try {
-      return JSON.parse(stored) as T
-    } catch (e) {
-      //
-    }
+    return tryParseJson(stored) || defaultValue
   }
   return defaultValue
 }

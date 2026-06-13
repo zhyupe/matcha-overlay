@@ -26,28 +26,28 @@ export declare namespace loader {
     id: string
   }
   export interface IMapInfo {
-    ['#']: string
+    '#': string
     id: string
     sizeFactor: number
-    ['placeName{Region}']: string
-    ['placeName{Sub}']: string
-    ['offset{X}']: number
-    ['offset{Y}']: number
+    'placeName{Region}': string
+    'placeName{Sub}': string
+    'offset{X}': number
+    'offset{Y}': number
     territoryType: string
     placeName: string
     mapMarkerRange: number
   }
   export interface IMapMarker {
-    ['#']: string
+    '#': string
     x: number
     y: number
     icon: string
-    ['placeName{Subtext}']: string
+    'placeName{Subtext}': string
     subtextOrientation: number
     mapMarkerRegion: string
     type: number
-    ['data{Type}']: number
-    ['data{Key}']: string
+    'data{Type}': number
+    'data{Key}': string
   }
 }
 

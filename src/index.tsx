@@ -7,10 +7,10 @@ import { SeasonProvider } from './lib/season'
 import { trackVersion } from './lib/track'
 
 const build = process.env.build
-trackVersion('overlay', build!)
+trackVersion('overlay', build as string)
 
 const container = document.getElementById('root')
-const root = createRoot(container!)
+const root = createRoot(container as HTMLDivElement)
 root.render(
   <StrictMode>
     <RecoilRoot>

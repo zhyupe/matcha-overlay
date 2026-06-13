@@ -3,7 +3,7 @@ import { create, type EoMap, loader, simpleMarker } from './eorzea-map'
 import './index.css'
 import '../components/icon/index.css'
 
-const $ = (id: string) => document.getElementById(id)!
+const $ = (id: string) => document.getElementById(id) as HTMLElement
 
 const title = $('title')
 const wrap = $('eorzea-map')

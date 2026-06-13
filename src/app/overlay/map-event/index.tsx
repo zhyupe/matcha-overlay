@@ -13,7 +13,6 @@ import {
   Instance2,
   Instance3,
   InstanceOffset,
-  Question,
 } from '../../../components/icon'
 import { RadioGroup } from '../../../components/radio-group'
 import { Switch } from '../../../components/switch'
@@ -41,7 +40,7 @@ function Point({
     }
 
     const mapInfo = Maps[point.map]
-    const pos = [point.x, point.y].map((pos, i) => {
+    const pos = [point.x, point.y].map((pos) => {
       const [a, b] = pos.toFixed(1).split('.')
       return (
         <>
@@ -75,7 +74,7 @@ function Treasure({
   point: PointInfo | null
   onClick: MapAction
 }) {
-  const showOnMap = () => {
+  const showOnMap = useCallback(() => {
     if (!point) return
 
     onClick({
@@ -88,9 +87,11 @@ function Treasure({
         },
       ],
     })
-  }
+  }, [point, onClick])
 
-  useEffect(showOnMap, [point, onClick])
+  useEffect(() => {
+    showOnMap()
+  }, [showOnMap])
 
   return (
     <div
@@ -218,12 +219,12 @@ function PostMoogle({
     const worldInfo = Worlds[item.world]
 
     onClick({
-      map: fate.map!,
+      map: fate.map as number,
       markers: [
         {
           icon: MapIcon.Fate,
-          x: fate.x!,
-          y: fate.y!,
+          x: fate.x as number,
+          y: fate.y as number,
           title: `${worldInfo?.name || item.world}${
             item.instance ? `[icon:${InstanceOffset + item.instance}]` : ''
           } - ${fate.name}`,
@@ -232,7 +233,7 @@ function PostMoogle({
     })
   }
 
-  useTimer(1000, data.data.length !== 0, () => {
+  useTimer(1000, data.data.count() !== 0, () => {
     setTime(Date.now())
   })
 
@@ -300,8 +301,7 @@ function PostMoogle({
             const worldInfo = Worlds[item.world]
 
             const key = item._subject
-            const clickable =
-              fateInfo && fateInfo.map && fateInfo.x && fateInfo.y
+            const clickable = fateInfo?.map && fateInfo.x && fateInfo.y
 
             return (
               <li
@@ -309,7 +309,7 @@ function PostMoogle({
                 {...(clickable
                   ? {
                       className: 'clickable',
-                      onClick: () => handleFate(item, fateInfo!),
+                      onClick: () => handleFate(item, fateInfo),
                     }
                   : {})}
               >

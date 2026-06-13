@@ -21,9 +21,7 @@ export function AvgLevel({
       return
     }
 
-    const itemIds = list
-      .map((item) => (item && item.item ? item.item : 0))
-      .toArray()
+    const itemIds = list.map((item) => (item?.item ? item.item : 0)).toArray()
     if (itemIds.length > 13) {
       itemIds.length = 13
     }

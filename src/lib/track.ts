@@ -8,7 +8,7 @@ export interface EventData {
 export function track(name: string, data?: EventData) {
   try {
     ;(window as any).gtag?.('event', name, data)
-  } catch (e) {
+  } catch {
     //
   }
 }

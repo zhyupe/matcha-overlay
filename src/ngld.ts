@@ -1,3 +1,5 @@
+import { tryParseJson } from './lib/json'
+
 export interface NgldMessage {
   [x: string]: any
 }
@@ -55,10 +57,8 @@ const sendMessage = (() => {
       })
 
       ws.addEventListener('message', (msg) => {
-        let data: NgldMessage
-        try {
-          data = JSON.parse(msg.data)
-        } catch (e) {
+        const data = tryParseJson<NgldMessage>(msg.data)
+        if (!data) {
           console.error('Invalid message received: ', msg)
           return
         }
@@ -138,7 +138,10 @@ function processEvent(msg: NgldMessage) {
 
 export { processEvent as dispatchOverlayEvent }
 
-export const addOverlayListener = <T>(event: string, cb: NgldSubscriber<T>) => {
+export const addOverlayListener = <T extends NgldMessage>(
+  event: string,
+  cb: NgldSubscriber<T>,
+) => {
   if (eventsStarted && subscribers[event]) {
     console.warn(`A new listener for ${event} has been registered after event transmission has already begun.
 Some events might have been missed and no cached values will be transmitted.
@@ -154,7 +157,7 @@ Please register your listeners before calling startOverlayEvents().`)
   eventSubscribers.push(cb)
 }
 
-export const removeOverlayListener = <T>(
+export const removeOverlayListener = <T extends NgldMessage>(
   event: string,
   cb: NgldSubscriber<T>,
 ) => {

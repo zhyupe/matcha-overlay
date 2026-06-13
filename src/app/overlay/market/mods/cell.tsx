@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { type ReactElement, useEffect, useState } from 'react'
 import { HQ } from '../../../../components/icon'
 import type { MarketItemMap } from '../interface'
 import './cell.css'
@@ -23,7 +23,7 @@ export function Cell({
   world: number
   item: MarketItemMap
   hqOnly: boolean
-}): JSX.Element {
+}): ReactElement {
   const localCheapest = useLocalCheapest(item, world, hqOnly)
   const globalCheapest = useGlobalCheapest(item, hqOnly)
   const firstGroup = useFirstGroup(item, world, hqOnly)

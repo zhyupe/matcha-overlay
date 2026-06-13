@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import './index.css'
-import { List, Map } from 'immutable'
+import { Map as ImmutableMap, List } from 'immutable'
 import { useEvent } from '../../../lib/event'
 import type { OverlayProps } from '../../interface'
 import {
@@ -29,7 +29,7 @@ function updatePriceRow(
     }
 
     return records.update(index, (record) =>
-      record!
+      (record as MarketPriceRecord)
         .update('quantity', (value) => value + quantity)
         .update('hq', (value) => value + (hq ? quantity : 0)),
     )
@@ -45,7 +45,7 @@ export function MarketOverlay({
   setActive,
 }: OverlayProps) {
   const [worlds, setWorlds] = useState(() => List<number>())
-  const [items, setItems] = useState<MarketItemsMap>(() => Map())
+  const [items, setItems] = useState<MarketItemsMap>(() => ImmutableMap())
 
   const reset = () => {
     setWorlds((servers) => servers.clear())
@@ -69,7 +69,7 @@ export function MarketOverlay({
       })
 
       setItems((items) =>
-        items.update(data.item, (item = Map()) => {
+        items.update(data.item, (item = ImmutableMap()) => {
           return item.update(data.world, (records = List()) =>
             updatePriceRow(records, data.data),
           )
@@ -83,7 +83,7 @@ export function MarketOverlay({
     'MarketBoardItemListingCount',
     (data) => {
       setItems((items) => {
-        return items.update(data.item, (item = Map()) =>
+        return items.update(data.item, (item = ImmutableMap()) =>
           item.set(data.world, List()),
         )
       })

@@ -1,10 +1,17 @@
-import { useContext, useEffect, useMemo, useState } from 'react'
+import {
+  type ReactElement,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import './index.css'
 import { EventEmitter } from 'events'
 import { Draggable } from '../components/draggable'
 import { LockClosed, LockOpen } from '../components/icon'
 import { Logo } from '../components/logo'
 import { useConfigBoolean } from '../lib/config'
+import { tryParseJson } from '../lib/json'
 import { SeasonContext } from '../lib/season'
 import { trackVersion } from '../lib/track'
 import { addOverlayListener, startOverlayEvents } from '../ngld'
@@ -19,7 +26,7 @@ import { MarketOverlay } from './overlay/market'
 interface Tab {
   title: string | null
   right?: boolean
-  Component: (props: OverlayProps) => JSX.Element | null
+  Component: (props: OverlayProps) => ReactElement | null
 }
 
 const tabs: Record<string, Tab> = {
@@ -160,13 +167,7 @@ function App() {
       const normalizedVersion = logVersion || 'Legacy'
       const normalizedLanguage = logLanguage || 'chs'
 
-      let content = line[4]
-      try {
-        content = JSON.parse(content)
-      } catch (e) {
-        // ignore
-      }
-
+      const content = tryParseJson(line[4]) || line[4]
       const event = {
         time: new Date(line[1]),
         type,
@@ -215,8 +216,8 @@ function App() {
       ) : (
         Object.entries(tabs).map(([key, { Component }]) => (
           <Component
+            key={key}
             {...{
-              key,
               version,
               language,
               eventEmitter,

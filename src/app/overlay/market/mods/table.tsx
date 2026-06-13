@@ -1,6 +1,6 @@
 import classNames from 'classnames'
-import { type List, Map, type Seq } from 'immutable'
-import type { CSSProperties, PropsWithChildren } from 'react'
+import type { List, Seq } from 'immutable'
+import type { CSSProperties, PropsWithChildren, ReactElement } from 'react'
 import { HQ, SwitchHorizontal, Trash } from '../../../../components/icon'
 import { useConfigBoolean } from '../../../../lib/config'
 import type { MarketItemsMap } from '../interface'
@@ -21,9 +21,9 @@ const renderItemHeader = (language: string, id: number | null) => {
   return <Cell.ItemName key={id} item={id} language={language} />
 }
 
-const toHeader = <T,>(
+const toHeader = <T extends number>(
   input: List<T> | Seq.Indexed<T>,
-  render: (value: T | null) => JSX.Element,
+  render: (value: T | null) => ReactElement,
 ) => {
   const array: Array<T | null> = input.isEmpty() ? [null] : input.toJSON()
 
@@ -140,7 +140,7 @@ export function MarketTable({
       <tbody>
         {rows.map((row, rowIndex) => {
           return (
-            <tr>
+            <tr key={row.value}>
               {row.header}
               {columns.map((_, columnIndex) => {
                 const cell = at(columnIndex, rowIndex)

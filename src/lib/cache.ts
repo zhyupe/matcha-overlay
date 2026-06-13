@@ -1,5 +1,6 @@
 import { debounce } from 'debounce'
-import LRU from 'lru-cache'
+import LRU, { type Entry } from 'lru-cache'
+import { tryParseJson } from './json'
 
 export class Cache<K, V> extends LRU<K, V> {
   private version?: string
@@ -36,10 +37,9 @@ export class Cache<K, V> extends LRU<K, V> {
     const dump = window.localStorage.getItem(this.name)
     if (!dump) return
 
-    try {
-      this.load(JSON.parse(dump))
-    } catch (e) {
-      // ignore
+    const data = tryParseJson<Entry<K, V>[]>(dump)
+    if (data) {
+      this.load(data)
     }
   }
 

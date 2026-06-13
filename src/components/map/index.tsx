@@ -10,12 +10,14 @@ export function EorzeaMap({ map, markers }: MapInfo) {
   const ref = useRef<HTMLIFrameElement>(null)
   const notify = useCallback(() => {
     const iframe = ref.current
-    if (iframe && iframe.contentWindow) {
+    if (iframe?.contentWindow) {
       iframe.contentWindow.postMessage({ map, markers }, '/')
     }
   }, [map, markers])
 
-  useEffect(notify, [notify, ref.current])
+  useEffect(() => {
+    notify()
+  }, [notify, ref.current])
 
   return (
     <iframe

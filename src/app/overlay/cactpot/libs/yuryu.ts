@@ -85,7 +85,7 @@ const calc_expectation = (
 
   // The current totals are for a number of possible configurations.
   // Divide by that number to get the actual expected value.
-  if (isNaN(curmax)) throw new Error('Something is wrong.')
+  if (Number.isNaN(curmax)) throw new Error('Something is wrong.')
   return curmax
 }
 
