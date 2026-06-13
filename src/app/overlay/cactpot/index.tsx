@@ -1,13 +1,17 @@
 import { useState } from 'react'
-import { GameState, MiniCactpotDTO } from './interface'
-import { OverlayProps } from '../../interface'
+import type { OverlayProps } from '../../interface'
+import type { GameState, MiniCactpotDTO } from './interface'
 import { InputBody, Table } from './mods/table'
 import './index.scss'
 import { Alert } from '../../../components/alert'
 import { useEvent } from '../../../lib/event'
 import { makeEmptyState } from './libs/constant'
 
-export function CactpotOverlay({ eventEmitter, active, setActive }: OverlayProps) {
+export function CactpotOverlay({
+  eventEmitter,
+  active,
+  setActive,
+}: OverlayProps) {
   const [table, setTable] = useState(makeEmptyState)
 
   useEvent<MiniCactpotDTO>(eventEmitter, 'MiniCactpot', (info) => {
@@ -21,14 +25,22 @@ export function CactpotOverlay({ eventEmitter, active, setActive }: OverlayProps
         table = makeEmptyState()
       }
 
-      return [...table.slice(0, index), info.value, ...table.slice(index + 1)] as GameState
+      return [
+        ...table.slice(0, index),
+        info.value,
+        ...table.slice(index + 1),
+      ] as GameState
     })
   })
 
   if (!active) return null
 
   if (table.every((item) => item === 0)) {
-    return <Alert title="未检测到仙人微彩">请与 NPC 对话参加“仙人微彩”有奖竞猜</Alert>
+    return (
+      <Alert title="未检测到仙人微彩">
+        请与 NPC 对话参加“仙人微彩”有奖竞猜
+      </Alert>
+    )
   }
 
   return (

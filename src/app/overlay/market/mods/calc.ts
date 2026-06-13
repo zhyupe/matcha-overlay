@@ -1,6 +1,6 @@
-import { List } from 'immutable'
+import type { List } from 'immutable'
 import { useMemo } from 'react'
-import { MarketItemMap, MarketPriceRecord } from '../interface'
+import type { MarketItemMap, MarketPriceRecord } from '../interface'
 
 const isHQ = (item: MarketPriceRecord) => item.get('hq') !== 0
 
@@ -14,7 +14,11 @@ const findCheapest = (records: List<MarketPriceRecord>, hqOnly: boolean) => {
   })
 }
 
-export function useLocalCheapest(item: MarketItemMap, world: number, hqOnly: boolean) {
+export function useLocalCheapest(
+  item: MarketItemMap,
+  world: number,
+  hqOnly: boolean,
+) {
   return useMemo(() => {
     const records = item.get(world)
     if (!records) {
@@ -46,7 +50,11 @@ export function useGlobalCheapest(item: MarketItemMap, hqOnly: boolean) {
   }, [item, hqOnly])
 }
 
-export function useFirstGroup(item: MarketItemMap, world: number, hqOnly: boolean) {
+export function useFirstGroup(
+  item: MarketItemMap,
+  world: number,
+  hqOnly: boolean,
+) {
   return useMemo(() => {
     const records = item.get(world)
     if (!records) {

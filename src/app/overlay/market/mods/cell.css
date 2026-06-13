@@ -1,20 +1,20 @@
 .overlay-market .quantity {
   margin-left: 2px;
-  font-size: .875em;
+  font-size: 0.875em;
 }
 
 .overlay-market .quantity .icon-hq {
   margin-right: 2px;
-  font-size: .875em;
+  font-size: 0.875em;
 }
 
 .overlay-market .group {
-  color: #FFFA;
-  font-size: .875em;
+  color: #fffa;
+  font-size: 0.875em;
 }
 
 .overlay-market .lowest {
-  color: #b7ca32
+  color: #b7ca32;
 }
 
 .overlay-market .hq {
@@ -26,5 +26,5 @@
 }
 
 .overlay-market .group .icon-hq path {
-  fill: #FFFA;
+  fill: #fffa;
 }

@@ -1,4 +1,4 @@
-import { MapInfo } from '../../../components/map'
+import type { MapInfo } from '../../../components/map'
 
 export interface PointInfo {
   map: number

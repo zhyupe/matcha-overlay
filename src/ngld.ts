@@ -17,7 +17,10 @@ const sendMessage = (() => {
 
   if (wsUrl) {
     let ws: WebSocket
-    const sendMessage = (message: NgldMessage, callback?: NgldSubscriber<any>) => {
+    const sendMessage = (
+      message: NgldMessage,
+      callback?: NgldSubscriber<any>,
+    ) => {
       if (queue) {
         queue.push({ message, callback })
         return
@@ -95,11 +98,17 @@ const sendMessage = (() => {
           }
         : undefined
 
-      ;(window as any).OverlayPluginApi.callHandler(JSON.stringify(message), apiCallback)
+      ;(window as any).OverlayPluginApi.callHandler(
+        JSON.stringify(message),
+        apiCallback,
+      )
     }
 
     const waitForApi = () => {
-      if (!(window as any).OverlayPluginApi || !(window as any).OverlayPluginApi.ready) {
+      if (
+        !(window as any).OverlayPluginApi ||
+        !(window as any).OverlayPluginApi.ready
+      ) {
         setTimeout(waitForApi, 300)
         return
       }
@@ -145,7 +154,10 @@ Please register your listeners before calling startOverlayEvents().`)
   eventSubscribers.push(cb)
 }
 
-export const removeOverlayListener = <T>(event: string, cb: NgldSubscriber<T>) => {
+export const removeOverlayListener = <T>(
+  event: string,
+  cb: NgldSubscriber<T>,
+) => {
   const list = subscribers[event]
   if (list) {
     const pos = list.indexOf(cb)

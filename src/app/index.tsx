@@ -1,20 +1,20 @@
-import { useState, useEffect, useMemo, useContext } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 import './index.css'
-import { addOverlayListener, startOverlayEvents } from '../ngld'
-import { LogEvent, OverlayProps } from './interface'
 import { EventEmitter } from 'events'
-import { Logo } from '../components/logo'
 import { Draggable } from '../components/draggable'
-import { CactpotOverlay } from './overlay/cactpot'
-import { GearsetOverlay } from './overlay/gearset'
-import { MarketOverlay } from './overlay/market'
-import { MapEventOverlay } from './overlay/map-event'
+import { LockClosed, LockOpen } from '../components/icon'
+import { Logo } from '../components/logo'
+import { useConfigBoolean } from '../lib/config'
+import { SeasonContext } from '../lib/season'
+import { trackVersion } from '../lib/track'
+import { addOverlayListener, startOverlayEvents } from '../ngld'
+import type { LogEvent, OverlayProps } from './interface'
 import { ActWsNotice } from './notice/actws'
 import { WelcomeNotice } from './notice/welcome'
-import { LockClosed, LockOpen } from '../components/icon'
-import { useConfigBoolean } from '../lib/config'
-import { trackVersion } from '../lib/track'
-import { SeasonContext } from '../lib/season'
+import { CactpotOverlay } from './overlay/cactpot'
+import { GearsetOverlay } from './overlay/gearset'
+import { MapEventOverlay } from './overlay/map-event'
+import { MarketOverlay } from './overlay/market'
 
 interface Tab {
   title: string | null
@@ -56,7 +56,15 @@ interface HeaderProps {
   setLock: (lock: boolean) => void
 }
 
-function Header({ isActWS, minified, setMinified, activeTab, setActiveTab, lock, setLock }: HeaderProps) {
+function Header({
+  isActWS,
+  minified,
+  setMinified,
+  activeTab,
+  setActiveTab,
+  lock,
+  setLock,
+}: HeaderProps) {
   const [menuVisible, setMenuVisible] = useState<boolean>(false)
   const logo = (
     <Draggable onClick={() => setMinified(!minified)}>
@@ -87,11 +95,16 @@ function Header({ isActWS, minified, setMinified, activeTab, setActiveTab, lock,
         <span className={`tab left ${activeTabItem.right ? '' : ' active'}`}>
           {activeTabItem.right ? '功能' : activeTabItem.title}
           <Draggable onClick={() => setLock(!lock)}>
-            <span className={`header-lock${lock ? ' locked' : ''}`}>{lock ? <LockClosed /> : <LockOpen />}</span>
+            <span className={`header-lock${lock ? ' locked' : ''}`}>
+              {lock ? <LockClosed /> : <LockOpen />}
+            </span>
           </Draggable>
         </span>
       </Draggable>
-      <div className="header-menu" style={{ display: menuVisible ? '' : 'none' }}>
+      <div
+        className="header-menu"
+        style={{ display: menuVisible ? '' : 'none' }}
+      >
         {tabEntries
           .filter(([, tab]) => !tab.right && tab.title)
           .map(([key, { title }]) => (
@@ -104,7 +117,9 @@ function Header({ isActWS, minified, setMinified, activeTab, setActiveTab, lock,
         .filter(([, tab]) => tab.right && tab.title)
         .map(([key, { title }]) => (
           <Draggable key={key} onClick={() => setActiveTab(key)}>
-            <span className={key === activeTab ? 'tab active' : 'tab'}>{title}</span>
+            <span className={key === activeTab ? 'tab active' : 'tab'}>
+              {title}
+            </span>
           </Draggable>
         ))}
     </header>
@@ -114,7 +129,10 @@ function Header({ isActWS, minified, setMinified, activeTab, setActiveTab, lock,
 function App() {
   const isActWS = window.location.search.includes('HOST_PORT')
   const eventEmitter = useMemo(() => new EventEmitter(), [])
-  const [minified, { set: setMinified }] = useConfigBoolean('app-minified', false)
+  const [minified, { set: setMinified }] = useConfigBoolean(
+    'app-minified',
+    false,
+  )
   const [activeTab, setActiveTab] = useState('welcome')
   const [version, setVersion] = useState<string>()
   const [language, setLanguage] = useState<string>('chs')
@@ -177,7 +195,10 @@ function App() {
   }, [version])
 
   return (
-    <div className={`app app-${minified ? 'minified' : 'wrap'} ${className}`} style={style}>
+    <div
+      className={`app app-${minified ? 'minified' : 'wrap'} ${className}`}
+      style={style}
+    >
       <Header
         {...{
           isActWS,

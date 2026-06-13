@@ -1,4 +1,4 @@
-import { List, Record, Map } from 'immutable'
+import { type List, type Map, Record } from 'immutable'
 
 export interface MarketItem {
   id: number

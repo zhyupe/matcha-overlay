@@ -1,8 +1,12 @@
-import { EventEmitter } from 'events'
+import type { EventEmitter } from 'events'
 import { useEffect, useRef } from 'react'
-import { MatchaEvent } from '../app/interface'
+import type { MatchaEvent } from '../app/interface'
 
-export function useEvent<T>(eventEmitter: EventEmitter, name: string, handler: (data: T, log: MatchaEvent<T>) => void) {
+export function useEvent<T>(
+  eventEmitter: EventEmitter,
+  name: string,
+  handler: (data: T, log: MatchaEvent<T>) => void,
+) {
   const handlerRef = useRef(handler)
 
   useEffect(() => {

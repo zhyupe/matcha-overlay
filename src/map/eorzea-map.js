@@ -12,4 +12,16 @@ const {
   crel,
 } = YZWF.eorzeaMap
 
-export { create, xy, L, simpleMarker, setApiUrl, AdvancedTileLayer, loader, getRegion, setCdnUrl, version, crel }
+export {
+  create,
+  xy,
+  L,
+  simpleMarker,
+  setApiUrl,
+  AdvancedTileLayer,
+  loader,
+  getRegion,
+  setCdnUrl,
+  version,
+  crel,
+}

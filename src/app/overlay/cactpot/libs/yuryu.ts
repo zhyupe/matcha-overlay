@@ -3,28 +3,33 @@
  * Copyright (c) 2015 Yuryu, MIT License
  */
 
-import { GameState, GameOption } from '../interface'
-import { candidates, makeEmptyOption, makeEmptyState, payouts } from './constant'
+import type { GameOption, GameState } from '../interface'
+import {
+  candidates,
+  makeEmptyOption,
+  makeEmptyState,
+  payouts,
+} from './constant'
 
 const maxRevealedNums = 4
 const EPS = 0.00001
 
-const reverse = function (array: number[], begin: number, end: number) {
+const reverse = (array: number[], begin: number, end: number) => {
   var rev = array.slice(begin, end).reverse()
-  for (var i = 0; i < rev.length; i++) {
+  for (let i = 0; i < rev.length; i++) {
     array[begin + i] = rev[i]
   }
 }
 
-const next_permutation = function (array: number[]) {
+const next_permutation = (array: number[]) => {
   let i = array.length - 1
   while (i > 0) {
-    let k = i
+    const k = i
     i--
     if (array[i] < array[k]) {
       let j = array.length - 1
       while (array[i] >= array[j]) j--
-      let tmp = array[j]
+      const tmp = array[j]
       array[j] = array[i]
       array[i] = tmp
       reverse(array, k, array.length)
@@ -35,13 +40,13 @@ const next_permutation = function (array: number[]) {
 }
 
 // calculate expectation
-const calc_expectation = function (
+const calc_expectation = (
   state: GameState,
   ids: number[],
   unknowns: number[],
   options: GameOption,
   tot_win = [0, 0, 0, 0, 0, 0, 0, 0],
-) {
+) => {
   let permutations = 0
 
   // Loop over all possible permutations on the unknowns
@@ -84,7 +89,7 @@ const calc_expectation = function (
   return curmax
 }
 
-const inspect_state = function (state: GameState) {
+const inspect_state = (state: GameState) => {
   const numbers = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9])
   const ids = []
 
@@ -100,7 +105,7 @@ const inspect_state = function (state: GameState) {
   return [ids, unknowns]
 }
 
-const solve_any = function (state: GameState, options: GameOption) {
+const solve_any = (state: GameState, options: GameOption) => {
   const [ids, unknowns] = inspect_state(state)
   const num_hidden = unknowns.length
 
@@ -111,8 +116,8 @@ const solve_any = function (state: GameState, options: GameOption) {
     // Determine which tile to reveal next.
     // Loop over every unknown tile and every possible value that could appear.
     // Solve the resulting cases with a recursive call to solve_any.
-    let tot_win = new Array(num_hidden)
-    let dummy_array = makeEmptyOption()
+    const tot_win = new Array(num_hidden)
+    const dummy_array = makeEmptyOption()
     for (let i = 0; i < num_hidden; i++) tot_win[i] = 0
     for (let i = 0; i < num_hidden; i++) {
       for (let j = 0; j < num_hidden; j++) {

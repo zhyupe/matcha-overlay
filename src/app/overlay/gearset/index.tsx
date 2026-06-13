@@ -1,13 +1,21 @@
-import { useState } from 'react'
 import { List } from 'immutable'
-import { GearsetDTO } from './interface'
-import { OverlayProps } from '../../interface'
-import { GearsetPart } from './mods/part'
+import { useState } from 'react'
+import type { OverlayProps } from '../../interface'
+import type { GearsetDTO } from './interface'
 import { AvgLevel } from './mods/avg-ilvl'
+import { GearsetPart } from './mods/part'
 import './index.css'
 import { useEvent } from '../../../lib/event'
 
-function Gearset({ title, list, language }: { title: string; list: List<GearsetDTO>; language: string }) {
+function Gearset({
+  title,
+  list,
+  language,
+}: {
+  title: string
+  list: List<GearsetDTO>
+  language: string
+}) {
   return (
     <div className="gearset-wrap">
       <h3>
@@ -19,12 +27,20 @@ function Gearset({ title, list, language }: { title: string; list: List<GearsetD
         <div className="gearset-container">
           <div className="gearset-left">
             {[0, 2, 3, 4, 6, 7].map((index) => (
-              <GearsetPart key={index} part={list.get(index)} language={language} />
+              <GearsetPart
+                key={index}
+                part={list.get(index)}
+                language={language}
+              />
             ))}
           </div>
           <div className="gearset-right">
             {[1, 8, 9, 10, 11, 12, 13].map((index) => (
-              <GearsetPart key={index} part={list.get(index)} language={language} />
+              <GearsetPart
+                key={index}
+                part={list.get(index)}
+                language={language}
+              />
             ))}
           </div>
         </div>
@@ -37,7 +53,12 @@ type TimedGearsetDTO = GearsetDTO & {
   time: number
 }
 
-export function GearsetOverlay({ language, eventEmitter, active, setActive }: OverlayProps) {
+export function GearsetOverlay({
+  language,
+  eventEmitter,
+  active,
+  setActive,
+}: OverlayProps) {
   const [mine, setMine] = useState(List<TimedGearsetDTO>())
   const [others, setOthers] = useState(List<TimedGearsetDTO>())
 

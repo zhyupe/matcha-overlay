@@ -28,7 +28,8 @@
   width: 30px;
 }
 
-.logo img, .logo svg {
+.logo img,
+.logo svg {
   height: 30px;
   width: 30px;
   background-color: #b7ca32;
@@ -51,7 +52,7 @@
   display: inline-flex;
   padding: 0 5px;
   align-items: center;
-  font-size: .875em;
+  font-size: 0.875em;
 }
 
 .header > .tab {
@@ -96,7 +97,7 @@
   top: -12px;
   left: 60px;
   display: block;
-  content: ' ';
+  content: " ";
   border: 6px solid #0000;
   border-bottom-color: #b7ca32cc;
 }
@@ -105,7 +106,7 @@
   width: 120px;
   padding: 10px 0;
   text-align: center;
-  font-size: .875em;
+  font-size: 0.875em;
 }
 
 .tag {

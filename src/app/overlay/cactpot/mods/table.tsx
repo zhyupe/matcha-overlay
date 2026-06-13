@@ -1,8 +1,8 @@
 import cn from 'classnames'
 import { useMemo } from 'react'
-import { GameState } from '../interface'
+import type { GameState } from '../interface'
 import { candidates, tableHeader, tableRow } from '../libs/constant'
-import { CactpotState, useCactpot } from '../libs/solve'
+import { type CactpotState, useCactpot } from '../libs/solve'
 
 function SumCell({ state, index }: { state: CactpotState; index: number }) {
   const suggested = state.lines.includes(index)
@@ -33,8 +33,26 @@ function InputCell({ state, index }: { state: CactpotState; index: number }) {
   )
 }
 
-export function InputBody({ value, suggested, unknown }: { value?: number; suggested?: boolean; unknown?: boolean }) {
-  return <span className={cn('cactpot-input', unknown && 'unknown', suggested && 'suggested')}>{value || ' '}</span>
+export function InputBody({
+  value,
+  suggested,
+  unknown,
+}: {
+  value?: number
+  suggested?: boolean
+  unknown?: boolean
+}) {
+  return (
+    <span
+      className={cn(
+        'cactpot-input',
+        unknown && 'unknown',
+        suggested && 'suggested',
+      )}
+    >
+      {value || ' '}
+    </span>
+  )
 }
 
 export function Table({ input }: { input: GameState }) {

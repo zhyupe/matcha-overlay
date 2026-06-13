@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { GameState } from '../interface'
+import type { GameState } from '../interface'
 import { suggestOpening } from './opening'
 import { calcExpection, solveAny } from './yuryu'
 

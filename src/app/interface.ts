@@ -1,5 +1,5 @@
-import { EventEmitter } from 'events'
-import { NgldMessage } from '../ngld'
+import type { EventEmitter } from 'events'
+import type { NgldMessage } from '../ngld'
 
 export interface LogEvent extends NgldMessage {
   type: string

@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { PropsWithChildren } from 'react'
+import type { PropsWithChildren } from 'react'
 import './index.scss'
 
 export function Dialog({
@@ -10,5 +10,9 @@ export function Dialog({
   className?: string
   direction: 'top-right' | 'top-left'
 }>) {
-  return <div className={cn('dialog', `dialog-${direction}`, className)}>{children}</div>
+  return (
+    <div className={cn('dialog', `dialog-${direction}`, className)}>
+      {children}
+    </div>
+  )
 }

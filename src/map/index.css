@@ -1,4 +1,6 @@
-body, html, .erozea-map-outer {
+body,
+html,
+.erozea-map-outer {
   padding: 0;
   margin: 0;
   width: 100%;
@@ -12,7 +14,8 @@ body, html, .erozea-map-outer {
 .eorzea-map-place-name {
   color: #fff;
 }
-.leaflet-control-container, .eorzea-map-label {
+.leaflet-control-container,
+.eorzea-map-label {
   display: none !important;
 }
 .info {
@@ -48,6 +51,6 @@ body, html, .erozea-map-outer {
 }
 
 .marker-tooltip .icon {
-  font-size: .75em;
+  font-size: 0.75em;
   margin-left: 2px;
 }

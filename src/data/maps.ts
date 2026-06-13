@@ -382,6 +382,11 @@ export const Maps: Record<number, IMapData> = {
     sizeFactor: 400,
     offset: [0, 0],
   },
+  77: {
+    name: '另一个未来',
+    sizeFactor: 400,
+    offset: [-100, -100],
+  },
   78: {
     name: '银胄团总长室',
     sizeFactor: 400,
@@ -4013,17 +4018,17 @@ export const Maps: Record<number, IMapData> = {
     offset: [-800, -750],
   },
   815: {
-    name: '雪山奥窟冥石洞',
+    name: '冥魂石洞',
     sizeFactor: 200,
     offset: [-46, 570],
   },
   816: {
-    name: '雪山奥窟冥石洞',
+    name: '冥魂石洞',
     sizeFactor: 200,
     offset: [-24, 744],
   },
   817: {
-    name: '雪山奥窟冥石洞',
+    name: '冥魂石洞',
     sizeFactor: 200,
     offset: [-350, 260],
   },
@@ -4058,7 +4063,7 @@ export const Maps: Record<number, IMapData> = {
     offset: [-100, -100],
   },
   824: {
-    name: '雪山奥窟冥石洞',
+    name: '冥魂石洞',
     sizeFactor: 200,
     offset: [320, -250],
   },
@@ -4646,5 +4651,460 @@ export const Maps: Record<number, IMapData> = {
     name: '如梦宫殿',
     sizeFactor: 200,
     offset: [0, 286],
+  },
+  942: {
+    name: '群狼困斗',
+    sizeFactor: 400,
+    offset: [0, 0],
+  },
+  943: {
+    name: '玉韦亚瓦塔',
+    sizeFactor: 200,
+    offset: [-35, -398],
+  },
+  944: {
+    name: '玉韦亚瓦塔',
+    sizeFactor: 200,
+    offset: [-87, 156],
+  },
+  945: {
+    name: '玉韦亚瓦塔',
+    sizeFactor: 200,
+    offset: [-34, 710],
+  },
+  946: {
+    name: '朱诺：第一巡行',
+    sizeFactor: 200,
+    offset: [-800, -595],
+  },
+  947: {
+    name: '朱诺：第一巡行',
+    sizeFactor: 200,
+    offset: [464, -710],
+  },
+  948: {
+    name: '朱诺：第一巡行',
+    sizeFactor: 200,
+    offset: [566, 580],
+  },
+  949: {
+    name: '朱诺：第一巡行',
+    sizeFactor: 200,
+    offset: [-864, 820],
+  },
+  950: {
+    name: '朱诺：第一巡行',
+    sizeFactor: 200,
+    offset: [-864, 820],
+  },
+  951: {
+    name: '朱诺：第一巡行',
+    sizeFactor: 200,
+    offset: [-150, -800],
+  },
+  952: {
+    name: '暗黑领域',
+    sizeFactor: 400,
+    offset: [-100, -100],
+  },
+  953: {
+    name: '暗黑领域',
+    sizeFactor: 400,
+    offset: [-100, -100],
+  },
+  954: {
+    name: '暗黑领域',
+    sizeFactor: 400,
+    offset: [-100, -100],
+  },
+  955: {
+    name: '朱诺下层',
+    sizeFactor: 400,
+    offset: [0, 58],
+  },
+  956: {
+    name: '星芒市场',
+    sizeFactor: 400,
+    offset: [0, 0],
+  },
+  957: {
+    name: '临时面试会场',
+    sizeFactor: 800,
+    offset: [0, 0],
+  },
+  958: {
+    name: '诺弗兰特',
+    sizeFactor: 400,
+    offset: [0, 0],
+  },
+  959: {
+    name: '诺弗兰特',
+    sizeFactor: 400,
+    offset: [0, 0],
+  },
+  960: {
+    name: '艾欧泽亚',
+    sizeFactor: 400,
+    offset: [0, 0],
+  },
+  961: {
+    name: '艾欧泽亚',
+    sizeFactor: 400,
+    offset: [0, 0],
+  },
+  962: {
+    name: '艾欧泽亚',
+    sizeFactor: 400,
+    offset: [0, 0],
+  },
+  963: {
+    name: '海德林',
+    sizeFactor: 400,
+    offset: [0, 0],
+  },
+  964: {
+    name: '海德林',
+    sizeFactor: 400,
+    offset: [0, 0],
+  },
+  965: {
+    name: '海德林',
+    sizeFactor: 400,
+    offset: [0, 0],
+  },
+  966: {
+    name: '佐戈永结桥',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  967: {
+    name: '新月岛南部',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  968: {
+    name: '两歧塔 力之塔',
+    sizeFactor: 200,
+    offset: [-700, -416],
+  },
+  969: {
+    name: '两歧塔 力之塔',
+    sizeFactor: 200,
+    offset: [-700, -10],
+  },
+  970: {
+    name: '两歧塔 力之塔',
+    sizeFactor: 200,
+    offset: [547, -195],
+  },
+  971: {
+    name: '两歧塔 力之塔',
+    sizeFactor: 200,
+    offset: [-700, 350],
+  },
+  972: {
+    name: '玉韦亚瓦塔',
+    sizeFactor: 200,
+    offset: [-35, -398],
+  },
+  973: {
+    name: '玉韦亚瓦塔',
+    sizeFactor: 200,
+    offset: [-87, 156],
+  },
+  974: {
+    name: '玉韦亚瓦塔',
+    sizeFactor: 200,
+    offset: [-34, 710],
+  },
+  975: {
+    name: '两歧塔 力之塔',
+    sizeFactor: 200,
+    offset: [-615, 121],
+  },
+  976: {
+    name: '两歧塔 力之塔',
+    sizeFactor: 200,
+    offset: [-784, 120],
+  },
+  977: {
+    name: '两歧塔 力之塔',
+    sizeFactor: 200,
+    offset: [-532, 36],
+  },
+  978: {
+    name: '两歧塔 力之塔',
+    sizeFactor: 200,
+    offset: [-528, -54],
+  },
+  979: {
+    name: '两歧塔 力之塔',
+    sizeFactor: 200,
+    offset: [-553, 112],
+  },
+  980: {
+    name: '两歧塔 力之塔',
+    sizeFactor: 200,
+    offset: [-644, 176],
+  },
+  981: {
+    name: '两歧塔 力之塔',
+    sizeFactor: 200,
+    offset: [-867, 36],
+  },
+  982: {
+    name: '两歧塔 力之塔',
+    sizeFactor: 200,
+    offset: [-872, -54],
+  },
+  983: {
+    name: '两歧塔 力之塔',
+    sizeFactor: 200,
+    offset: [-755, 176],
+  },
+  984: {
+    name: '两歧塔 力之塔',
+    sizeFactor: 200,
+    offset: [-846, 111],
+  },
+  985: {
+    name: '两歧塔 力之塔',
+    sizeFactor: 200,
+    offset: [800, -387],
+  },
+  986: {
+    name: '两歧塔 力之塔',
+    sizeFactor: 200,
+    offset: [-700, 573],
+  },
+  987: {
+    name: '两歧塔 力之塔',
+    sizeFactor: 200,
+    offset: [-700, 774],
+  },
+  988: {
+    name: '两歧塔 力之塔',
+    sizeFactor: 200,
+    offset: [-813, 506],
+  },
+  989: {
+    name: '两歧塔 力之塔',
+    sizeFactor: 200,
+    offset: [-640, 470],
+  },
+  990: {
+    name: '两歧塔 力之塔',
+    sizeFactor: 200,
+    offset: [-583, 571],
+  },
+  991: {
+    name: '艺术格斗场',
+    sizeFactor: 400,
+    offset: [-100, -100],
+  },
+  992: {
+    name: '劲舞格斗场',
+    sizeFactor: 400,
+    offset: [-100, -100],
+  },
+  993: {
+    name: '独狼格斗场',
+    sizeFactor: 400,
+    offset: [-100, -100],
+  },
+  994: {
+    name: '嚎狼格斗场',
+    sizeFactor: 400,
+    offset: [-100, -100],
+  },
+  995: {
+    name: '永护塔底',
+    sizeFactor: 200,
+    offset: [122, -273],
+  },
+  996: {
+    name: '永护塔底',
+    sizeFactor: 200,
+    offset: [111, 19],
+  },
+  997: {
+    name: '永护塔底',
+    sizeFactor: 200,
+    offset: [0, 248],
+  },
+  998: {
+    name: '永护塔底',
+    sizeFactor: 200,
+    offset: [0, 248],
+  },
+  999: {
+    name: '永护塔底',
+    sizeFactor: 200,
+    offset: [0, 248],
+  },
+  1000: {
+    name: '第八层建设区域',
+    sizeFactor: 400,
+    offset: [-100, -100],
+  },
+  1001: {
+    name: '第八层建设区域',
+    sizeFactor: 400,
+    offset: [-100, -5],
+  },
+  1002: {
+    name: '第八层建设区域',
+    sizeFactor: 400,
+    offset: [-100, -5],
+  },
+  1003: {
+    name: '憧憬湾',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1004: {
+    name: '憧憬湾',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1005: {
+    name: '憧憬湾',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1006: {
+    name: '憧憬湾',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1007: {
+    name: '憧憬湾',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1008: {
+    name: '憧憬湾',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1009: {
+    name: '憧憬湾',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1010: {
+    name: '憧憬湾',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1011: {
+    name: '憧憬湾',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1012: {
+    name: '憧憬湾',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1013: {
+    name: '憧憬湾',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1014: {
+    name: '憧憬湾',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1015: {
+    name: '憧憬湾',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1016: {
+    name: '憧憬湾',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1017: {
+    name: '憧憬湾',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1018: {
+    name: '憧憬湾',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1019: {
+    name: '憧憬湾',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1020: {
+    name: '憧憬湾',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1021: {
+    name: '憧憬湾',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1022: {
+    name: '憧憬湾',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1023: {
+    name: '休息室',
+    sizeFactor: 400,
+    offset: [0, 0],
+  },
+  1024: {
+    name: '王座大殿',
+    sizeFactor: 400,
+    offset: [0, 0],
+  },
+  1025: {
+    name: '幻境村',
+    sizeFactor: 400,
+    offset: [0, 40],
+  },
+  1026: {
+    name: '航船甲板',
+    sizeFactor: 400,
+    offset: [0, 0],
+  },
+  1027: {
+    name: '玉韦亚瓦塔',
+    sizeFactor: 200,
+    offset: [-35, -398],
+  },
+  1028: {
+    name: '玉韦亚瓦塔',
+    sizeFactor: 200,
+    offset: [-87, 156],
+  },
+  1029: {
+    name: '玉韦亚瓦塔',
+    sizeFactor: 200,
+    offset: [-34, 710],
+  },
+  1030: {
+    name: '王座大殿',
+    sizeFactor: 400,
+    offset: [-100, -100],
+  },
+  1031: {
+    name: '憧憬湾',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1032: {
+    name: '独狼格斗场',
+    sizeFactor: 400,
+    offset: [-100, -100],
   },
 }

@@ -4,7 +4,10 @@ import LRU from 'lru-cache'
 export class Cache<K, V> extends LRU<K, V> {
   private version?: string
 
-  constructor(private name: string, options: LRU.Options<K, V> & { version?: string } = {}) {
+  constructor(
+    private name: string,
+    options: LRU.Options<K, V> & { version?: string } = {},
+  ) {
     super({
       ...options,
       dispose: (key: K, value: V) => {

@@ -8,11 +8,11 @@ export const json = (v) =>
     .replace(/"(.+?)"/g, "'$1'")
     .replace(/'(\n\s+)\}/g, "',$1}")
 
-export const write = (file, code) => {
+export const write = async (file, code) => {
   const target = fileURLToPath(new URL(`../src/data/${file}.ts`, import.meta.url))
   writeFileSync(
     target,
-    prettier.format(code, {
+    await prettier.format(code, {
       filepath: target,
       semi: false,
       singleQuote: true,

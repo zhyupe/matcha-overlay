@@ -21,7 +21,8 @@
   justify-content: space-evenly;
 }
 
-.gearset-left, .gearset-right {
+.gearset-left,
+.gearset-right {
   flex-grow: 1;
   width: 168px;
 }
@@ -50,7 +51,7 @@
 }
 
 .gearset-item-icon::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -60,14 +61,16 @@
   pointer-events: none;
   background: radial-gradient(
     circle at 50% -460%,
-    rgba(255, 255, 255, .6) 80%,
-    rgba(255,255,255, 0) 85%
+    rgba(255, 255, 255, 0.6) 80%,
+    rgba(255, 255, 255, 0) 85%
   );
-  box-shadow: inset 0px 2px 2px 1px rgba(255, 255, 255, 0.3),
+  box-shadow:
+    inset 0px 2px 2px 1px rgba(255, 255, 255, 0.3),
     inset 0px -1px 2px 1px rgba(255, 255, 255, 0.1);
 }
 
-.gearset-item-name, .gearset-item-name span {
+.gearset-item-name,
+.gearset-item-name span {
   line-height: 24px;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -83,11 +86,21 @@
 }
 
 @keyframes item-name {
-  0%   { opacity: 1; }
-  40%  { opacity: 1; }
-  50%  { opacity: 0; }
-  90%  { opacity: 0; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 1;
+  }
+  40% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  90% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .gearset-item-animated span {

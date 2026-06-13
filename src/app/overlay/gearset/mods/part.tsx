@@ -1,7 +1,12 @@
-import { useState, useEffect } from 'react'
-import { GearsetDTO, GearsetMateria } from '../interface'
-import { HQ, Glamour, ILvl } from '../../../../components/icon'
-import { queryItem, ItemRecord, xivapiRoot, itemName } from '../../../../lib/store/item'
+import { useEffect, useState } from 'react'
+import { Glamour, HQ, ILvl } from '../../../../components/icon'
+import {
+  type ItemRecord,
+  itemName,
+  queryItem,
+  xivapiRoot,
+} from '../../../../lib/store/item'
+import type { GearsetDTO, GearsetMateria } from '../interface'
 
 const materiaMap = [
   '', // Skip index 0
@@ -32,9 +37,30 @@ const materiaMap = [
   '咏唱',
 ]
 
-const tierNumbers = ['壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖', '拾', '拾壹', '拾贰']
+const tierNumbers = [
+  '壹',
+  '贰',
+  '叁',
+  '肆',
+  '伍',
+  '陆',
+  '柒',
+  '捌',
+  '玖',
+  '拾',
+  '拾壹',
+  '拾贰',
+]
 
-function Materias({ materias, slot, overmeld }: { materias: GearsetMateria[]; slot: number; overmeld: boolean }) {
+function Materias({
+  materias,
+  slot,
+  overmeld,
+}: {
+  materias: GearsetMateria[]
+  slot: number
+  overmeld: boolean
+}) {
   if (materias.some(({ type }) => type >= materiaMap.length)) {
     return null
   }
@@ -79,7 +105,13 @@ function Materias({ materias, slot, overmeld }: { materias: GearsetMateria[]; sl
   )
 }
 
-export function GearsetPart({ part, language }: { part?: GearsetDTO; language: string }) {
+export function GearsetPart({
+  part,
+  language,
+}: {
+  part?: GearsetDTO
+  language: string
+}) {
   const [record, setRecord] = useState<ItemRecord | null>()
   const [glamour, setGlamour] = useState<ItemRecord | null>()
 
@@ -113,8 +145,12 @@ export function GearsetPart({ part, language }: { part?: GearsetDTO; language: s
   const root = language === 'chs' ? xivapiRoot.china : xivapiRoot.global
   return (
     <div className="gearset-item">
-      <div className="gearset-item-icon">{record ? <img alt="" src={`${root}${record.i}`} /> : null}</div>
-      <div className={`gearset-item-name ${glamour ? 'gearset-item-animated' : ''}`}>
+      <div className="gearset-item-icon">
+        {record ? <img alt="" src={`${root}${record.i}`} /> : null}
+      </div>
+      <div
+        className={`gearset-item-name ${glamour ? 'gearset-item-animated' : ''}`}
+      >
         <span>
           {itemName(record, language)} {part.hq ? <HQ /> : null}
         </span>
@@ -126,7 +162,11 @@ export function GearsetPart({ part, language }: { part?: GearsetDTO; language: s
       </div>
       <div className="gearset-item-materia gearset-item-animated">
         <span>
-          <Materias materias={part.materias} slot={record ? record.s : 5} overmeld={record ? !!record.a : false} />
+          <Materias
+            materias={part.materias}
+            slot={record ? record.s : 5}
+            overmeld={record ? !!record.a : false}
+          />
         </span>
         <span className="delay">
           <ILvl /> {record.l}

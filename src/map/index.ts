@@ -1,5 +1,5 @@
-import { create, EoMap, loader, simpleMarker } from './eorzea-map'
-import { MapInfo } from '../components/map'
+import type { MapInfo } from '../components/map'
+import { create, type EoMap, loader, simpleMarker } from './eorzea-map'
 import './index.css'
 import '../components/icon/index.css'
 
@@ -18,13 +18,18 @@ const nextState = ({ map, markers }: MapInfo) => {
     if (!markers || markers.length === 0) return
 
     for (const { x, y, icon, title } of markers) {
-      const iconUrl = loader.getIconUrl(`ui/icon/${icon.substring(0, 3)}000/${icon}.tex`)
+      const iconUrl = loader.getIconUrl(
+        `ui/icon/${icon.substring(0, 3)}000/${icon}.tex`,
+      )
       const marker = simpleMarker(x, y, iconUrl, instance.mapInfo)
 
       if (title) {
         marker
           .bindTooltip(
-            title.replace(/\[icon:(\d+)\]/g, (_, i) => `<i class="icon">&#${i};</i>`),
+            title.replace(
+              /\[icon:(\d+)\]/g,
+              (_, i) => `<i class="icon">&#${i};</i>`,
+            ),
             {
               permanent: true,
               direction: 'top',
@@ -38,7 +43,10 @@ const nextState = ({ map, markers }: MapInfo) => {
     }
 
     const main = markers[0]
-    setTimeout(() => instance.setView(instance.mapToLatLng2D(main.x, main.y), -1), 10)
+    setTimeout(
+      () => instance.setView(instance.mapToLatLng2D(main.x, main.y), -1),
+      10,
+    )
   })
 }
 

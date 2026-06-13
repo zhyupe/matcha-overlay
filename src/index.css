@@ -1,25 +1,29 @@
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
   margin: 0;
   padding: 0;
   overflow: hidden;
 }
 
-body, body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', 
-    'Microsoft Yahei UI', 'Microsoft Yahei', sans-serif;
+body,
+body {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    "Microsoft Yahei UI", "Microsoft Yahei", sans-serif;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  
+
   background-color: transparent;
   color: white;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family:
+    source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
 .button {
@@ -30,11 +34,14 @@ code {
   border-radius: 15px;
   color: #fff8;
   outline: 0;
-  transition: color .4s ease-in-out, border-color .4s ease-in-out;
+  transition:
+    color 0.4s ease-in-out,
+    border-color 0.4s ease-in-out;
   cursor: pointer;
 }
 
-.button-active, .button:hover {
+.button-active,
+.button:hover {
   color: #b7ca32;
   border-color: #b7ca32;
 }
@@ -54,12 +61,12 @@ code {
 }
 
 ::-webkit-scrollbar-track {
-  background: #FFF4;
+  background: #fff4;
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #FFFA;
+  background: #fffa;
   border-radius: 10px;
 }
 
@@ -78,5 +85,5 @@ code {
   border: 1px solid #b7ca32;
   line-height: 1.5;
   border-radius: 5px;
-  background: rgba(0, 0, 0, .4);
+  background: rgba(0, 0, 0, 0.4);
 }

@@ -1,13 +1,17 @@
 import classNames from 'classnames'
-import { List, Map, Seq } from 'immutable'
-import { CSSProperties, PropsWithChildren } from 'react'
+import { type List, Map, type Seq } from 'immutable'
+import type { CSSProperties, PropsWithChildren } from 'react'
 import { HQ, SwitchHorizontal, Trash } from '../../../../components/icon'
 import { useConfigBoolean } from '../../../../lib/config'
-import { MarketItemsMap } from '../interface'
+import type { MarketItemsMap } from '../interface'
 import { Cell } from './cell'
 
 const renderWorldHeader = (world: number | null) =>
-  world === null ? <th key="_null">服务器</th> : <Cell.WorldName id={world} key={world} />
+  world === null ? (
+    <th key="_null">服务器</th>
+  ) : (
+    <Cell.WorldName id={world} key={world} />
+  )
 
 const renderItemHeader = (language: string, id: number | null) => {
   if (id === null) {
@@ -17,7 +21,10 @@ const renderItemHeader = (language: string, id: number | null) => {
   return <Cell.ItemName key={id} item={id} language={language} />
 }
 
-const toHeader = function <T>(input: List<T> | Seq.Indexed<T>, render: (value: T | null) => JSX.Element) {
+const toHeader = <T,>(
+  input: List<T> | Seq.Indexed<T>,
+  render: (value: T | null) => JSX.Element,
+) => {
   const array: Array<T | null> = input.isEmpty() ? [null] : input.toJSON()
 
   return array.map((value) => ({
@@ -26,14 +33,18 @@ const toHeader = function <T>(input: List<T> | Seq.Indexed<T>, render: (value: T
   }))
 }
 
-const handleTranspose = function <X, Y>(columns: X[], rows: Y[], transpose = false) {
-  const [visualColumns, visualRows] = transpose ? [rows, columns] : [columns, rows]
+const handleTranspose = <X, Y>(columns: X[], rows: Y[], transpose = false) => {
+  const [visualColumns, visualRows] = transpose
+    ? [rows, columns]
+    : [columns, rows]
 
   return {
     rows: visualRows,
     columns: visualColumns,
     at(visualColumn: number, visualRow: number) {
-      const [column, row] = transpose ? [visualRow, visualColumn] : [visualColumn, visualRow]
+      const [column, row] = transpose
+        ? [visualRow, visualColumn]
+        : [visualColumn, visualRow]
       return {
         column: columns[column],
         row: rows[row],
@@ -56,7 +67,12 @@ function Button({
 }>) {
   return (
     <button
-      className={classNames('button', 'button-circle', className, active && 'button-active')}
+      className={classNames(
+        'button',
+        'button-circle',
+        className,
+        active && 'button-active',
+      )}
       onClick={onClick}
       style={style}
     >
@@ -76,13 +92,21 @@ export function MarketTable({
   language: string
   onReset: () => void
 }) {
-  const [transpose, { toggle: toggleTranspose }] = useConfigBoolean('market-transpose')
+  const [transpose, { toggle: toggleTranspose }] =
+    useConfigBoolean('market-transpose')
   const [hqOnly, { toggle: toggleHQOnly }] = useConfigBoolean('market-hq-only')
 
   const worldHeaders = toHeader(worlds, renderWorldHeader)
-  const itemHeaders = toHeader(items.keySeq(), renderItemHeader.bind(null, language))
+  const itemHeaders = toHeader(
+    items.keySeq(),
+    renderItemHeader.bind(null, language),
+  )
 
-  const { rows, columns, at } = handleTranspose(itemHeaders, worldHeaders, transpose)
+  const { rows, columns, at } = handleTranspose(
+    itemHeaders,
+    worldHeaders,
+    transpose,
+  )
 
   return (
     <table className="overlay-market">
@@ -90,10 +114,19 @@ export function MarketTable({
         <tr>
           <th style={{ width: 100 }}>
             <div className="buttons">
-              <Button active={transpose} className="transpose" onClick={toggleTranspose} style={{ marginRight: 10 }}>
+              <Button
+                active={transpose}
+                className="transpose"
+                onClick={toggleTranspose}
+                style={{ marginRight: 10 }}
+              >
                 <SwitchHorizontal />
               </Button>
-              <Button active={hqOnly} onClick={toggleHQOnly} style={{ marginRight: 10 }}>
+              <Button
+                active={hqOnly}
+                onClick={toggleHQOnly}
+                style={{ marginRight: 10 }}
+              >
                 <HQ />
               </Button>
               <Button onClick={onReset}>
@@ -119,7 +152,14 @@ export function MarketTable({
                   return <Cell.Empty />
                 }
 
-                return <Cell key={`${world}-${item}`} world={world} item={itemMap} hqOnly={hqOnly} />
+                return (
+                  <Cell
+                    key={`${world}-${item}`}
+                    world={world}
+                    item={itemMap}
+                    hqOnly={hqOnly}
+                  />
+                )
               })}
             </tr>
           )

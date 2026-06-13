@@ -117,10 +117,16 @@ export { L }
 export declare function xy(xy: [number, number]): [number, number]
 export declare function xy(x: number, y: number): [number, number]
 export declare function create(mapEl: HTMLElement): Promise<EoMap>
-export declare function simpleMarker(x: number, y: number, iconUrl: string, mapInfo: loader.IMapInfo): L.Marker<any>
+export declare function simpleMarker(
+  x: number,
+  y: number,
+  iconUrl: string,
+  mapInfo: loader.IMapInfo,
+): L.Marker<any>
 export declare function setCdnUrl(url: string): void
 export declare function setApiUrl(url: string): void
-export declare const getRegion: (() => Promise<IRegion[]>) & import('lodash').MemoizedFunction
+export declare const getRegion: (() => Promise<IRegion[]>) &
+  import('lodash').MemoizedFunction
 export declare const version: string
 
 // import crel from 'crel';

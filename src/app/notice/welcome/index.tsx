@@ -1,14 +1,15 @@
 import { useContext, useMemo } from 'react'
 import { Dialog } from '../../../components/dialog'
 import { SeasonContext } from '../../../lib/season'
-import { OverlayProps } from '../../interface'
+import type { OverlayProps } from '../../interface'
 import './index.css'
 
 const year = new Date().getFullYear()
 const build = process.env.build
 
 const appointedVersion = '22.4.15.1906'
-const parseVersion = (version: string) => version.split('.').map((item) => +item)
+const parseVersion = (version: string) =>
+  version.split('.').map((item) => +item)
 function VersionCheck({ version }: { version: string | undefined }) {
   const showNotice = useMemo(() => {
     if (!version) return false
@@ -24,7 +25,9 @@ function VersionCheck({ version }: { version: string | undefined }) {
     return false
   }, [version])
 
-  return showNotice ? <Dialog direction="top-left">您的插件版本较旧，请到插件中心更新</Dialog> : null
+  return showNotice ? (
+    <Dialog direction="top-left">您的插件版本较旧，请到插件中心更新</Dialog>
+  ) : null
 }
 
 export function WelcomeNotice({ version, language, active }: OverlayProps) {

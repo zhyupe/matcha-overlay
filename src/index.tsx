@@ -1,10 +1,10 @@
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import App from './app'
-import { RecoilRoot } from 'recoil'
 import { StrictMode } from 'react'
-import { trackVersion } from './lib/track'
+import { RecoilRoot } from 'recoil'
+import App from './app'
 import { SeasonProvider } from './lib/season'
+import { trackVersion } from './lib/track'
 
 const build = process.env.build
 trackVersion('overlay', build!)

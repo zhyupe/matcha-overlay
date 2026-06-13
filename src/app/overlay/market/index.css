@@ -1,15 +1,15 @@
-
 .overlay-market {
   text-align: center;
 }
 
-.overlay-market th, .overlay-market td {
+.overlay-market th,
+.overlay-market td {
   font-weight: normal;
   padding: 5px 10px;
 }
 
 .overlay-market .small {
-  font-size: .875em;
+  font-size: 0.875em;
 }
 
 .overlay-market li {

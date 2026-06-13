@@ -1,23 +1,40 @@
-import { OverlayProps } from '../../interface'
-import { EorzeaMap, MapInfo } from '../../../components/map'
-import { useTreasureSpot } from './data-source/treasure'
+import cn from 'classnames'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { EorzeaMap, type MapInfo } from '../../../components/map'
 import { Maps } from '../../../data/maps'
 import { MapIcon } from '../../../map/interface'
-import cn from 'classnames'
+import type { OverlayProps } from '../../interface'
+import { useTreasureSpot } from './data-source/treasure'
 import './index.scss'
-import { MapAction, PointInfo } from './interface'
-import { PostMoogleFate, PostMoogleState, usePostMoogle } from './data-source/post-moogle'
-import { DC, Worlds } from '../../../data/worlds'
-import { FFXIVFate, IFFXIVFate } from '../../../data/fates'
-import { useConfig, useConfigBoolean } from '../../../lib/config'
-import { Edit, Instance1, Instance2, Instance3, InstanceOffset, Question } from '../../../components/icon'
-import { useTimer } from '../../../lib/hook'
-import { Switch } from '../../../components/switch'
 import { Dialog } from '../../../components/dialog'
+import {
+  Edit,
+  Instance1,
+  Instance2,
+  Instance3,
+  InstanceOffset,
+  Question,
+} from '../../../components/icon'
 import { RadioGroup } from '../../../components/radio-group'
+import { Switch } from '../../../components/switch'
+import { FFXIVFate, type IFFXIVFate } from '../../../data/fates'
+import { DC, Worlds } from '../../../data/worlds'
+import { useConfig, useConfigBoolean } from '../../../lib/config'
+import { useTimer } from '../../../lib/hook'
+import {
+  type PostMoogleFate,
+  type PostMoogleState,
+  usePostMoogle,
+} from './data-source/post-moogle'
+import type { MapAction, PointInfo } from './interface'
 
-function Point({ point, empty = '未知' }: { point: PointInfo | null; empty?: string }) {
+function Point({
+  point,
+  empty = '未知',
+}: {
+  point: PointInfo | null
+  empty?: string
+}) {
   const [name, x, y] = useMemo(() => {
     if (!point) {
       return [null, null, null]
@@ -51,7 +68,13 @@ function Point({ point, empty = '未知' }: { point: PointInfo | null; empty?: s
   )
 }
 
-function Treasure({ point, onClick }: { point: PointInfo | null; onClick: MapAction }) {
+function Treasure({
+  point,
+  onClick,
+}: {
+  point: PointInfo | null
+  onClick: MapAction
+}) {
   const showOnMap = () => {
     if (!point) return
 
@@ -70,14 +93,23 @@ function Treasure({ point, onClick }: { point: PointInfo | null; onClick: MapAct
   useEffect(showOnMap, [point, onClick])
 
   return (
-    <div className={cn('map-treasure space-between', point && 'clickable')} onClick={showOnMap}>
+    <div
+      className={cn('map-treasure space-between', point && 'clickable')}
+      onClick={showOnMap}
+    >
       <span className="tag">[寻宝]</span>
       <Point point={point} empty="未检测到宝图，请尝试切换地图" />
     </div>
   )
 }
 
-function PostMoogleStatus({ data, onClick }: { data: PostMoogleState; onClick: () => void }) {
+function PostMoogleStatus({
+  data,
+  onClick,
+}: {
+  data: PostMoogleState
+  onClick: () => void
+}) {
   const statusText = useMemo(() => {
     if (!data.enabled) {
       return '未启用'
@@ -130,8 +162,16 @@ function EventTimer({ from, to }: { from: number; to: number }) {
   return <span>{timeString}</span>
 }
 
-function ListeningFates({ fate, isDefault }: { fate: number[]; isDefault: boolean }) {
-  const name = (id: number) => <span className="tag">{FFXIVFate[id]?.name || `FATE:${id}`}</span>
+function ListeningFates({
+  fate,
+  isDefault,
+}: {
+  fate: number[]
+  isDefault: boolean
+}) {
+  const name = (id: number) => (
+    <span className="tag">{FFXIVFate[id]?.name || `FATE:${id}`}</span>
+  )
 
   return (
     <div>
@@ -150,9 +190,17 @@ function ListeningFates({ fate, isDefault }: { fate: number[]; isDefault: boolea
   )
 }
 
-function PostMoogle({ data, onClick }: { data: PostMoogleState; onClick: MapAction }) {
+function PostMoogle({
+  data,
+  onClick,
+}: {
+  data: PostMoogleState
+  onClick: MapAction
+}) {
   const [setting, setSetting] = useState(false)
-  const [enabled, { setTrue, setFalse, set: setEnabled }] = useConfigBoolean('post-moogle-enabled')
+  const [enabled, { setTrue, setFalse, set: setEnabled }] = useConfigBoolean(
+    'post-moogle-enabled',
+  )
   const [tts, { set: setTTS }] = useConfigBoolean('post-moogle-tts')
   const [dc, setDC] = useConfig('post-moogle-dc', 0)
   const [time, setTime] = useState(0)
@@ -223,7 +271,10 @@ function PostMoogle({ data, onClick }: { data: PostMoogleState; onClick: MapActi
           {enabled ? (
             <div className="space-between">
               <span style={{ flexShrink: 0 }}>危命任务</span>
-              <ListeningFates isDefault={data.config.isDefault} fate={data.config.fates} />
+              <ListeningFates
+                isDefault={data.config.isDefault}
+                fate={data.config.fates}
+              />
             </div>
           ) : null}
           <div>
@@ -249,7 +300,8 @@ function PostMoogle({ data, onClick }: { data: PostMoogleState; onClick: MapActi
             const worldInfo = Worlds[item.world]
 
             const key = item._subject
-            const clickable = fateInfo && fateInfo.map && fateInfo.x && fateInfo.y
+            const clickable =
+              fateInfo && fateInfo.map && fateInfo.x && fateInfo.y
 
             return (
               <li
@@ -269,7 +321,12 @@ function PostMoogle({ data, onClick }: { data: PostMoogleState; onClick: MapActi
                   {fateInfo?.name || item.fate}
                 </div>
 
-                <EventTimer from={item.startTime ? item.startTime * 1000 : item._receivedAt} to={time} />
+                <EventTimer
+                  from={
+                    item.startTime ? item.startTime * 1000 : item._receivedAt
+                  }
+                  to={time}
+                />
               </li>
             )
           })}
@@ -279,7 +336,11 @@ function PostMoogle({ data, onClick }: { data: PostMoogleState; onClick: MapActi
   )
 }
 
-export function MapEventOverlay({ eventEmitter, active, setActive }: OverlayProps) {
+export function MapEventOverlay({
+  eventEmitter,
+  active,
+  setActive,
+}: OverlayProps) {
   const treasure = useTreasureSpot(eventEmitter)
   const [mapInfo, setMapInfo] = useState<MapInfo>({ map: 0 })
 
@@ -299,7 +360,9 @@ export function MapEventOverlay({ eventEmitter, active, setActive }: OverlayProp
 
   return (
     <div className="overlay overlay-map-event">
-      <main className="map-container">{mapInfo.map !== 0 ? <EorzeaMap {...mapInfo} /> : null}</main>
+      <main className="map-container">
+        {mapInfo.map !== 0 ? <EorzeaMap {...mapInfo} /> : null}
+      </main>
       <aside className="map-points">
         <Treasure point={treasure} onClick={action} />
         <PostMoogle data={postMoogle} onClick={action} />

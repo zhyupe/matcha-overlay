@@ -1,8 +1,8 @@
-import { EventEmitter } from 'events'
+import type { EventEmitter } from 'events'
 import { useMemo, useState } from 'react'
-import { PointInfo } from '../interface'
 import { TreasureData } from '../../../../data/treasures'
 import { useEvent } from '../../../../lib/event'
+import type { PointInfo } from '../interface'
 
 export interface TreasureSpotDTO {
   item: number
@@ -14,7 +14,10 @@ export function useTreasureSpot(eventEmitter: EventEmitter) {
   const [info, setInfo] = useState<TreasureSpotDTO>()
 
   useEvent<TreasureSpotDTO>(eventEmitter, 'TreasureSpot', (data) => {
-    if ((info && data.item === info.item && data.location === info.location) || (!info && data.item === 0)) {
+    if (
+      (info && data.item === info.item && data.location === info.location) ||
+      (!info && data.item === 0)
+    ) {
       return
     }
 

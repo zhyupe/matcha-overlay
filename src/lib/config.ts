@@ -1,8 +1,11 @@
-import { Dispatch, SetStateAction, useMemo } from 'react'
-import { atom, RecoilState, useRecoilState } from 'recoil'
+import { type Dispatch, type SetStateAction, useMemo } from 'react'
+import { atom, type RecoilState, useRecoilState } from 'recoil'
 import { debug } from './log'
 
-export function getConfig<T = unknown>(key: string, defaultValue?: T): T | undefined {
+export function getConfig<T = unknown>(
+  key: string,
+  defaultValue?: T,
+): T | undefined {
   debug('[config:get]', key)
   const stored = window.localStorage.getItem(`config:${key}`)
   if (stored) {
@@ -15,7 +18,10 @@ export function getConfig<T = unknown>(key: string, defaultValue?: T): T | undef
   return defaultValue
 }
 
-export function getConfigWithInit<T = unknown>(key: string, defaultValue: () => T): T {
+export function getConfigWithInit<T = unknown>(
+  key: string,
+  defaultValue: () => T,
+): T {
   let value = getConfig<T>(key)
   if (!value) {
     value = defaultValue()
@@ -32,8 +38,13 @@ export function setConfig<T = unknown>(key: string, value: T): void {
 
 const atomMap = new Map<string, RecoilState<any>>()
 
-export function useConfig<T = unknown>(key: string): [T | undefined, Dispatch<SetStateAction<T>>]
-export function useConfig<T = unknown>(key: string, defaultValue: T): [T, Dispatch<SetStateAction<T>>]
+export function useConfig<T = unknown>(
+  key: string,
+): [T | undefined, Dispatch<SetStateAction<T>>]
+export function useConfig<T = unknown>(
+  key: string,
+  defaultValue: T,
+): [T, Dispatch<SetStateAction<T>>]
 export function useConfig<T = unknown>(
   key: string,
   defaultValue?: T,

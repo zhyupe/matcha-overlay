@@ -1,4 +1,9 @@
-import { createContext, CSSProperties, PropsWithChildren, useMemo } from 'react'
+import {
+  type CSSProperties,
+  createContext,
+  type PropsWithChildren,
+  useMemo,
+} from 'react'
 import './2025.scss'
 
 const matchaIcon = {
@@ -116,5 +121,7 @@ export function SeasonProvider({ children }: PropsWithChildren<{}>) {
     }
   }, [])
 
-  return <SeasonContext.Provider value={value}>{children}</SeasonContext.Provider>
+  return (
+    <SeasonContext.Provider value={value}>{children}</SeasonContext.Provider>
+  )
 }

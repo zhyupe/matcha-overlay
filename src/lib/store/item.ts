@@ -126,7 +126,7 @@ const queryXivapi = (root: string, list: QueryTask[]) => {
     })
 }
 
-const doQuery = debounce(function () {
+const doQuery = debounce(() => {
   const list = itemQueryList.slice()
   itemQueryList = []
 
@@ -141,9 +141,16 @@ const doQuery = debounce(function () {
 }, 200)
 
 export function queryItem(id: number, language: string): Promise<ItemRecord> {
-  const queryLanguage = ['en', 'de', 'fr', 'ja', 'chs'].includes(language) ? language : 'en'
+  const queryLanguage = ['en', 'de', 'fr', 'ja', 'chs'].includes(language)
+    ? language
+    : 'en'
   const fromCache = itemCache.get(id)
-  if (fromCache && typeof fromCache.l === 'number' && typeof fromCache.n === 'object' && fromCache.n[queryLanguage]) {
+  if (
+    fromCache &&
+    typeof fromCache.l === 'number' &&
+    typeof fromCache.n === 'object' &&
+    fromCache.n[queryLanguage]
+  ) {
     return Promise.resolve(fromCache)
   }
 

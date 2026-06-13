@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react'
-import { Marker } from '../../map/interface'
+import type { Marker } from '../../map/interface'
 
 export interface MapInfo {
   map: number
@@ -21,7 +21,12 @@ export function EorzeaMap({ map, markers }: MapInfo) {
     <iframe
       ref={ref}
       title="map"
-      style={{ border: 0, background: 'transparent', height: '100%', width: '100%' }}
+      style={{
+        border: 0,
+        background: 'transparent',
+        height: '100%',
+        width: '100%',
+      }}
       src="map.html"
       onLoad={notify}
     />

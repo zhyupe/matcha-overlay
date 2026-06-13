@@ -1,12 +1,18 @@
-import { useState, useEffect } from 'react'
-import { List } from 'immutable'
+import type { List } from 'immutable'
+import { useEffect, useState } from 'react'
 import { ILvl } from '../../../../components/icon'
-import { GearsetDTO } from '../interface'
 import { queryItem } from '../../../../lib/store/item'
+import type { GearsetDTO } from '../interface'
 
 const InvalidAvgILvl = -1
 
-export function AvgLevel({ list, language }: { list: List<GearsetDTO>; language: string }) {
+export function AvgLevel({
+  list,
+  language,
+}: {
+  list: List<GearsetDTO>
+  language: string
+}) {
   const [ilvl, setILvl] = useState(InvalidAvgILvl)
 
   useEffect(() => {
@@ -15,12 +21,16 @@ export function AvgLevel({ list, language }: { list: List<GearsetDTO>; language:
       return
     }
 
-    const itemIds = list.map((item) => (item && item.item ? item.item : 0)).toArray()
+    const itemIds = list
+      .map((item) => (item && item.item ? item.item : 0))
+      .toArray()
     if (itemIds.length > 13) {
       itemIds.length = 13
     }
 
-    Promise.all(itemIds.map((item) => (item ? queryItem(item, language) : null)))
+    Promise.all(
+      itemIds.map((item) => (item ? queryItem(item, language) : null)),
+    )
       .then((items) => {
         let totalLevel = items.reduce((sum, item, i) => {
           if (sum === InvalidAvgILvl || (itemIds[i] && !item)) {

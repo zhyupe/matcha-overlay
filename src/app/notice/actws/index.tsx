@@ -1,7 +1,10 @@
 export function ActWsNotice() {
   return (
     <div style={{ padding: '0 10px' }}>
-      <p>检测到您可能启用了 ACTWS 兼容模式，在此模式下本页面无法正常工作。请尝试通过以下操作进行修复</p>
+      <p>
+        检测到您可能启用了 ACTWS
+        兼容模式，在此模式下本页面无法正常工作。请尝试通过以下操作进行修复
+      </p>
       <ol>
         <li>
           在<span className="tag">ngld 悬浮窗插件</span>中找到本悬浮窗

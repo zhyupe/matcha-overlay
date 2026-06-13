@@ -1,18 +1,31 @@
-import { EventEmitter } from 'events'
-import { connect as natsConnect, NatsConnection, jwtAuthenticator, Subscription, Msg, JSONCodec } from 'nats.ws'
-import { useEffect, useMemo, useState } from 'react'
 import { debounce } from 'debounce'
-import { Worlds } from '../../../../data/worlds'
-import { getConfig, getConfigWithInit, setConfig, useConfig, useConfigBoolean } from '../../../../lib/config'
-import { useEvent } from '../../../../lib/event'
-import { createUser, fromSeed, KeyPair } from 'nkeys.js'
-import { v4 as uuidv4 } from 'uuid'
-import { useLatest, useTimer } from '../../../../lib/hook'
+import type { EventEmitter } from 'events'
 import { List } from 'immutable'
-import { speak } from '../../../../lib/tts'
+import {
+  JSONCodec,
+  jwtAuthenticator,
+  type Msg,
+  type NatsConnection,
+  connect as natsConnect,
+  type Subscription,
+} from 'nats.ws'
+import { createUser, fromSeed, type KeyPair } from 'nkeys.js'
+import { useEffect, useMemo, useState } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 import { FFXIVFate } from '../../../../data/fates'
-import { track } from '../../../../lib/track'
+import { Worlds } from '../../../../data/worlds'
+import {
+  getConfig,
+  getConfigWithInit,
+  setConfig,
+  useConfig,
+  useConfigBoolean,
+} from '../../../../lib/config'
+import { useEvent } from '../../../../lib/event'
+import { useLatest, useTimer } from '../../../../lib/hook'
 import { debug } from '../../../../lib/log'
+import { track } from '../../../../lib/track'
+import { speak } from '../../../../lib/tts'
 
 export interface FateWatchListChangedDTO {
   world: number
@@ -33,18 +46,22 @@ function usePostMoogleConfig(eventEmitter: EventEmitter): PostMoogleConfig {
   const [world, setWorld] = useConfig('post-moogle-world', 0)
   const [fates, setFates] = useConfig<number[]>('post-moogle-fates')
 
-  useEvent<FateWatchListChangedDTO>(eventEmitter, 'FateWatchListChanged', (data) => {
-    const nextWorld = Worlds[data.world]
-    if (!data.world || !nextWorld) {
-      setDC(0)
-      setWorld(0)
-      return
-    }
+  useEvent<FateWatchListChangedDTO>(
+    eventEmitter,
+    'FateWatchListChanged',
+    (data) => {
+      const nextWorld = Worlds[data.world]
+      if (!data.world || !nextWorld) {
+        setDC(0)
+        setWorld(0)
+        return
+      }
 
-    setDC(nextWorld.dc || 0)
-    setWorld(data.world)
-    setFates(data.fates)
-  })
+      setDC(nextWorld.dc || 0)
+      setWorld(data.world)
+      setFates(data.fates)
+    },
+  )
 
   return {
     world,
@@ -70,64 +87,72 @@ const configKey = {
   seed: 'post-moogle-seed',
 }
 
-const connect = debounce(async (cb: (err: Error | null, conn: NatsConnection, close: () => void) => void) => {
-  const clientId = getConfigWithInit(configKey.client, () => uuidv4())
+const connect = debounce(
+  async (
+    cb: (err: Error | null, conn: NatsConnection, close: () => void) => void,
+  ) => {
+    const clientId = getConfigWithInit(configKey.client, () => uuidv4())
 
-  const encoder = new TextEncoder()
-  const decoder = new TextDecoder()
-  const seed = getConfig<string>(configKey.seed)
+    const encoder = new TextEncoder()
+    const decoder = new TextDecoder()
+    const seed = getConfig<string>(configKey.seed)
 
-  let nkey: KeyPair
-  if (seed) {
-    nkey = fromSeed(encoder.encode(seed))
-  } else {
-    nkey = createUser()
-    setConfig(configKey.seed, decoder.decode(nkey.getSeed()))
-  }
+    let nkey: KeyPair
+    if (seed) {
+      nkey = fromSeed(encoder.encode(seed))
+    } else {
+      nkey = createUser()
+      setConfig(configKey.seed, decoder.decode(nkey.getSeed()))
+    }
 
-  const qs = new URLSearchParams({
-    id: clientId,
-    key: nkey.getPublicKey(),
-  })
+    const qs = new URLSearchParams({
+      id: clientId,
+      key: nkey.getPublicKey(),
+    })
 
-  const res = await fetch(`${apiServer}/api/v1/auth/nats?${qs}`)
-  if (res.status !== 200) {
-    throw new Error(`Invalid auth response: status ${res.status}`)
-  }
+    const res = await fetch(`${apiServer}/api/v1/auth/nats?${qs}`)
+    if (res.status !== 200) {
+      throw new Error(`Invalid auth response: status ${res.status}`)
+    }
 
-  const { token } = await res.json()
-  if (!token) {
-    throw new Error('Invalid jwt response')
-  }
+    const { token } = await res.json()
+    if (!token) {
+      throw new Error('Invalid jwt response')
+    }
 
-  const conn = await natsConnect({
-    servers: [natsServer],
-    reconnect: false,
-    ignoreClusterUpdates: true,
-    authenticator: jwtAuthenticator(token, nkey.getSeed()),
-  })
+    const conn = await natsConnect({
+      servers: [natsServer],
+      reconnect: false,
+      ignoreClusterUpdates: true,
+      authenticator: jwtAuthenticator(token, nkey.getSeed()),
+    })
 
-  let manuallyClosed = false
-  cb(null, conn, () => {
-    manuallyClosed = true
-    void conn.close()
-  })
+    let manuallyClosed = false
+    cb(null, conn, () => {
+      manuallyClosed = true
+      void conn.close()
+    })
 
-  const error = await conn.closed()
-  if (error) {
-    console.error(error)
-    debug(`[nats] Connection closed with error, retry in 10s`)
+    const error = await conn.closed()
+    if (error) {
+      console.error(error)
+      debug(`[nats] Connection closed with error, retry in 10s`)
 
-    setTimeout(() => connect(cb), 10e3)
-  } else if (!manuallyClosed) {
-    debug(`[nats] Connection unexpectly closed, retry`)
-    void connect(cb)
-  } else {
-    debug(`[nats] Connection closed`)
-  }
-})
+      setTimeout(() => connect(cb), 10e3)
+    } else if (!manuallyClosed) {
+      debug(`[nats] Connection unexpectly closed, retry`)
+      void connect(cb)
+    } else {
+      debug(`[nats] Connection closed`)
+    }
+  },
+)
 
-function useConnection(enabled: boolean, topics: string[], handler: (message: Msg) => void) {
+function useConnection(
+  enabled: boolean,
+  topics: string[],
+  handler: (message: Msg) => void,
+) {
   const [connection, setConnection] = useState<NatsConnection>()
   const handlerRef = useLatest(handler)
 
@@ -221,16 +246,21 @@ export interface PostMoogleState {
 const hasServer = !!apiServer && !!natsServer
 const codec = JSONCodec()
 export function usePostMoogle(eventEmitter: EventEmitter): PostMoogleState {
-  const [enabled, { setTrue, setFalse }] = useConfigBoolean('post-moogle-enabled')
+  const [enabled, { setTrue, setFalse }] = useConfigBoolean(
+    'post-moogle-enabled',
+  )
   const [tts] = useConfigBoolean('post-moogle-tts')
   const config = usePostMoogleConfig(eventEmitter)
   const [data, setData] = useState(List<PostMoogleItem<PostMoogleFate>>())
 
   const topics = useMemo(() => {
-    return config.fates.map((fate) => `${topicPrefix}.dc${config.dc}.fate${fate}.*`)
+    return config.fates.map(
+      (fate) => `${topicPrefix}.dc${config.dc}.fate${fate}.*`,
+    )
   }, [config.dc, config.fates])
 
-  const ready = enabled && hasServer && config.dc !== 0 && config.fates.length !== 0
+  const ready =
+    enabled && hasServer && config.dc !== 0 && config.fates.length !== 0
   useConnection(ready, topics, (msg) => {
     if (msg.subject.includes('.fate')) {
       const json = codec.decode(msg.data) as PostMoogleFate
@@ -251,7 +281,8 @@ export function usePostMoogle(eventEmitter: EventEmitter): PostMoogleState {
           startTime: json.startTime || item?.startTime || 0,
           duration: json.duration || item?.duration || 0,
           stage:
-            json.stage === ReportStage.Ongoing || item?.stage === ReportStage.Ongoing
+            json.stage === ReportStage.Ongoing ||
+            item?.stage === ReportStage.Ongoing
               ? ReportStage.Ongoing
               : ReportStage.Prepare,
         })
@@ -285,7 +316,9 @@ export function usePostMoogle(eventEmitter: EventEmitter): PostMoogleState {
     const now = Date.now()
     setData((data) =>
       data.filter((item) => {
-        const startTime = item.startTime ? item.startTime * 1000 : item._receivedAt
+        const startTime = item.startTime
+          ? item.startTime * 1000
+          : item._receivedAt
         const duration = (item.duration || 15 * 60) * 1000
 
         return now <= startTime + duration

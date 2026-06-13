@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react'
-import { MarketItemMap } from '../interface'
+import { useEffect, useState } from 'react'
 import { HQ } from '../../../../components/icon'
+import type { MarketItemMap } from '../interface'
 import './cell.css'
-import { itemName, queryItem } from '../../../../lib/store/item'
 import { Worlds } from '../../../../data/worlds'
+import { itemName, queryItem } from '../../../../lib/store/item'
 import { useFirstGroup, useGlobalCheapest, useLocalCheapest } from './calc'
 
 function Amount({ quantity, hq }: { quantity: number; hq: number }) {
@@ -15,7 +15,15 @@ function Amount({ quantity, hq }: { quantity: number; hq: number }) {
   )
 }
 
-export function Cell({ world, item, hqOnly }: { world: number; item: MarketItemMap; hqOnly: boolean }): JSX.Element {
+export function Cell({
+  world,
+  item,
+  hqOnly,
+}: {
+  world: number
+  item: MarketItemMap
+  hqOnly: boolean
+}): JSX.Element {
   const localCheapest = useLocalCheapest(item, world, hqOnly)
   const globalCheapest = useGlobalCheapest(item, hqOnly)
   const firstGroup = useFirstGroup(item, world, hqOnly)
@@ -33,9 +41,12 @@ export function Cell({ world, item, hqOnly }: { world: number; item: MarketItemM
       </div>
       <div className="group">
         ~
-        {(firstGroup.totalPrice / firstGroup.quantity).toLocaleString(undefined, {
-          maximumFractionDigits: 0,
-        })}
+        {(firstGroup.totalPrice / firstGroup.quantity).toLocaleString(
+          undefined,
+          {
+            maximumFractionDigits: 0,
+          },
+        )}
         <Amount quantity={firstGroup.quantity} hq={firstGroup.hq} />
       </div>
     </td>
@@ -57,7 +68,13 @@ Cell.Empty = function Empty() {
   )
 }
 
-Cell.ItemName = function ItemName({ item, language }: { item: number; language: string }) {
+Cell.ItemName = function ItemName({
+  item,
+  language,
+}: {
+  item: number
+  language: string
+}) {
   const [name, setName] = useState<string>('')
   useEffect(() => {
     setName('载入中')
