@@ -4559,8 +4559,8 @@ export const TreasureData: Record<string, ITreasureData[]> = {
     },
     {
       map: 858,
-      x: 37.8,
-      y: 17.6,
+      x: 38.6,
+      y: 21.2,
     },
     {
       map: 858,
@@ -4838,6 +4838,48 @@ export const TreasureData: Record<string, ITreasureData[]> = {
       map: 859,
       x: 22.6,
       y: 5.9,
+    },
+  ],
+  2003785: [
+    {
+      map: 862,
+      x: 38.5,
+      y: 28.2,
+    },
+    {
+      map: 862,
+      x: 35.1,
+      y: 35.4,
+    },
+    {
+      map: 862,
+      x: 20.3,
+      y: 23.1,
+    },
+    {
+      map: 862,
+      x: 31.1,
+      y: 18.2,
+    },
+    {
+      map: 862,
+      x: 18.6,
+      y: 15.9,
+    },
+    {
+      map: 862,
+      x: 9.3,
+      y: 10.8,
+    },
+    {
+      map: 862,
+      x: 10.5,
+      y: 36.1,
+    },
+    {
+      map: 862,
+      x: 25.1,
+      y: 6.9,
     },
   ],
 }

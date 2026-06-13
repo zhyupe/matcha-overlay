@@ -1,21 +1,29 @@
-import { json, write } from './common.mjs'
+import { json, write, xivapiTable } from './common.mjs'
 
-Promise.all([
-  fetch('https://xivapi.com/servers/dc').then((res) => res.json()),
-  fetch('https://xivapi.com/world?limit=10000').then((res) => res.json()),
-  fetch('https://zhyupe.github.io/ffxiv-datamining-worker/server.json').then((res) => res.json()),
-]).then(([dc, data, cnServer]) => {
+export async function updateWorld() {
+  const [dc, data, cnServer] = await Promise.all([
+    fetch('https://xivapi.com/servers/dc').then((res) => res.json()),
+    xivapiTable('World', ['Name']),
+    fetch('https://zhyupe.github.io/ffxiv-datamining-worker/server.json').then(
+      (res) => res.json(),
+    ),
+  ])
+
   const dcMap = {}
   const worlds = {}
   const overlayWorlds = {}
 
-  data.Results.forEach((row) => {
-    const dcName = Object.keys(dc).find((key) => dc[key].includes(row.Name))
+  data.forEach((row) => {
+    const {
+      row_id: worldId,
+      fields: { Name: worldName },
+    } = row
+    const dcName = Object.keys(dc).find((key) => dc[key].includes(worldName))
     if (!dcName) return
 
-    worlds[row.ID] = {
-      name: row.Name,
-      name_en: row.Name,
+    worlds[worldId] = {
+      name: worldName,
+      name_en: worldName,
       dc: dcName,
       dc_en: dcName,
     }
@@ -61,4 +69,4 @@ Promise.all([
   export const Worlds: Record<number, IWorldData> = ${json(overlayWorlds)}
   `
   write('worlds', code)
-})
+}

@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 export interface IMapData {
   name: string
   sizeFactor: number
@@ -5106,5 +5104,805 @@ export const Maps: Record<number, IMapData> = {
     name: '独狼格斗场',
     sizeFactor: 400,
     offset: [-100, -100],
+  },
+  1033: {
+    name: '桑多利亚：第二巡行',
+    sizeFactor: 200,
+    offset: [-826, -871],
+  },
+  1034: {
+    name: '桑多利亚：第二巡行',
+    sizeFactor: 200,
+    offset: [-594, -796],
+  },
+  1035: {
+    name: '桑多利亚：第二巡行',
+    sizeFactor: 200,
+    offset: [850, -863],
+  },
+  1036: {
+    name: '桑多利亚：第二巡行',
+    sizeFactor: 200,
+    offset: [-800, 0],
+  },
+  1037: {
+    name: '桑多利亚：第二巡行',
+    sizeFactor: 200,
+    offset: [-650, -400],
+  },
+  1038: {
+    name: '桑多利亚：第二巡行',
+    sizeFactor: 200,
+    offset: [-800, -800],
+  },
+  1039: {
+    name: '桑多利亚：第二巡行',
+    sizeFactor: 200,
+    offset: [-750, -800],
+  },
+  1040: {
+    name: '桑多利亚：第二巡行',
+    sizeFactor: 200,
+    offset: [850, 838],
+  },
+  1041: {
+    name: '桑多利亚：第二巡行',
+    sizeFactor: 200,
+    offset: [200, -150],
+  },
+  1042: {
+    name: '桑多利亚：第二巡行',
+    sizeFactor: 200,
+    offset: [-50, 100],
+  },
+  1043: {
+    name: '桑多利亚：第二巡行',
+    sizeFactor: 200,
+    offset: [-800, 800],
+  },
+  1044: {
+    name: '桑多利亚：第二巡行',
+    sizeFactor: 200,
+    offset: [200, -150],
+  },
+  1045: {
+    name: '死亡满溢之地',
+    sizeFactor: 400,
+    offset: [-100, -100],
+  },
+  1046: {
+    name: '永暗渊狱',
+    sizeFactor: 400,
+    offset: [-100, 100],
+  },
+  1047: {
+    name: '永暗渊狱',
+    sizeFactor: 400,
+    offset: [-300, 100],
+  },
+  1048: {
+    name: '永暗渊狱',
+    sizeFactor: 400,
+    offset: [-300, -100],
+  },
+  1049: {
+    name: '永暗渊狱',
+    sizeFactor: 400,
+    offset: [-300, -300],
+  },
+  1050: {
+    name: '永暗渊狱',
+    sizeFactor: 400,
+    offset: [-100, -300],
+  },
+  1051: {
+    name: '永暗渊狱',
+    sizeFactor: 400,
+    offset: [100, -300],
+  },
+  1052: {
+    name: '永暗渊狱',
+    sizeFactor: 400,
+    offset: [100, -100],
+  },
+  1053: {
+    name: '永暗渊狱',
+    sizeFactor: 400,
+    offset: [100, 100],
+  },
+  1054: {
+    name: '雪棱拜坛',
+    sizeFactor: 400,
+    offset: [0, -135],
+  },
+  1055: {
+    name: '中央终端',
+    sizeFactor: 200,
+    offset: [-132, -113],
+  },
+  1056: {
+    name: '中央终端',
+    sizeFactor: 200,
+    offset: [-92, 160],
+  },
+  1057: {
+    name: '中央终端',
+    sizeFactor: 200,
+    offset: [80, -118],
+  },
+  1058: {
+    name: '中央终端',
+    sizeFactor: 200,
+    offset: [0, 0],
+  },
+  1059: {
+    name: '巡梦金库',
+    sizeFactor: 400,
+    offset: [-100, -100],
+  },
+  1060: {
+    name: '海岸斗场',
+    sizeFactor: 400,
+    offset: [-100, -100],
+  },
+  1061: {
+    name: '瓦伦提昂蛋糕店',
+    sizeFactor: 400,
+    offset: [0, 0],
+  },
+  1062: {
+    name: '仓库栋10-29',
+    sizeFactor: 400,
+    offset: [0, 0],
+  },
+  1063: {
+    name: '天堑荒地',
+    sizeFactor: 400,
+    offset: [-100, -100],
+  },
+  1064: {
+    name: '天堑荒地',
+    sizeFactor: 400,
+    offset: [-35, -745],
+  },
+  1065: {
+    name: '法恩娜行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1066: {
+    name: '法恩娜行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1067: {
+    name: '法恩娜行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1068: {
+    name: '法恩娜行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1069: {
+    name: '法恩娜行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1070: {
+    name: '法恩娜行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1071: {
+    name: '法恩娜行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1072: {
+    name: '法恩娜行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1073: {
+    name: '法恩娜行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1074: {
+    name: '法恩娜行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1075: {
+    name: '法恩娜行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1076: {
+    name: '法恩娜行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1077: {
+    name: '法恩娜行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1078: {
+    name: '法恩娜行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1079: {
+    name: '法恩娜行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1080: {
+    name: '法恩娜行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1081: {
+    name: '法恩娜行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1082: {
+    name: '法恩娜行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1083: {
+    name: '法恩娜行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1084: {
+    name: '法恩娜行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1085: {
+    name: '法恩娜行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1086: {
+    name: '法恩娜行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1087: {
+    name: '桑多利亚：第二巡行',
+    sizeFactor: 200,
+    offset: [200, -150],
+  },
+  1088: {
+    name: '亡灵府邸闹鬼庄园',
+    sizeFactor: 200,
+    offset: [0, 0],
+  },
+  1089: {
+    name: '亡灵府邸闹鬼庄园',
+    sizeFactor: 200,
+    offset: [0, 0],
+  },
+  1090: {
+    name: '亡灵府邸闹鬼庄园',
+    sizeFactor: 200,
+    offset: [0, 0],
+  },
+  1091: {
+    name: '雪棱拜坛',
+    sizeFactor: 400,
+    offset: [0, -135],
+  },
+  1092: {
+    name: '雪棱拜坛',
+    sizeFactor: 400,
+    offset: [0, -135],
+  },
+  1093: {
+    name: '雪棱拜坛',
+    sizeFactor: 400,
+    offset: [0, -135],
+  },
+  1094: {
+    name: '雪棱拜坛',
+    sizeFactor: 400,
+    offset: [0, -135],
+  },
+  1095: {
+    name: '雾之迹',
+    sizeFactor: 200,
+    offset: [-143, -475],
+  },
+  1096: {
+    name: '雾之迹',
+    sizeFactor: 200,
+    offset: [-194, 147],
+  },
+  1097: {
+    name: '雾之迹',
+    sizeFactor: 200,
+    offset: [-263, 476],
+  },
+  1098: {
+    name: '朝圣交错路',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1099: {
+    name: '致命格斗场',
+    sizeFactor: 400,
+    offset: [-100, -100],
+  },
+  1100: {
+    name: '铁马车轨道',
+    sizeFactor: 400,
+    offset: [-100, -100],
+  },
+  1101: {
+    name: '铁马车轨道',
+    sizeFactor: 400,
+    offset: [-100, -150],
+  },
+  1102: {
+    name: '铁马车轨道',
+    sizeFactor: 400,
+    offset: [-100, -200],
+  },
+  1103: {
+    name: '铁马车轨道',
+    sizeFactor: 400,
+    offset: [-100, -250],
+  },
+  1104: {
+    name: '铁马车轨道',
+    sizeFactor: 400,
+    offset: [-100, -300],
+  },
+  1105: {
+    name: '铁马车轨道',
+    sizeFactor: 400,
+    offset: [-100, -100],
+  },
+  1106: {
+    name: '铁马车轨道',
+    sizeFactor: 400,
+    offset: [-100, -150],
+  },
+  1107: {
+    name: '铁马车轨道',
+    sizeFactor: 400,
+    offset: [-100, -200],
+  },
+  1108: {
+    name: '铁马车轨道',
+    sizeFactor: 400,
+    offset: [-100, -250],
+  },
+  1109: {
+    name: '铁马车轨道',
+    sizeFactor: 400,
+    offset: [-100, -300],
+  },
+  1110: {
+    name: '铁马车轨道',
+    sizeFactor: 400,
+    offset: [-100, -350],
+  },
+  1111: {
+    name: '？？？？',
+    sizeFactor: 400,
+    offset: [400, 400],
+  },
+  1112: {
+    name: '极限格斗场',
+    sizeFactor: 400,
+    offset: [-100, -100],
+  },
+  1113: {
+    name: '霸王格斗场',
+    sizeFactor: 400,
+    offset: [-100, -100],
+  },
+  1114: {
+    name: '商客奇谭',
+    sizeFactor: 200,
+    offset: [574, -666],
+  },
+  1115: {
+    name: '商客奇谭',
+    sizeFactor: 200,
+    offset: [714, 514],
+  },
+  1116: {
+    name: '商客奇谭',
+    sizeFactor: 200,
+    offset: [-215, -700],
+  },
+  1117: {
+    name: '商客奇谭',
+    sizeFactor: 200,
+    offset: [-72, 556],
+  },
+  1118: {
+    name: '商客奇谭',
+    sizeFactor: 200,
+    offset: [-805, -670],
+  },
+  1119: {
+    name: '沃刻其特',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1120: {
+    name: '特雷诺',
+    sizeFactor: 200,
+    offset: [-143, -475],
+  },
+  1121: {
+    name: '特雷诺',
+    sizeFactor: 200,
+    offset: [-172, 7],
+  },
+  1122: {
+    name: '特雷诺',
+    sizeFactor: 200,
+    offset: [-264, 476],
+  },
+  1123: {
+    name: '亚历山德里亚王国遗址',
+    sizeFactor: 400,
+    offset: [-1, 25],
+  },
+  1124: {
+    name: '美丽的姑娘的家',
+    sizeFactor: 400,
+    offset: [0, 0],
+  },
+  1125: {
+    name: '本蒂尼货运站',
+    sizeFactor: 400,
+    offset: [-12, 2],
+  },
+  1126: {
+    name: '睡莲湖附近',
+    sizeFactor: 400,
+    offset: [700, 700],
+  },
+  1127: {
+    name: '睡莲湖附近',
+    sizeFactor: 400,
+    offset: [-100, 700],
+  },
+  1128: {
+    name: '睡莲湖附近',
+    sizeFactor: 400,
+    offset: [-900, 700],
+  },
+  1129: {
+    name: '睡莲湖附近',
+    sizeFactor: 400,
+    offset: [700, -100],
+  },
+  1130: {
+    name: '睡莲湖附近',
+    sizeFactor: 400,
+    offset: [-100, -100],
+  },
+  1131: {
+    name: '睡莲湖附近',
+    sizeFactor: 400,
+    offset: [-900, -100],
+  },
+  1132: {
+    name: '睡莲湖附近',
+    sizeFactor: 400,
+    offset: [700, -900],
+  },
+  1133: {
+    name: '睡莲湖附近',
+    sizeFactor: 400,
+    offset: [-100, -900],
+  },
+  1134: {
+    name: '睡莲湖附近',
+    sizeFactor: 400,
+    offset: [-900, -900],
+  },
+  1137: {
+    name: '三尾训练馆',
+    sizeFactor: 400,
+    offset: [0, 0],
+  },
+  1138: {
+    name: '俄匊斯行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1139: {
+    name: '俄匊斯行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1140: {
+    name: '俄匊斯行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1141: {
+    name: '俄匊斯行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1142: {
+    name: '俄匊斯行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1143: {
+    name: '俄匊斯行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1144: {
+    name: '俄匊斯行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1145: {
+    name: '俄匊斯行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1146: {
+    name: '俄匊斯行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1147: {
+    name: '俄匊斯行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1148: {
+    name: '俄匊斯行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1149: {
+    name: '俄匊斯行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1150: {
+    name: '俄匊斯行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1151: {
+    name: '俄匊斯行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1152: {
+    name: '俄匊斯行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1153: {
+    name: '俄匊斯行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1154: {
+    name: '俄匊斯行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1155: {
+    name: '俄匊斯行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1156: {
+    name: '俄匊斯行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1157: {
+    name: '俄匊斯行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1158: {
+    name: '俄匊斯行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1159: {
+    name: '俄匊斯行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1160: {
+    name: '俄匊斯行星',
+    sizeFactor: 100,
+    offset: [0, 0],
+  },
+  1161: {
+    name: '商客奇谭',
+    sizeFactor: 200,
+    offset: [515, -870],
+  },
+  1162: {
+    name: '商客奇谭',
+    sizeFactor: 200,
+    offset: [580, -750],
+  },
+  1163: {
+    name: '商客奇谭',
+    sizeFactor: 200,
+    offset: [760, 793],
+  },
+  1164: {
+    name: '商客奇谭',
+    sizeFactor: 200,
+    offset: [-375, -562],
+  },
+  1165: {
+    name: '商客奇谭',
+    sizeFactor: 200,
+    offset: [-170, 815],
+  },
+  1167: {
+    name: '商客奇谭',
+    sizeFactor: 200,
+    offset: [-805, -546],
+  },
+  1168: {
+    name: '登天格斗场',
+    sizeFactor: 400,
+    offset: [-100, -100],
+  },
+  1169: {
+    name: '登天格斗场',
+    sizeFactor: 400,
+    offset: [-100, -100],
+  },
+  1192: {
+    name: '温达斯：第三巡行',
+    sizeFactor: 200,
+    offset: [0, 615],
+  },
+  1193: {
+    name: '温达斯：第三巡行',
+    sizeFactor: 200,
+    offset: [-700, -720],
+  },
+  1194: {
+    name: '温达斯：第三巡行',
+    sizeFactor: 200,
+    offset: [0, -400],
+  },
+  1195: {
+    name: '温达斯：第三巡行',
+    sizeFactor: 200,
+    offset: [720, -740],
+  },
+  1196: {
+    name: '温达斯：第三巡行',
+    sizeFactor: 200,
+    offset: [820, 820],
+  },
+  1197: {
+    name: '温达斯：第三巡行',
+    sizeFactor: 200,
+    offset: [-820, 750],
+  },
+  1198: {
+    name: '克吕提俄斯魔导工厂',
+    sizeFactor: 200,
+    offset: [688, -677],
+  },
+  1199: {
+    name: '克吕提俄斯魔导工厂',
+    sizeFactor: 200,
+    offset: [-632, -8],
+  },
+  1200: {
+    name: '克吕提俄斯魔导工厂',
+    sizeFactor: 200,
+    offset: [-639, 538],
+  },
+  1201: {
+    name: '无之领域',
+    sizeFactor: 400,
+    offset: [-100, -100],
+  },
+  1202: {
+    name: '无之深渊',
+    sizeFactor: 200,
+    offset: [-100, -100],
+  },
+  1203: {
+    name: '温达斯：第三巡行',
+    sizeFactor: 200,
+    offset: [-820, 750],
+  },
+  1229: {
+    name: '休兵书库',
+    sizeFactor: 400,
+    offset: [-100, -100],
+  },
+  1230: {
+    name: '闹鬼盛宴',
+    sizeFactor: 200,
+    offset: [20, 10],
+  },
+  1231: {
+    name: '零的领域',
+    sizeFactor: 400,
+    offset: [-15, 0],
+  },
+  1232: {
+    name: '红月',
+    sizeFactor: 400,
+    offset: [-30, -600],
+  },
+  1235: {
+    name: '闹鬼盛宴',
+    sizeFactor: 400,
+    offset: [-88, 90],
+  },
+  1236: {
+    name: '诺弗兰特',
+    sizeFactor: 400,
+    offset: [0, 0],
+  },
+  1237: {
+    name: '诺弗兰特',
+    sizeFactor: 400,
+    offset: [0, 0],
+  },
+  1238: {
+    name: '艾欧泽亚',
+    sizeFactor: 400,
+    offset: [0, 0],
+  },
+  1239: {
+    name: '艾欧泽亚',
+    sizeFactor: 400,
+    offset: [0, 0],
+  },
+  1240: {
+    name: '艾欧泽亚',
+    sizeFactor: 400,
+    offset: [0, 0],
+  },
+  1241: {
+    name: '海德林',
+    sizeFactor: 400,
+    offset: [0, 0],
+  },
+  1242: {
+    name: '海德林',
+    sizeFactor: 400,
+    offset: [0, 0],
+  },
+  1243: {
+    name: '海德林',
+    sizeFactor: 400,
+    offset: [0, 0],
+  },
+  1267: {
+    name: '星芒市场',
+    sizeFactor: 400,
+    offset: [0, 0],
   },
 }

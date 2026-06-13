@@ -1,4 +1,4 @@
-import { json, write } from './common.mjs'
+import { json, write, xivapiTable } from './common.mjs'
 
 function toMapCoordinate2D(value, sizeFactor, offset) {
   const c = sizeFactor / 100
@@ -8,64 +8,61 @@ function toMapCoordinate2D(value, sizeFactor, offset) {
   return val.toFixed(1)
 }
 
-;(async () => {
-  const rankRes = await (await fetch('https://xivapi.com/TreasureHuntRank?columns=ID,KeyItemNameTargetID')).json()
+export async function updateTreasure() {
+  const huntRank = await xivapiTable('TreasureHuntRank', ['KeyItemName.row_id'])
   const map = new Map()
-
-  for (const item of rankRes.Results) {
-    map.set(item.ID, item.KeyItemNameTargetID)
+  for (const item of huntRank) {
+    map.set(item.row_id, item.fields.KeyItemName.value)
   }
 
   const data = {}
-  const columns = [
+  const spots = await xivapiTable('TreasureSpot', [
     'ID',
     'Location.X',
     'Location.Z',
-    'Location.Map.ID',
     'Location.Map.SizeFactor',
     'Location.Map.OffsetX',
     'Location.Map.OffsetY',
     'MapOffsetX',
     'MapOffsetY',
-  ].join(',')
+  ])
 
-  let page = 1
-  while (page) {
-    const url = `https://xivapi.com/TreasureSpot?columns=${columns}&page=${page}`
-    console.log(`Loading ${url}`)
+  for (const row of spots) {
+    const itemId = map.get(row.row_id)
+    if (!itemId) continue
 
-    const spotRes = await (await fetch(url)).json()
-    page = spotRes.Pagination.PageNext
+    if (!data[itemId]) {
+      data[itemId] = []
+    }
 
-    for (const item of spotRes.Results) {
-      const [rank, index] = item.ID.split('.')
-      const itemId = map.get(+rank)
+    if (!row.fields.Location.value) continue
 
-      if (!itemId) continue
-
-      if (!data[itemId]) {
-        data[itemId] = []
-      }
-
-      const {
+    const {
+      fields: {
         Location: {
-          X,
-          Z,
-          Map: { ID: mapId, SizeFactor, OffsetX, OffsetY },
+          value,
+          fields: {
+            X,
+            Z,
+            Map: {
+              value: mapId,
+              fields: { SizeFactor, OffsetX, OffsetY },
+            },
+          },
         },
         MapOffsetX,
         MapOffsetY,
-      } = item
+      },
+    } = row
 
-      if (MapOffsetX !== OffsetX || MapOffsetY !== OffsetY) {
-        console.log('test', item)
-      }
+    if (MapOffsetX !== OffsetX || MapOffsetY !== OffsetY) {
+      console.log('test', item)
+    }
 
-      data[itemId][index] = {
-        map: mapId,
-        x: +toMapCoordinate2D(+X, +SizeFactor, +OffsetX),
-        y: +toMapCoordinate2D(+Z, +SizeFactor, +OffsetY),
-      }
+    data[itemId][row.subrow_id] = {
+      map: mapId,
+      x: +toMapCoordinate2D(+X, +SizeFactor, +OffsetX),
+      y: +toMapCoordinate2D(+Z, +SizeFactor, +OffsetY),
     }
   }
 
@@ -78,4 +75,4 @@ function toMapCoordinate2D(value, sizeFactor, offset) {
 export const TreasureData: Record<string, ITreasureData[]> = ${json(data)}`
 
   write('treasures', code)
-})()
+}
