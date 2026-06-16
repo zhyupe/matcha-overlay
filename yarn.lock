@@ -605,6 +605,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@thewakingsands/xivapi-v2@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@thewakingsands/xivapi-v2@npm:1.0.0"
+  checksum: 10/e43bc17083fcb650f1c27ae1b6caf5a1a2e9085985f6dd7dfe61b353fb40ea30344530afd29aa3d0506841dba22dc37a37e43ece53e3865a27015bdf39e023fe
+  languageName: node
+  linkType: hard
+
 "@tootallnate/once@npm:2":
   version: 2.0.0
   resolution: "@tootallnate/once@npm:2.0.0"
@@ -1366,6 +1373,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "matcha-overlay@workspace:."
   dependencies:
+    "@thewakingsands/xivapi-v2": "npm:^1.0.0"
     "@types/debounce": "npm:^1.2.0"
     "@types/events": "npm:^3.0.0"
     "@types/leaflet": "npm:^1.7.9"

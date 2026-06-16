@@ -4,8 +4,8 @@ import {
   type ItemRecord,
   itemName,
   queryItem,
-  xivapiRoot,
 } from '../../../../lib/store/item'
+import { xivapi } from '../../../../lib/xivapi'
 import type { GearsetDTO, GearsetMateria } from '../interface'
 
 const materiaMap = [
@@ -79,6 +79,7 @@ function Materias({
     }
 
     icons.push({
+      id: `${i}-${type}-${tier}`,
       icon: `icon/materia/slot_${i >= slot ? 'overmeld' : 'normal'}_grade${tier.toString().padStart(2, '0')}.png`,
       name: `${materiaMap[type]}魔晶石${tierNumbers[tier]}型`,
     })
@@ -87,6 +88,7 @@ function Materias({
   const maxMateria = overmeld ? 5 : slot
   for (let i = icons.length; i < maxMateria; ++i) {
     icons.push({
+      id: `${i}-empty`,
       icon: `icon/materia/slot_${i >= slot ? 'overmeld' : 'normal'}_empty.png`,
       name: '未镶嵌',
     })
@@ -98,19 +100,11 @@ function Materias({
 
   return (
     <>
-      {icons.map(({ name, icon }, index) => (
-        <img key={`${index}-${name}`} alt={name} src={icon} />
+      {icons.map(({ id, name, icon }) => (
+        <img key={id} alt={name} src={icon} />
       ))}
     </>
   )
-}
-
-const formatIconUrl = (path: string) => {
-  if (path.startsWith('/i/')) {
-    return `${xivapiRoot.china}${path}`
-  }
-
-  return `${xivapiRoot.china}/api/asset?path=${encodeURIComponent(path)}`
 }
 
 export function GearsetPart({
@@ -150,7 +144,7 @@ export function GearsetPart({
     return <div className="gearset-item gearset-item-empty">载入中，请稍候</div>
   }
 
-  const icon = formatIconUrl(record.i)
+  const icon = xivapi.formatIconUrl(record.i)
   return (
     <div className="gearset-item">
       <div className="gearset-item-icon">

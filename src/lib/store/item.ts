@@ -1,5 +1,7 @@
+import type { Models } from '@thewakingsands/xivapi-v2'
 import { debounce } from 'debounce'
 import { Cache } from '../cache'
+import { xivapi } from '../xivapi'
 
 interface QueryTask {
   id: number
@@ -74,10 +76,6 @@ export interface XivapiPagedResponse<T> {
   rows: XivapiV2Row<T>[]
 }
 
-export const xivapiRoot = {
-  global: 'https://v2.xivapi.com',
-  china: 'https://xivapi-v2.xivcdn.com',
-}
 const itemCache = new Cache<number, ItemRecord>('gearset-item', {
   version: '2026.06.13',
 })
@@ -115,19 +113,17 @@ const queryColumns = [
 ]
 let itemQueryList: QueryTask[] = []
 
-const queryXivapi = async (root: string, list: QueryTask[]) => {
+const queryXivapi = async (list: QueryTask[]) => {
   if (list.length === 0) return
 
   const ids = Array.from(new Set(list.map(({ id }) => id)))
-  const search = new URLSearchParams({
-    fields: queryColumns.join(','),
-    rows: ids.join(','),
-  })
 
   try {
-    const res = await fetch(`${root}/api/sheet/Item?${search}`)
-    const data = (await res.json()) as XivapiPagedResponse<ItemInfo>
-    for (const result of data.rows) {
+    const res = (await xivapi.items.list({
+      rows: ids.join(','),
+      fields: queryColumns.join(','),
+    } as any)) as Models.SheetResponse<ItemInfo, unknown>
+    for (const result of res.rows) {
       const { fields } = result
       const record = {
         n: Object.fromEntries(
@@ -168,7 +164,7 @@ const doQuery = debounce(() => {
   const list = itemQueryList.slice()
   itemQueryList = []
 
-  queryXivapi(xivapiRoot.china, list)
+  queryXivapi(list)
 }, 200)
 
 export function queryItem(id: number, language: string): Promise<ItemRecord> {
