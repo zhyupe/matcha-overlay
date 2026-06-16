@@ -1,6 +1,6 @@
 import { writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
-import prettier from 'prettier'
+import { inspect } from 'node:util'
 
 export const json = (v) =>
   JSON.stringify(v, null, 2)
@@ -8,20 +8,32 @@ export const json = (v) =>
     .replace(/"(.+?)"/g, "'$1'")
     .replace(/'(\n\s+)\}/g, "',$1}")
 
+export function item(name, type, data) {
+  return `export const ${name}: ${type} = ${inspect(data, false, Infinity)}`
+}
+
+export function type(name, type) {
+  if (typeof type === 'object') {
+    return `export interface ${name} {
+  ${Object.entries(type)
+    .map(([k, v]) => `${k}: ${v}`)
+    .join('\n')}
+}`
+  }
+  return `export type ${name} = ${type}`
+}
+
+export function exports(...items) {
+  return items.join('\n\n')
+}
+
 export const write = async (file, code) => {
   const target = fileURLToPath(
     new URL(`../src/data/${file}.ts`, import.meta.url),
   )
 
   console.log('Writing', target)
-  writeFileSync(
-    target,
-    await prettier.format(code, {
-      filepath: target,
-      semi: false,
-      singleQuote: true,
-    }),
-  )
+  writeFileSync(target, code)
 }
 
 const rowId = (row) =>
@@ -63,4 +75,20 @@ export const xivapiTable = async (name, fields) => {
   }
 
   return rows
+}
+
+export const xivapiSearch = async (name, fields, query) => {
+  const search = new URLSearchParams({
+    sheets: name,
+    fields: fields.join(','),
+    query,
+  })
+
+  const url = `https://xivapi-v2.xivcdn.com/api/search?${search}`
+  console.log(url)
+
+  const res = await fetch(url)
+  const data = await res.json()
+
+  return data.results
 }
