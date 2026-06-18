@@ -24,11 +24,19 @@ function ShipPartSelect({
   onChange: (value: Ship) => void
 }) {
   const { title, parts } = getShipParts(ship.type, slot)
+  const items = [
+    { value: '0', label: 'None' },
+    ...parts.map((part) => ({
+      value: part.value.toString(),
+      label: part.label,
+    })),
+  ]
 
   return (
     <label className={labelClass}>
       <span className={labelTextClass}>{title}</span>
       <Select
+        items={items}
         value={ship.parts[slot].toString()}
         onValueChange={(nextValue) => {
           const nextParts = [...ship.parts] as Ship['parts']
