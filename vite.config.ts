@@ -2,6 +2,7 @@ import 'dotenv/config'
 import { defineConfig } from 'vite'
 import { readFileSync } from 'fs'
 import react from '@vitejs/plugin-react-swc'
+import tailwindcss from '@tailwindcss/vite'
 
 const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'))
 
@@ -13,7 +14,10 @@ export default defineConfig({
     'process.env.POST_MOOGLE_API': `'${process.env.POST_MOOGLE_API}'`,
     'process.env.POST_MOOGLE_NATS': `'${process.env.POST_MOOGLE_NATS}'`,
   },
-  plugins: [react()],
+  plugins: [
+    react(),
+    tailwindcss(),
+  ],
   build: {
     rollupOptions: {
       input: {

@@ -22,6 +22,7 @@ import { CactpotOverlay } from './overlay/cactpot'
 import { GearsetOverlay } from './overlay/gearset'
 import { MapEventOverlay } from './overlay/map-event'
 import { MarketOverlay } from './overlay/market'
+import { SubmarineOverlay } from './overlay/submarine'
 
 interface Tab {
   title: string | null
@@ -45,6 +46,10 @@ const tabs: Record<string, Tab> = {
   treasure: {
     title: '地图事件',
     Component: MapEventOverlay,
+  },
+  submarine: {
+    title: '部队潜水艇',
+    Component: SubmarineOverlay,
   },
   welcome: {
     title: '关于',
