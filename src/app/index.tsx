@@ -190,6 +190,13 @@ function App() {
     const { hostname } = window.location
     if (hostname === '127.0.0.1' || hostname === 'localhost') {
       ;(window as any)._dev_mock = (log: string) => handler(log.split('|'))
+
+      const mockLogs = process.env.MOCK_LOGS
+      if (mockLogs) {
+        for (const line of mockLogs.split('\n')) {
+          handler(line.trim().split('|'))
+        }
+      }
     }
 
     startOverlayEvents()
