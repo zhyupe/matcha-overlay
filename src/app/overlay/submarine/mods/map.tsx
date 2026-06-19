@@ -1,5 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Button } from '#components/ui/button'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '#components/ui/select'
 import type { SubmarineMap } from '../../../../data/submarine'
 import { xivapi } from '../../../../lib/xivapi'
 import type { useSpotStatus } from '../lib/ship'
@@ -95,7 +102,7 @@ function Circle({
 }) {
   return (
     <span
-      className="mx-[5px] inline-block size-[22px] box-border rounded-full border-2 border-dashed text-center leading-5 align-middle"
+      className="mx-[5px] inline-block size-[22px]  box-border rounded-full border-2 border-dashed text-center"
       style={{
         borderColor: color,
         backgroundColor: dashed ? '#fff' : color,
@@ -227,25 +234,28 @@ export function VoyageMap({
   }, [mapId, map, mapImage, spotStatus])
 
   const menu = useMemo(() => Object.entries(maps), [maps])
+  const mapItems = useMemo(
+    () => menu.map(([key, value]) => ({ value: key, label: value.name })),
+    [menu],
+  )
 
   if (!map) return null
 
   return (
     <>
-      <div className="mb-2.5 flex flex-wrap items-center gap-2">
-        {menu.map(([key, value]) => (
-          <Button
-            key={key}
-            type="button"
-            variant={key === mapId ? 'secondary' : 'outline'}
-            onClick={() => setActiveMap(key)}
-          >
-            {value.name}
-          </Button>
-        ))}
-      </div>
       <div className="mb-2.5 flex items-center justify-between gap-2">
-        <Legend />
+        <Select items={mapItems} value={mapId} onValueChange={setActiveMap}>
+          <SelectTrigger className="w-[220px]">
+            <SelectValue placeholder="选择地图" />
+          </SelectTrigger>
+          <SelectContent>
+            {menu.map(([key, value]) => (
+              <SelectItem key={key} value={key}>
+                {value.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <div className="flex items-center gap-2">
           <Button
             type="button"
@@ -260,6 +270,9 @@ export function VoyageMap({
             清空
           </Button>
         </div>
+      </div>
+      <div className="mb-2.5">
+        <Legend />
       </div>
       <canvas
         className="mx-auto block aspect-square h-auto w-[min(100%,56vh)] cursor-pointer rounded-[5px]"
