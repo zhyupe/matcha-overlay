@@ -22,7 +22,7 @@ function Tag({
   return (
     <span
       className={cn(
-        'min-w-0 rounded border px-2 py-1 text-xs',
+        'min-w-0 rounded border h-6 px-2.5 text-sm',
         tagColors[color],
       )}
     >
@@ -70,7 +70,7 @@ function ShipStatusColumn({
         <Tag>
           速度: {shipStatus?.speed ?? '-'} / 距离: {shipStatus?.range ?? '-'}
         </Tag>
-        <Button type="button" size="sm" onClick={onCalculate}>
+        <Button type="button" size="xs" onClick={onCalculate}>
           计算路径
         </Button>
       </div>
