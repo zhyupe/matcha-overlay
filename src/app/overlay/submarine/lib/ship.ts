@@ -228,7 +228,7 @@ export function calculateRoutes(
 ): Route[] {
   const { range, speed } = ship
 
-  // 璁＄畻鑸偣鐨勬湡鏈涗骇鍑?  const spotExpectation: Record<string, number> = {}
+  const spotExpectation: Record<string, number> = {}
   for (const spot of Object.keys(spots)) {
     if (spot === '0') {
       continue
