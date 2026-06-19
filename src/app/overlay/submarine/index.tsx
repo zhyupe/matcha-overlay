@@ -1,12 +1,15 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { submarineMap } from '../../../data/submarine'
 import type { OverlayProps } from '../../interface'
 import { useEvent } from '../../../lib/event'
-import { VoyageEdit } from './mods/edit'
+import { VoyageEdit } from './mods/status'
 import { VoyageMap } from './mods/map'
 import { VoyageRoutes } from './mods/routes'
+import type { Route } from './lib/interface'
 import {
   type SubmarineStatusLog,
+  calculateRoutes,
+  getShipStatus,
   upsertSubmarineStatus,
   useShips,
   useSpotStatus,
@@ -22,18 +25,15 @@ export function SubmarineOverlay({
 }: OverlayProps) {
   const [activeKey, setActiveKey] = useState<string>()
   const [activeMap, setActiveMap] = useState('1')
+  const [routes, setRoutes] = useState<Route[]>([])
   const ships = useShips()
   const spotStatus = useSpotStatus()
 
-  useEvent<SubmarineStatusLog>(
-    eventEmitter,
-    'SubmarineStatus',
-    (data) => {
-      const key = upsertSubmarineStatus(ships, data)
-      setActiveKey(key)
-      setActive()
-    },
-  )
+  useEvent<SubmarineStatusLog>(eventEmitter, 'SubmarineStatus', (data) => {
+    const key = upsertSubmarineStatus(ships, data)
+    setActiveKey(key)
+    setActive()
+  })
 
   const shipKeys = useMemo(() => Object.keys(ships.ships), [ships.ships])
 
@@ -44,6 +44,35 @@ export function SubmarineOverlay({
   }, [activeKey, shipKeys])
 
   const activeShip = ships.get(activeKey)
+  const activeShipStatus = useMemo(
+    () =>
+      activeShip
+        ? getShipStatus(activeShip.type, activeShip.rank, activeShip.parts)
+        : null,
+    [activeShip],
+  )
+
+  const calculate = useCallback(() => {
+    const nextRoutes: Route[] = []
+    if (activeShip?.status === 1 && activeShipStatus) {
+      const mapData = submarineMap[activeMap]
+      const spots = Object.fromEntries(
+        Object.entries(mapData.spots).filter(
+          ([key, value]) =>
+            value.location === '0' ||
+            (value.rank <= activeShip.rank && spotStatus.get(activeMap, key)),
+        ),
+      )
+
+      nextRoutes.push(...calculateRoutes(activeShipStatus, activeMap, spots))
+      nextRoutes.sort((a, b) => b.score - a.score)
+    }
+    setRoutes(nextRoutes)
+  }, [activeShip, activeShipStatus, activeMap, spotStatus])
+
+  useEffect(() => {
+    setRoutes([])
+  }, [activeKey, activeMap])
 
   if (!active) return null
 
@@ -54,6 +83,8 @@ export function SubmarineOverlay({
           ships={ships}
           activeKey={activeKey}
           setActiveKey={setActiveKey}
+          shipStatus={activeShipStatus}
+          onCalculate={calculate}
         />
       </section>
       <div className="grid grid-cols-[minmax(360px,1fr)_minmax(360px,1fr)] gap-2.5 max-[820px]:grid-cols-1">
@@ -70,7 +101,7 @@ export function SubmarineOverlay({
             ship={activeShip}
             maps={submarineMap}
             activeMap={activeMap}
-            spotStatus={spotStatus}
+            routes={routes}
           />
         </section>
       </div>

@@ -1,17 +1,16 @@
-import {
+﻿import {
   SubmarineRank,
   SubmarineSpot,
   submarineMap,
   submarineParts,
   submarineRanks,
 } from '../../../../data/submarine'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { dfsPlanner, findTopRoutesOptimized, naivePlanner } from './planner'
 import {
   getSpotsDistance,
   getSubmarineSecondsForSpots,
   getSubmarineVoyageDistance,
-  random,
 } from './utils'
 import { PlannerInput, Route } from './interface'
 import { useConfig } from '../../../../lib/config'
@@ -28,6 +27,8 @@ export interface Ship {
   name: string
   rank: number
   parts: ShipParts
+  status: number
+  returnTime: number
 }
 
 export interface SubmarineStatusLog {
@@ -48,40 +49,17 @@ export interface SubmarineStatusLog {
 }
 
 export function useShips() {
-  const [ships, setShips] = useConfig<Record<string, Ship>>('ships', {})
+  const [ships, setShips] = useState<Record<string, Ship>>({})
   const update = (value: Ship) => {
     setShips((old) => ({ ...old, [value.key]: value }))
   }
-  const remove = (value: Ship) => {
-    setShips(({ ...ships }) => {
-      const newShips = { ...ships }
-      delete newShips[value.key]
-      return newShips
-    })
-  }
-  const create = (data: Partial<Ship> = {}) => {
-    const key = random()
-    update({
-      key,
-      type: ShipType.Submarine,
-      name: '新船',
-      rank: 1,
-      parts: [0, 0, 0, 0],
-      ...data,
-    })
-
-    return key
-  }
 
   return {
-    ships: ships || {},
-    get: (id?: string) => (id && ships?.[id]) || null,
+    ships,
+    get: (id?: string) => (id && ships[id]) || null,
     update,
-    remove,
-    create,
   }
 }
-
 export function upsertSubmarineStatus(
   ships: ReturnType<typeof useShips>,
   data: SubmarineStatusLog,
@@ -90,9 +68,11 @@ export function upsertSubmarineStatus(
   ships.update({
     key,
     type: ShipType.Submarine,
-    name: data.name || `潜水艇 ${data.index + 1}`,
+    name: data.name,
     rank: data.rank || 1,
     parts: [data.hull, data.stern, data.bow, data.bridge],
+    status: data.status,
+    returnTime: data.returnTime,
   })
 
   return key
@@ -190,7 +170,7 @@ export function getShipParts(type: ShipType, slot: number) {
     throw new Error('not implemented')
   }
 
-  const titles = ['船体', '船尾', '船首', '舰桥']
+  const titles = ['鑸逛綋', '鑸瑰熬', '鑸归', '鑸版ˉ']
 
   return {
     title: titles[slot],
@@ -201,6 +181,17 @@ export function getShipParts(type: ShipType, slot: number) {
         value: +key,
       })),
   }
+}
+
+export function getShipPartName(type: ShipType, slot: number, partId: number) {
+  if (!partId) {
+    return 'None'
+  }
+
+  return (
+    getShipParts(type, slot).parts.find((part) => part.value === partId)
+      ?.label || `#${partId}`
+  )
 }
 
 export function getShipStatus(
@@ -237,8 +228,7 @@ export function calculateRoutes(
 ): Route[] {
   const { range, speed } = ship
 
-  // 计算航点的期望产出
-  const spotExpectation: Record<string, number> = {}
+  // 璁＄畻鑸偣鐨勬湡鏈涗骇鍑?  const spotExpectation: Record<string, number> = {}
   for (const spot of Object.keys(spots)) {
     if (spot === '0') {
       continue
