@@ -18,7 +18,7 @@ const clipRight = 60
 const clipTop = 30
 const clipBottom = 0
 const offsetX = 155
-const offsetY = 96
+const offsetY = 76
 const scale = 0.6
 const radius = 20
 
@@ -101,8 +101,8 @@ function Circle({
   dashed?: boolean
 }) {
   return (
-    <span
-      className="mx-[5px] inline-block size-[22px]  box-border rounded-full border-2 border-dashed text-center"
+    <div
+      className="size-[22px] box-border rounded-full border-2 border-dashed text-center"
       style={{
         borderColor: color,
         backgroundColor: dashed ? '#fff' : color,
@@ -110,25 +110,25 @@ function Circle({
       }}
     >
       {text}
-    </span>
+    </div>
   )
 }
 
 function Legend() {
   return (
-    <div className="flex flex-wrap items-center gap-2 text-sm">
-      <span>
+    <div className="flex flex-wrap items-center gap-4 text-sm">
+      <div className="flex item-center gap-2">
         <Circle color={colorStart} />
         起始点
-      </span>
-      <span>
+      </div>
+      <div className="flex item-center gap-2">
         <Circle color={colorSpot} text="A" dashed />
         未探索
-      </span>
-      <span>
+      </div>
+      <div className="flex item-center gap-2">
         <Circle color={colorSpot} text="A" />
         已探索
-      </span>
+      </div>
     </div>
   )
 }
@@ -245,7 +245,7 @@ export function VoyageMap({
     <>
       <div className="mb-2.5 flex items-center justify-between gap-2">
         <Select items={mapItems} value={mapId} onValueChange={setActiveMap}>
-          <SelectTrigger className="w-[220px]">
+          <SelectTrigger size="sm" className="w-[220px]">
             <SelectValue placeholder="选择地图" />
           </SelectTrigger>
           <SelectContent>
@@ -259,12 +259,14 @@ export function VoyageMap({
         <div className="flex items-center gap-2">
           <Button
             type="button"
+            size="sm"
             onClick={() => spotStatus.updateAll(mapId, true)}
           >
             全选
           </Button>
           <Button
             type="button"
+            size="sm"
             onClick={() => spotStatus.updateAll(mapId, false)}
           >
             清空
@@ -275,7 +277,7 @@ export function VoyageMap({
         <Legend />
       </div>
       <canvas
-        className="mx-auto block aspect-square h-auto w-[min(100%,56vh)] cursor-pointer rounded-[5px]"
+        className="mx-auto block aspect-square h-auto max-w-[100%] cursor-pointer rounded-[5px]"
         height={canvasSize}
         ref={ref}
         width={canvasSize}

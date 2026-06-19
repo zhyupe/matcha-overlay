@@ -15,8 +15,7 @@ import { VoyageMap } from './mods/map'
 import { VoyageRoutes } from './mods/routes'
 import { VoyageEdit } from './mods/status'
 
-const panelClass =
-  'min-w-0 rounded-[5px] border border-white/15 bg-black/25 p-2.5'
+const panelClass = 'min-w-0 rounded border border-white/15 bg-black/25 p-2.5'
 
 export function SubmarineOverlay({
   eventEmitter,
@@ -77,7 +76,7 @@ export function SubmarineOverlay({
 
   return (
     <div className="overlay box-border flex flex-col gap-2.5 p-1">
-      <section className={panelClass}>
+      <section>
         <VoyageEdit
           ships={ships}
           activeKey={activeKey}

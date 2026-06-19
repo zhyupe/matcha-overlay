@@ -22,7 +22,7 @@ function Tag({
   return (
     <span
       className={cn(
-        'min-w-0 rounded-[5px] border px-2 py-1 text-xs',
+        'min-w-0 rounded border px-2 py-1 text-xs',
         tagColors[color],
       )}
     >
