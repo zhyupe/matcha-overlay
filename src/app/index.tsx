@@ -158,7 +158,7 @@ function App() {
     }
 
     const handler = (line: string[]) => {
-      if (!line || line.length !== 5 || line[0] !== '00') return
+      if (line?.length !== 5 || line[0] !== '00') return
 
       const label = line[3]
       if (!label.startsWith('Matcha')) return

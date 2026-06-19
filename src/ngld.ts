@@ -105,10 +105,7 @@ const sendMessage = (() => {
     }
 
     const waitForApi = () => {
-      if (
-        !(window as any).OverlayPluginApi ||
-        !(window as any).OverlayPluginApi.ready
-      ) {
+      if (!(window as any).OverlayPluginApi?.ready) {
         setTimeout(waitForApi, 300)
         return
       }

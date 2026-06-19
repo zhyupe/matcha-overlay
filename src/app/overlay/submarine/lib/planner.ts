@@ -213,7 +213,6 @@ export function findTopRoutesOptimized(
       case 'distanceDesc':
         combined = byDistanceDesc.slice(0, neighborLimit)
         break
-      case 'mixed':
       default: {
         // mixed: 先按密度，再按绝对收益，再按远距离补充（各取 neighborLimit 的一部分）
         const part = Math.max(1, Math.floor(neighborLimit / 3))

@@ -28,7 +28,7 @@ export function useTreasureSpot(eventEmitter: EventEmitter) {
     if (!info) return null
 
     const map = TreasureData[info.item.toString()]
-    if (!map || !map[info.location]) {
+    if (!map?.[info.location]) {
       return null
     }
     const row = map[info.location]

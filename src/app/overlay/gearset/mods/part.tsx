@@ -136,7 +136,7 @@ export function GearsetPart({
     }
   }, [language, part])
 
-  if (!part || !part.item) {
+  if (!part?.item) {
     return <div className="gearset-item gearset-item-empty">空栏位</div>
   }
 
