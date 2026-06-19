@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Button } from '#components/ui/button'
 import type { SubmarineMap } from '../../../../data/submarine'
 import { xivapi } from '../../../../lib/xivapi'
-import { useSpotStatus } from '../lib/ship'
+import type { useSpotStatus } from '../lib/ship'
 
 const imageWidth = 880
 const imageHeight = 760
@@ -22,8 +22,10 @@ const canvasSize = Math.max(width, height)
 const colorStart = '#22b14c'
 const colorSpot = '#00a2e8'
 
-const spotToCanvas = ({ x, y }: { x: number; y: number }): [number, number] =>
-  [x * scale + offsetX - clipLeft, y * scale + offsetY]
+const spotToCanvas = ({ x, y }: { x: number; y: number }): [number, number] => [
+  x * scale + offsetX - clipLeft,
+  y * scale + offsetY,
+]
 
 const distance2 = (x1: number, y1: number, x2: number, y2: number) =>
   Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
@@ -245,10 +247,16 @@ export function VoyageMap({
       <div className="mb-2.5 flex items-center justify-between gap-2">
         <Legend />
         <div className="flex items-center gap-2">
-          <Button type="button" onClick={() => spotStatus.updateAll(mapId, true)}>
+          <Button
+            type="button"
+            onClick={() => spotStatus.updateAll(mapId, true)}
+          >
             全选
           </Button>
-          <Button type="button" onClick={() => spotStatus.updateAll(mapId, false)}>
+          <Button
+            type="button"
+            onClick={() => spotStatus.updateAll(mapId, false)}
+          >
             清空
           </Button>
         </div>

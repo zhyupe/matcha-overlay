@@ -1,4 +1,4 @@
-import { SubmarineSpot } from "../../../../data/submarine"
+import type { SubmarineSpot } from '../../../../data/submarine'
 
 const SECONDS_PER_MINUTE = 60
 const MINUTES_PER_HOUR = 60
@@ -10,8 +10,7 @@ export const distance3 = (
   x2: number,
   y2: number,
   z2: number,
-) =>
-  Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2) + Math.pow(z1 - z2, 2))
+) => Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)
 
 export function getSpotsDistance(a: SubmarineSpot, b: SubmarineSpot) {
   return distance3(a.x, a.y, a.z, b.x, b.y, b.z)

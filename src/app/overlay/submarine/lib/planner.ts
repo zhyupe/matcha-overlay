@@ -1,4 +1,4 @@
-import { PlannerInput, PlannerOutput } from './interface'
+import type { PlannerInput, PlannerOutput } from './interface'
 import { getSubmarineScore } from './utils'
 
 export function naivePlanner({
@@ -214,7 +214,7 @@ export function findTopRoutesOptimized(
         combined = byDistanceDesc.slice(0, neighborLimit)
         break
       case 'mixed':
-      default:
+      default: {
         // mixed: 先按密度，再按绝对收益，再按远距离补充（各取 neighborLimit 的一部分）
         const part = Math.max(1, Math.floor(neighborLimit / 3))
         const p1 = byDensityTime.slice(0, part)
@@ -225,6 +225,7 @@ export function findTopRoutesOptimized(
         )
         combined = [...p1, ...p2, ...p3]
         break
+      }
     }
 
     // 去重并截断到 neighborLimit

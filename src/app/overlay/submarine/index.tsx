@@ -1,19 +1,19 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { submarineMap } from '../../../data/submarine'
-import type { OverlayProps } from '../../interface'
 import { useEvent } from '../../../lib/event'
-import { VoyageEdit } from './mods/status'
-import { VoyageMap } from './mods/map'
-import { VoyageRoutes } from './mods/routes'
+import type { OverlayProps } from '../../interface'
 import type { Route } from './lib/interface'
 import {
-  type SubmarineStatusLog,
   calculateRoutes,
   getShipStatus,
+  type SubmarineStatusLog,
   upsertSubmarineStatus,
   useShips,
   useSpotStatus,
 } from './lib/ship'
+import { VoyageMap } from './mods/map'
+import { VoyageRoutes } from './mods/routes'
+import { VoyageEdit } from './mods/status'
 
 const panelClass =
   'min-w-0 rounded-[5px] border border-white/15 bg-black/25 p-2.5'

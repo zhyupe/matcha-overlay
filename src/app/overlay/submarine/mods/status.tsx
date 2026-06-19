@@ -1,9 +1,9 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import type { PropsWithChildren } from 'react'
 import { Button } from '#components/ui/button'
-import { getShipPartName, type Ship, type useShips } from '../lib/ship'
-import type { SubmarineRank } from '../../../../data/submarine'
-import { PropsWithChildren } from 'react'
 import { cn } from '#lib/utils'
+import type { SubmarineRank } from '../../../../data/submarine'
+import { getShipPartName, type Ship, type useShips } from '../lib/ship'
 
 const partSlots = [0, 1, 2, 3] as const
 // border-[#b7ca32]/60 bg-[#b7ca32]/15 px-2 py-1 text-xs text-[#d8eb5d]

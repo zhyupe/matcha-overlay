@@ -62,7 +62,9 @@ export function VoyageRoutes({
           routes.map((route) => (
             <TableRow key={`${route.mapId}-${route.path.join('-')}`}>
               <TableCell>{maps[route.mapId].name}</TableCell>
-              <TableCell className="break-keep">{route.path.join('-')}</TableCell>
+              <TableCell className="break-keep">
+                {route.path.join('-')}
+              </TableCell>
               <TableCell>{route.range}</TableCell>
               <TableCell>{formatExpectation(route.expectation)}</TableCell>
               <TableCell>{(route.time / 3600).toFixed(1)}h</TableCell>

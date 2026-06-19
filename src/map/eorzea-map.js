@@ -13,15 +13,15 @@ const {
 } = YZWF.eorzeaMap
 
 export {
-  create,
-  xy,
-  L,
-  simpleMarker,
-  setApiUrl,
   AdvancedTileLayer,
-  loader,
-  getRegion,
-  setCdnUrl,
-  version,
+  create,
   crel,
+  getRegion,
+  L,
+  loader,
+  setApiUrl,
+  setCdnUrl,
+  simpleMarker,
+  version,
+  xy,
 }

@@ -1,19 +1,19 @@
-﻿import {
-  SubmarineRank,
-  SubmarineSpot,
+﻿import { useCallback, useMemo, useState } from 'react'
+import {
+  type SubmarineRank,
+  type SubmarineSpot,
   submarineMap,
   submarineParts,
   submarineRanks,
 } from '../../../../data/submarine'
-import { useCallback, useMemo, useState } from 'react'
+import { useConfig } from '../../../../lib/config'
+import type { PlannerInput, Route } from './interface'
 import { dfsPlanner, findTopRoutesOptimized, naivePlanner } from './planner'
 import {
   getSpotsDistance,
   getSubmarineSecondsForSpots,
   getSubmarineVoyageDistance,
 } from './utils'
-import { PlannerInput, Route } from './interface'
-import { useConfig } from '../../../../lib/config'
 
 export enum ShipType {
   Airship,
