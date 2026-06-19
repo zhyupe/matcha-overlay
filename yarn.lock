@@ -1476,13 +1476,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^14.0.26":
-  version: 14.18.13
-  resolution: "@types/node@npm:14.18.13"
-  checksum: 10/185dbec808c03570372f36317eaff905432040b2624ae855e0cba92df90719f7850586d1dc5014451ca7fbbe1853ace5da0e1dd543db8ff444f8b19dee4e8b41
-  languageName: node
-  linkType: hard
-
 "@types/node@npm:^22.13.14":
   version: 22.13.14
   resolution: "@types/node@npm:22.13.14"
@@ -3703,8 +3696,6 @@ __metadata:
     immutable: "npm:^4.0.0"
     lru-cache: "npm:^6.0.0"
     lucide-react: "npm:^1.21.0"
-    nats.ws: "npm:^1.7.2"
-    nkeys.js: "npm:^1.0.0-9"
     react: "npm:^19.2.7"
     react-dom: "npm:^19.2.7"
     recoil: "npm:^0.7.2"
@@ -3938,18 +3929,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nats.ws@npm:^1.7.2":
-  version: 1.7.2
-  resolution: "nats.ws@npm:1.7.2"
-  dependencies:
-    nkeys.js: "npm:^1.0.0-9"
-  dependenciesMeta:
-    nkeys.js:
-      optional: true
-  checksum: 10/ea69edb4ed351f3fe4b3ec77ac51b8826e81e0d97052362a691426fdacaaec56601ee47e8bdf32ebeae450f8132645551697d1fa966efc677eb8461ea2be9f89
-  languageName: node
-  linkType: hard
-
 "negotiator@npm:^0.6.3":
   version: 0.6.3
   resolution: "negotiator@npm:0.6.3"
@@ -3961,16 +3940,6 @@ __metadata:
   version: 1.0.0
   resolution: "negotiator@npm:1.0.0"
   checksum: 10/b5734e87295324fabf868e36fb97c84b7d7f3156ec5f4ee5bf6e488079c11054f818290fc33804cef7b1ee21f55eeb14caea83e7dafae6492a409b3e573153e5
-  languageName: node
-  linkType: hard
-
-"nkeys.js@npm:^1.0.0-9":
-  version: 1.0.0-9
-  resolution: "nkeys.js@npm:1.0.0-9"
-  dependencies:
-    "@types/node": "npm:^14.0.26"
-    tweetnacl: "npm:^1.0.3"
-  checksum: 10/62c4096ebd99ff3069f1865e7a490dd036b264473b22d44d246818266bcefac37ca31c70408bbe3b8b2996680658f5e07cd5c0a7687a4311dbb3162dc5c46a15
   languageName: node
   linkType: hard
 
@@ -5139,13 +5108,6 @@ __metadata:
   version: 1.4.0
   resolution: "tw-animate-css@npm:1.4.0"
   checksum: 10/9d46c71b624bc7f9cf7a91c0ab3a04cfb22ba605a690961eea35689e368a8721add12815f59aa0fbf7092374acb24552f281351a83bf8b25414c52f4888f94ad
-  languageName: node
-  linkType: hard
-
-"tweetnacl@npm:^1.0.3":
-  version: 1.0.3
-  resolution: "tweetnacl@npm:1.0.3"
-  checksum: 10/ca122c2f86631f3c0f6d28efb44af2a301d4a557a62a3e2460286b08e97567b258c2212e4ad1cfa22bd6a57edcdc54ba76ebe946847450ab0999e6d48ccae332
   languageName: node
   linkType: hard
 

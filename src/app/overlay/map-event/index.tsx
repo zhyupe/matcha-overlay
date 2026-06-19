@@ -6,25 +6,8 @@ import { MapIcon } from '../../../map/interface'
 import type { OverlayProps } from '../../interface'
 import { useTreasureSpot } from './data-source/treasure'
 import './index.scss'
-import { Dialog } from '../../../components/dialog'
-import {
-  Edit,
-  Instance1,
-  Instance2,
-  Instance3,
-  InstanceOffset,
-} from '../../../components/icon'
-import { RadioGroup } from '../../../components/radio-group'
-import { Switch } from '../../../components/switch'
-import { FFXIVFate, type IFFXIVFate } from '../../../data/fates'
-import { DC, Worlds } from '../../../data/worlds'
-import { useConfig, useConfigBoolean } from '../../../lib/config'
-import { useTimer } from '../../../lib/hook'
-import {
-  type PostMoogleFate,
-  type PostMoogleState,
-  usePostMoogle,
-} from './data-source/post-moogle'
+import { Instance1, Instance2, Instance3 } from '../../../components/icon'
+import { FFXIVFate } from '../../../data/fates'
 import type { MapAction, PointInfo } from './interface'
 
 function Point({
@@ -104,38 +87,6 @@ function Treasure({
   )
 }
 
-function PostMoogleStatus({
-  data,
-  onClick,
-}: {
-  data: PostMoogleState
-  onClick: () => void
-}) {
-  const statusText = useMemo(() => {
-    if (!data.enabled) {
-      return '未启用'
-    }
-
-    if (data.config.dc === 0) {
-      return '未设置大区'
-    }
-
-    const count = data.config.fates.length
-    if (count === 0) {
-      return '未设置关注活动'
-    }
-
-    return `正在关注 ${count} 个活动`
-  }, [data.enabled, data.config])
-
-  return (
-    <div className="status clickable" onClick={onClick}>
-      {statusText}
-      <Edit />
-    </div>
-  )
-}
-
 function Instance({ value }: { value: number }) {
   switch (value) {
     case 1:
@@ -191,151 +142,6 @@ function ListeningFates({
   )
 }
 
-function PostMoogle({
-  data,
-  onClick,
-}: {
-  data: PostMoogleState
-  onClick: MapAction
-}) {
-  const [setting, setSetting] = useState(false)
-  const [enabled, { setTrue, setFalse, set: setEnabled }] = useConfigBoolean(
-    'post-moogle-enabled',
-  )
-  const [tts, { set: setTTS }] = useConfigBoolean('post-moogle-tts')
-  const [dc, setDC] = useConfig('post-moogle-dc', 0)
-  const [time, setTime] = useState(0)
-
-  const updateDC = (next: number) => {
-    setDC(next)
-    if (next === 0) {
-      setFalse()
-    } else {
-      setTrue()
-    }
-  }
-
-  const handleFate = (item: PostMoogleFate, fate: IFFXIVFate) => {
-    const worldInfo = Worlds[item.world]
-
-    onClick({
-      map: fate.map as number,
-      markers: [
-        {
-          icon: MapIcon.Fate,
-          x: fate.x as number,
-          y: fate.y as number,
-          title: `${worldInfo?.name || item.world}${
-            item.instance ? `[icon:${InstanceOffset + item.instance}]` : ''
-          } - ${fate.name}`,
-        },
-      ],
-    })
-  }
-
-  useTimer(1000, data.data.count() !== 0, () => {
-    setTime(Date.now())
-  })
-
-  return (
-    <div className="map-post-moogle">
-      <div className="space-between">
-        <span className="tag">[跨服广播]</span>
-        <PostMoogleStatus data={data} onClick={() => setSetting(!setting)} />
-      </div>
-      {setting ? (
-        <Dialog className="map-post-moogle-setting" direction="top-right">
-          <div className="space-between">
-            <span>启用</span>
-            <Switch value={enabled} onChange={setEnabled} />
-          </div>
-          <div className="space-between">
-            <span style={{ flexShrink: 0 }}>大区</span>
-            <RadioGroup
-              value={dc}
-              onChange={updateDC}
-              data={[
-                { value: 0, label: '未设置' },
-                ...Object.entries(DC)
-                  .filter(([, value]) => typeof value !== 'string')
-                  .map(([key, value]) => ({
-                    value: value as number,
-                    label: key,
-                  })),
-              ]}
-            />
-          </div>
-          <div className="space-between">
-            <span>语音播报</span>
-            <Switch value={tts} onChange={setTTS} />
-          </div>
-          {enabled ? (
-            <div className="space-between">
-              <span style={{ flexShrink: 0 }}>危命任务</span>
-              <ListeningFates
-                isDefault={data.config.isDefault}
-                fate={data.config.fates}
-              />
-            </div>
-          ) : null}
-          <div>
-            {'跨服广播是一项实验性功能，可以帮助您获取当前大区内的活动内容。' +
-              '此功能可能会包含不准确或恶意投放的信息，也可能在不另行通知的情况下变更或中止。'}
-          </div>
-          <div>
-            {'抹茶 Matcha 鼓励您以开放包容的心态参与游戏内活动。' +
-              '请积极邀请其他玩家参与并为他们保留充足的时间。' +
-              '如您已集齐相关奖励，请优先让未集齐奖励的玩家参与活动。'}
-          </div>
-          <div>
-            {'抹茶 Matcha 反对任何基于游戏内活动信息的交易行为。' +
-              '请勿将通过广播功能获得的信息用于任何形式的交易行为。'}
-          </div>
-        </Dialog>
-      ) : null}
-
-      {enabled ? (
-        <ul className="map-post-moogle-list">
-          {data.data.map((item) => {
-            const fateInfo = FFXIVFate[item.fate]
-            const worldInfo = Worlds[item.world]
-
-            const key = item._subject
-            const clickable = fateInfo?.map && fateInfo.x && fateInfo.y
-
-            return (
-              <li
-                key={key}
-                {...(clickable
-                  ? {
-                      className: 'clickable',
-                      onClick: () => handleFate(item, fateInfo),
-                    }
-                  : {})}
-              >
-                <div className="map-event-name">
-                  <span className="map-event-world tag">
-                    [{worldInfo?.name || item.world}
-                    <Instance value={item.instance} />]
-                  </span>
-                  {fateInfo?.name || item.fate}
-                </div>
-
-                <EventTimer
-                  from={
-                    item.startTime ? item.startTime * 1000 : item._receivedAt
-                  }
-                  to={time}
-                />
-              </li>
-            )
-          })}
-        </ul>
-      ) : null}
-    </div>
-  )
-}
-
 export function MapEventOverlay({
   eventEmitter,
   active,
@@ -354,8 +160,6 @@ export function MapEventOverlay({
     [active, setActive],
   )
 
-  const postMoogle = usePostMoogle(eventEmitter)
-
   if (!active) return null
 
   return (
@@ -365,7 +169,6 @@ export function MapEventOverlay({
       </main>
       <aside className="map-points">
         <Treasure point={treasure} onClick={action} />
-        <PostMoogle data={postMoogle} onClick={action} />
       </aside>
     </div>
   )

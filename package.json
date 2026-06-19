@@ -15,8 +15,6 @@
     "immutable": "^4.0.0",
     "lru-cache": "^6.0.0",
     "lucide-react": "^1.21.0",
-    "nats.ws": "^1.7.2",
-    "nkeys.js": "^1.0.0-9",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "recoil": "^0.7.2",
