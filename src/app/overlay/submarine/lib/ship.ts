@@ -22,7 +22,7 @@ export enum ShipType {
 
 export type ShipParts = [number, number, number, number]
 export interface Ship {
-  key: string
+  index: number
   type: ShipType
   name: string
   rank: number
@@ -48,34 +48,16 @@ export interface SubmarineStatusLog {
   destination: number[]
 }
 
-export function useShips() {
-  const [ships, setShips] = useState<Record<string, Ship>>({})
-  const update = (value: Ship) => {
-    setShips((old) => ({ ...old, [value.key]: value }))
-  }
-
+export function formatSubmarine(data: SubmarineStatusLog): Ship {
   return {
-    ships,
-    get: (id?: string) => (id && ships[id]) || null,
-    update,
-  }
-}
-export function upsertSubmarineStatus(
-  ships: ReturnType<typeof useShips>,
-  data: SubmarineStatusLog,
-) {
-  const key = `submarine-${data.index}`
-  ships.update({
-    key,
+    index: data.index,
     type: ShipType.Submarine,
     name: data.name,
     rank: data.rank || 1,
     parts: [data.hull, data.stern, data.bow, data.bridge],
     status: data.status,
     returnTime: data.returnTime,
-  })
-
-  return key
+  }
 }
 
 export function useSpotStatus() {

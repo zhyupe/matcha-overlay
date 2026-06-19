@@ -3,7 +3,7 @@ import type { PropsWithChildren } from 'react'
 import { Button } from '#components/ui/button'
 import { cn } from '#lib/utils'
 import type { SubmarineRank } from '../../../../data/submarine'
-import { getShipPartName, type Ship, type useShips } from '../lib/ship'
+import { getShipPartName, type Ship } from '../lib/ship'
 
 const partSlots = [0, 1, 2, 3] as const
 // border-[#b7ca32]/60 bg-[#b7ca32]/15 px-2 py-1 text-xs text-[#d8eb5d]
@@ -66,11 +66,11 @@ function ShipStatusColumn({
 }) {
   if (ship.status === 1) {
     return (
-      <div className="flex min-w-[320px] flex-wrap items-center justify-end gap-2">
+      <div className="flex min-w-[100px] flex-wrap items-center justify-end gap-2">
         <Tag>
           速度: {shipStatus?.speed ?? '-'} / 距离: {shipStatus?.range ?? '-'}
         </Tag>
-        <Button type="button" onClick={onCalculate}>
+        <Button type="button" size="sm" onClick={onCalculate}>
           计算路径
         </Button>
       </div>
@@ -82,7 +82,7 @@ function ShipStatusColumn({
       ship.returnTime > 0 && ship.returnTime * 1000 > Date.now()
 
     return (
-      <div className="flex min-w-[160px] justify-end items-center gap-2 text-xs">
+      <div className="flex min-w-[100px] justify-end items-center gap-2 text-xs">
         <Tag>
           {isExploring
             ? `探索中 [${formatReturnTime(ship.returnTime)}]`
@@ -101,73 +101,69 @@ function ShipStatusColumn({
 
 export function VoyageEdit({
   ships,
-  activeKey,
+  activeKey: activeIndex,
   setActiveKey,
   shipStatus,
   onCalculate,
 }: {
-  ships: ReturnType<typeof useShips>
-  activeKey?: string
-  setActiveKey: (val: string) => void
+  ships: Ship[]
+  activeKey: number
+  setActiveKey: (val: number) => void
   shipStatus: SubmarineRank | null
   onCalculate: () => void
 }) {
-  const activeShip = ships.get(activeKey)
-  const shipEntries = Object.entries(ships.ships)
-  const activeIndex = shipEntries.findIndex(([key]) => key === activeKey)
-
+  const activeShip = ships[activeIndex]
   const selectByOffset = (offset: number) => {
-    if (shipEntries.length === 0) return
+    if (ships.length === 0) return
     const base = activeIndex === -1 ? 0 : activeIndex
-    const nextIndex = (base + offset + shipEntries.length) % shipEntries.length
-    setActiveKey(shipEntries[nextIndex][0])
+    const nextIndex = (base + offset + ships.length) % ships.length
+    setActiveKey(nextIndex)
+  }
+
+  if (ships.length === 0) {
+    return (
+      <div className="min-w-[220px] flex-1 text-sm text-white/90">
+        请到部队工房管理潜水艇
+      </div>
+    )
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <div className="flex items-center gap-1">
+    <div className="flex items-center gap-2">
+      <div className="flex min-w-[150px] items-center gap-1">
         <Button
           aria-label="Previous submarine"
-          disabled={shipEntries.length <= 1}
-          size="icon"
+          disabled={ships.length <= 1}
+          size="icon-sm"
           type="button"
           onClick={() => selectByOffset(-1)}
         >
-          <ChevronLeft />
+          <ChevronLeft size={16} />
         </Button>
+        <div className="flex-1 truncate text-sm font-medium text-white text-center">
+          {activeShip.name}
+        </div>
         <Button
           aria-label="Next submarine"
-          disabled={shipEntries.length <= 1}
-          size="icon"
+          disabled={ships.length <= 1}
+          size="icon-sm"
           type="button"
           onClick={() => selectByOffset(1)}
         >
-          <ChevronRight />
+          <ChevronRight size={16} />
         </Button>
       </div>
-
-      {activeShip ? (
-        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-          <div className="min-w-[80px] truncate text-sm font-medium text-white">
-            {activeShip.name}
-          </div>
-          <Tag color="matcha">Lv {activeShip.rank}</Tag>
-          <div className="flex min-w-0 flex-[3] flex-wrap gap-1.5">
-            {partSlots.map((slot) => (
-              <ShipPart key={slot} ship={activeShip} slot={slot} />
-            ))}
-          </div>
-          <ShipStatusColumn
-            ship={activeShip}
-            shipStatus={shipStatus}
-            onCalculate={onCalculate}
-          />
-        </div>
-      ) : (
-        <div className="min-w-[220px] flex-1 text-sm text-white/90">
-          请到部队工房管理潜水艇
-        </div>
-      )}
+      <Tag color="matcha">Lv {activeShip.rank}</Tag>
+      <div className="flex min-w-0 flex-[3] flex-wrap gap-1.5">
+        {partSlots.map((slot) => (
+          <ShipPart key={slot} ship={activeShip} slot={slot} />
+        ))}
+      </div>
+      <ShipStatusColumn
+        ship={activeShip}
+        shipStatus={shipStatus}
+        onCalculate={onCalculate}
+      />
     </div>
   )
 }

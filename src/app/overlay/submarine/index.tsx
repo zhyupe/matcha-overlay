@@ -5,10 +5,10 @@ import type { OverlayProps } from '../../interface'
 import type { Route } from './lib/interface'
 import {
   calculateRoutes,
+  formatSubmarine,
   getShipStatus,
+  type Ship,
   type SubmarineStatusLog,
-  upsertSubmarineStatus,
-  useShips,
   useSpotStatus,
 } from './lib/ship'
 import { VoyageMap } from './mods/map'
@@ -23,27 +23,25 @@ export function SubmarineOverlay({
   active,
   setActive,
 }: OverlayProps) {
-  const [activeKey, setActiveKey] = useState<string>()
+  const [ships, setShips] = useState<Ship[]>([])
+  const [activeKey, setActiveKey] = useState(0)
+
   const [activeMap, setActiveMap] = useState('1')
   const [routes, setRoutes] = useState<Route[]>([])
-  const ships = useShips()
   const spotStatus = useSpotStatus()
 
   useEvent<SubmarineStatusLog>(eventEmitter, 'SubmarineStatus', (data) => {
-    const key = upsertSubmarineStatus(ships, data)
-    setActiveKey(key)
+    const ship = formatSubmarine(data)
+    setShips((prev) => {
+      const next = prev.slice()
+      next[ship.index] = ship
+      return next
+    })
+
     setActive()
   })
 
-  const shipKeys = useMemo(() => Object.keys(ships.ships), [ships.ships])
-
-  useEffect(() => {
-    if (!activeKey && shipKeys.length > 0) {
-      setActiveKey(shipKeys[0])
-    }
-  }, [activeKey, shipKeys])
-
-  const activeShip = ships.get(activeKey)
+  const activeShip = ships[activeKey]
   const activeShipStatus = useMemo(
     () =>
       activeShip
@@ -70,6 +68,7 @@ export function SubmarineOverlay({
     setRoutes(nextRoutes)
   }, [activeShip, activeShipStatus, activeMap, spotStatus])
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: by design
   useEffect(() => {
     setRoutes([])
   }, [activeKey, activeMap])
@@ -77,7 +76,7 @@ export function SubmarineOverlay({
   if (!active) return null
 
   return (
-    <div className="overlay box-border flex flex-col gap-2.5 px-[5px] pb-[5px]">
+    <div className="overlay box-border flex flex-col gap-2.5 p-1">
       <section className={panelClass}>
         <VoyageEdit
           ships={ships}
