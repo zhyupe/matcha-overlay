@@ -1,23 +1,22 @@
 .overlay-map-event {
   position: relative;
   display: flex;
-  justify-content: center;
-  align-items: stretch;
-  overflow-x: hidden;
+  flex-direction: column;
+  overflow: hidden;
 
-  > .map-points {
+  .map-points {
     flex: 1 1 200px;
     padding-right: 10px;
     margin-left: 10px;
     font-size: 14px;
-    overflow-y: scroll;
+    overflow-y: auto;
 
     > div {
       padding: 5px 0;
     }
   }
   
-  > .map-container {
+  .map-container {
     flex: 5;
     overflow: hidden;
   }
@@ -71,4 +70,37 @@
 .map-event-world .icon {
   font-size: .75em;
   margin-left: 2px;
+}
+
+.map-event-content {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.map-event-modes {
+  display: flex;
+  flex-shrink: 0;
+  gap: 12px;
+  padding: 3px 15px 8px;
+  font-size: 14px;
+
+  button {
+    padding: 2px 0;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    color: #fffa;
+    cursor: pointer;
+
+    &[aria-pressed='true'] {
+      color: #b7ca32;
+      border-bottom-color: #b7ca32;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #b7ca32;
+      outline-offset: 2px;
+    }
+  }
 }

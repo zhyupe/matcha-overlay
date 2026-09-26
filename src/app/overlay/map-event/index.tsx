@@ -8,6 +8,9 @@ import { useTreasureSpot } from './data-source/treasure'
 import './index.scss'
 import { Instance1, Instance2, Instance3 } from '../../../components/icon'
 import { FFXIVFate } from '../../../data/fates'
+import { useEvent } from '../../../lib/event'
+import { FishingPanel } from '../fishing'
+import { useFishing } from '../fishing/use-fishing'
 import type { MapAction, PointInfo } from './interface'
 
 function Point({
@@ -142,13 +145,21 @@ function ListeningFates({
   )
 }
 
-export function MapEventOverlay({
-  eventEmitter,
-  active,
-  setActive,
-}: OverlayProps) {
+export function MapEventOverlay(props: OverlayProps) {
+  const { eventEmitter, active, setActive } = props
   const treasure = useTreasureSpot(eventEmitter)
   const [mapInfo, setMapInfo] = useState<MapInfo>({ map: 0 })
+  const [mode, setMode] = useState<'map' | 'fishing'>('map')
+  const showFishing = useCallback(() => {
+    setMode('fishing')
+    setActive()
+  }, [setActive])
+  const fishing = useFishing({
+    ...props,
+    active: active && mode === 'fishing',
+    setActive: showFishing,
+  })
+  useEvent(eventEmitter, 'InitZone', () => setMode('map'))
 
   const action = useCallback<MapAction>(
     (nextMapInfo: MapInfo) => {
@@ -163,13 +174,40 @@ export function MapEventOverlay({
   if (!active) return null
 
   return (
-    <div className="overlay overlay-map-event">
-      <main className="map-container">
-        {mapInfo.map !== 0 ? <EorzeaMap {...mapInfo} /> : null}
-      </main>
-      <aside className="map-points">
-        <Treasure point={treasure} onClick={action} />
-      </aside>
+    <div
+      className={cn(
+        'overlay overlay-map-event',
+        mode === 'fishing' && 'is-fishing',
+      )}
+    >
+      <nav className="map-event-modes" aria-label="地图事件模式">
+        <button
+          type="button"
+          aria-pressed={mode === 'map'}
+          onClick={() => setMode('map')}
+        >
+          寻宝
+        </button>
+        <button
+          type="button"
+          aria-pressed={mode === 'fishing'}
+          onClick={() => setMode('fishing')}
+        >
+          钓鱼
+        </button>
+      </nav>
+      {mode === 'fishing' ? (
+        <FishingPanel fishing={fishing} />
+      ) : (
+        <div className="map-event-content">
+          <main className="map-container">
+            {mapInfo.map !== 0 ? <EorzeaMap {...mapInfo} /> : null}
+          </main>
+          <aside className="map-points">
+            <Treasure point={treasure} onClick={action} />
+          </aside>
+        </div>
+      )}
     </div>
   )
 }

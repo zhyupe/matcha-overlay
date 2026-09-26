@@ -1,3 +1,4 @@
+import { updateFishing } from './fishing.mjs'
 import { updateMap } from './map.mjs'
 import { updateMateriaIcons } from './materia-icons.mjs'
 import { updateSubmarine } from './submarine.mjs'
@@ -5,6 +6,7 @@ import { updateTreasure } from './treasure.mjs'
 import { updateWorld } from './world.mjs'
 
 const map = {
+  fishing: updateFishing,
   map: updateMap,
   treasure: updateTreasure,
   world: updateWorld,

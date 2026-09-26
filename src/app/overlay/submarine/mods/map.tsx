@@ -244,7 +244,13 @@ export function VoyageMap({
   return (
     <>
       <div className="mb-2.5 flex items-center justify-between gap-2">
-        <Select items={mapItems} value={mapId} onValueChange={setActiveMap}>
+        <Select
+          items={mapItems}
+          value={mapId}
+          onValueChange={(value) => {
+            if (value !== null) setActiveMap(value)
+          }}
+        >
           <SelectTrigger size="sm" className="w-[220px]">
             <SelectValue placeholder="选择地图" />
           </SelectTrigger>
