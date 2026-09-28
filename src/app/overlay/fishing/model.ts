@@ -29,14 +29,22 @@ export interface FishingEvent {
   statuses: number[] | null
 }
 
+export type Hookset = 'precision' | 'powerful'
+export const isHookset = (value: unknown): value is Hookset =>
+  value === 'precision' || value === 'powerful'
+export const hooksetName = (hookset: Hookset) =>
+  hookset === 'precision' ? '精准提勾' : '强力提勾'
+
+export interface FishInfo {
+  fishId: number
+  tug?: 1 | 2 | 3
+  snagging?: boolean
+  hookset?: Hookset
+}
+
 export interface Profile {
-  placeId: number
   fishId: number
   baitId: number
-  chum: boolean
-  snagging: boolean
-  mooch: boolean
-  tug?: number
   minMs?: number
   maxMs?: number
   // Curated prerequisites, not inferred from time samples.
@@ -50,11 +58,13 @@ export interface Archive {
   version: 1
   catches: FishingEvent[]
   profiles: Profile[]
+  fish: FishInfo[]
 }
 export const emptyArchive = (): Archive => ({
   version: 1,
   catches: [],
   profiles: [],
+  fish: [],
 })
 export const catalog = FishingCatalog
 export const itemName = (id: number | null) =>
@@ -118,23 +128,21 @@ export function recordCatch(archive: Archive, event: FishingEvent): Archive {
   return { ...archive, catches: [...archive.catches, event].slice(-2000) }
 }
 
-const combo = (a: Profile | FishingEvent, b: FishingEvent) =>
-  a.placeId === b.placeId &&
-  a.baitId === b.baitId &&
-  a.chum === b.chum &&
-  a.snagging === b.snagging &&
-  a.mooch === b.mooch
-const knownCombo = (c: FishingEvent) =>
-  c.placeId != null &&
-  c.baitId != null &&
-  c.chum != null &&
-  c.snagging != null &&
-  c.mooch != null
+export const CHUM_MULTIPLIER = 0.5
+const timeMultiplier = (chum: boolean | null) =>
+  chum == null ? undefined : chum ? CHUM_MULTIPLIER : 1
+const baseTime = (event: FishingEvent) => {
+  const multiplier = timeMultiplier(event.chum)
+  return multiplier == null ? NaN : elapsed(event, event.time) / multiplier
+}
+const scaleTime = (time: number | undefined, multiplier: number | undefined) =>
+  time == null || multiplier == null ? undefined : time * multiplier
 
 export interface Candidate {
   fishId: number
   name: string
   tug: number | null
+  hookset?: Hookset
   minMs?: number
   maxMs?: number
   allBaitsMinMs?: number
@@ -154,11 +162,6 @@ export function predict(
   weatherId?: number,
 ): Candidate[] {
   const ids = new Set(catalog.placefish[cast.placeId ?? ''] || [])
-  archive.profiles
-    .filter((p) => p.placeId === cast.placeId)
-    .forEach((p) => {
-      ids.add(p.fishId)
-    })
   archive.catches
     .filter((c) => c.placeId === cast.placeId && c.fishId)
     .forEach((c) => {
@@ -167,26 +170,31 @@ export function predict(
   const time = elapsed(cast, now)
   const hour = ((cast.castTime ?? now) / 175000) % 24
   const rows = [...ids].map((fishId): Candidate => {
-    const profile = knownCombo(cast)
-      ? archive.profiles.find((p) => p.fishId === fishId && combo(p, cast))
-      : undefined
-    const samples = knownCombo(cast)
-      ? archive.catches.filter((c) => c.fishId === fishId && combo(c, cast))
-      : []
-    const times = samples
-      .map((c) => elapsed(c, c.time))
-      .filter((t) => Number.isFinite(t) && t > 0)
-    // Empirical bounds are soft evidence: sparse observations are never absolute exclusions.
-    const minMs =
-      profile?.minMs ?? (times.length ? Math.min(...times) : undefined)
-    const maxMs =
-      profile?.maxMs ?? (times.length ? Math.max(...times) : undefined)
-    const allBaitProfiles = archive.profiles.filter(
-      (p) => p.fishId === fishId && p.placeId === cast.placeId,
+    const info = archive.fish.find((f) => f.fishId === fishId)
+    const profile = archive.profiles.find(
+      (p) => p.fishId === fishId && p.baitId === cast.baitId,
     )
+    const times = archive.catches
+      .filter(
+        (c) =>
+          c.fishId === fishId && c.baitId != null && c.baitId === cast.baitId,
+      )
+      .map(baseTime)
+      .filter((t) => Number.isFinite(t) && t > 0)
+    const multiplier = timeMultiplier(cast.chum)
+    // Empirical bounds are soft evidence: sparse observations are never absolute exclusions.
+    const minMs = scaleTime(
+      profile?.minMs ?? (times.length ? Math.min(...times) : undefined),
+      multiplier,
+    )
+    const maxMs = scaleTime(
+      profile?.maxMs ?? (times.length ? Math.max(...times) : undefined),
+      multiplier,
+    )
+    const allBaitProfiles = archive.profiles.filter((p) => p.fishId === fishId)
     const allBaitTimes = archive.catches
-      .filter((c) => c.fishId === fishId && c.placeId === cast.placeId)
-      .map((c) => elapsed(c, c.time))
+      .filter((c) => c.fishId === fishId)
+      .map(baseTime)
       .filter((t) => Number.isFinite(t) && t > 0)
     const allBaitBounds = [
       ...allBaitTimes,
@@ -198,28 +206,33 @@ export function predict(
       archive.catches.filter((c) => c.fishId === fishId).map((c) => c.tug),
     )
     const tug =
-      profile?.tug ??
+      info?.tug ??
       (observedTugs.size === 1 ? [...observedTugs][0] : null) ??
       null
     const row: Candidate = {
       fishId,
       name: itemName(fishId),
       tug,
+      hookset: info?.hookset,
       minMs,
       maxMs,
-      allBaitsMinMs: allBaitBounds.length
-        ? Math.min(...allBaitBounds)
-        : undefined,
-      allBaitsMaxMs: allBaitBounds.length
-        ? Math.max(...allBaitBounds)
-        : undefined,
+      allBaitsMinMs: scaleTime(
+        allBaitBounds.length ? Math.min(...allBaitBounds) : undefined,
+        multiplier,
+      ),
+      allBaitsMaxMs: scaleTime(
+        allBaitBounds.length ? Math.max(...allBaitBounds) : undefined,
+        multiplier,
+      ),
       count: times.length,
       result: 'unknown',
-      reason: '缺少此鱼饵的时间统计',
+      reason: multiplier == null ? '撒饵状态未知' : '缺少此鱼饵的时间统计',
       note: profile?.note,
       source:
         profile?.minMs != null ? 'manual' : times.length ? 'observed' : 'none',
     }
+    if (info?.snagging === true && cast.snagging === false)
+      return { ...row, result: 'excluded', reason: '需要启用钓组' }
     if (cast.tug != null && tug != null && cast.tug !== tug)
       return { ...row, result: 'excluded', reason: '上钩强度不符' }
     if (
@@ -242,6 +255,7 @@ export function predict(
     )
       return { ...row, result: 'excluded', reason: '天气条件不满足' }
     const unknownCondition =
+      (info?.snagging === true && cast.snagging == null) ||
       (profile?.requiredStatuses?.length && cast.statuses == null) ||
       (profile?.weatherIds?.length && weatherId == null) ||
       profile?.note
@@ -274,6 +288,45 @@ export function predict(
 
 const positive = (n: unknown): n is number =>
   typeof n === 'number' && Number.isSafeInteger(n) && n > 0
+const profileKey = (p: Profile) => [p.fishId, p.baitId].join(':')
+
+export function parseFishInfo(value: unknown): FishInfo[] {
+  if (value === undefined) return []
+  if (!Array.isArray(value) || value.length > 10000)
+    throw new Error('fish 必须是数组，最多 10000 条鱼种数据。')
+  const ids = new Set<number>()
+  return value.map((info, index) => {
+    const fail = (message: string): never => {
+      throw new Error(`第 ${index + 1} 条鱼种：${message}`)
+    }
+    if (!info || typeof info !== 'object' || Array.isArray(info))
+      return fail('需要一个对象。')
+    const unknownKey = Object.keys(info).find(
+      (key) => !['fishId', 'tug', 'snagging', 'hookset'].includes(key),
+    )
+    if (unknownKey) return fail(`不支持字段 ${unknownKey}。`)
+    if (!positive(info.fishId)) return fail('fishId 必须是正整数 ID。')
+    if ('tug' in info && ![1, 2, 3].includes(info.tug))
+      return fail('tug 必须是 1（轻杆）、2（中杆）或 3（重杆）；未知时省略。')
+    if ('snagging' in info && typeof info.snagging !== 'boolean')
+      return fail('snagging 必须是布尔值；未知时省略。')
+    if ('hookset' in info && !isHookset(info.hookset))
+      return fail(
+        'hookset 必须是 precision（精准提勾）或 powerful（强力提勾）；未知时省略。',
+      )
+    if (ids.has(info.fishId)) return fail('存在重复的鱼种数据。')
+    ids.add(info.fishId)
+    return { ...info }
+  })
+}
+
+export const isMoochBait = (baitId: number | null, archive: Archive) =>
+  baitId != null &&
+  (catalog.fish[baitId] != null ||
+    archive.fish.some((f) => f.fishId === baitId) ||
+    archive.profiles.some((p) => p.fishId === baitId) ||
+    archive.catches.some((c) => c.fishId === baitId))
+
 export function parseArchive(text: string): Archive {
   const data = JSON.parse(text)
   if (
@@ -289,11 +342,16 @@ export function parseArchive(text: string): Archive {
   for (const p of data.profiles) {
     if (
       !p ||
-      !positive(p.placeId) ||
+      typeof p !== 'object' ||
+      Array.isArray(p) ||
+      ('placeId' in p && !positive(p.placeId)) ||
       !positive(p.fishId) ||
       !positive(p.baitId) ||
-      ['chum', 'snagging', 'mooch'].some((k) => typeof p[k] !== 'boolean') ||
+      ['chum', 'snagging', 'mooch'].some(
+        (k) => k in p && typeof p[k] !== 'boolean',
+      ) ||
       (p.tug != null && ![1, 2, 3].includes(p.tug)) ||
+      ('hookset' in p && !isHookset(p.hookset)) ||
       ((p.minMs != null || p.maxMs != null) &&
         (!positive(p.minMs) || !positive(p.maxMs) || p.minMs > p.maxMs)) ||
       (p.note != null && (typeof p.note !== 'string' || p.note.length > 500)) ||
@@ -312,10 +370,11 @@ export function parseArchive(text: string): Archive {
           p.hours[0] === p.hours[1]))
     )
       throw new Error(
-        '区间数据格式无效：请检查鱼种、鱼饵、状态、时间区间和前置条件。',
+        '区间数据格式无效：请检查鱼种、鱼饵、状态、强度、提勾类型、时间区间和前置条件。',
       )
   }
-  let result: Archive = { version: 1, catches: [], profiles: data.profiles }
+  const fish = parseFishInfo(data.fish)
+  let result: Archive = { version: 1, catches: [], profiles: [], fish }
   for (const c of data.catches) {
     if (
       !c ||
@@ -339,25 +398,68 @@ export function parseArchive(text: string): Archive {
     if (next === result) throw new Error('鱼获记录重复或缺少有效的咬钩时间。')
     result = next
   }
-  const keys = data.profiles.map((p: Profile) =>
-    [p.placeId, p.fishId, p.baitId, p.chum, p.snagging, p.mooch].join(':'),
+  const keys = data.profiles.map(
+    (
+      p: Profile & {
+        placeId?: number
+        chum?: boolean
+        snagging?: boolean
+        mooch?: boolean
+      },
+    ) => [p.placeId, profileKey(p), p.chum, p.snagging, p.mooch].join(':'),
   )
   if (new Set(keys).size !== keys.length)
     throw new Error('存在重复的鱼种 / 鱼饵 / 状态区间数据。')
-  return result
+  // Legacy times are normalized; the last entry for each combination wins.
+  const profiles = new Map<string, Profile>()
+  const fishInfo = new Map<number, FishInfo>()
+  for (const {
+    placeId: _placeId,
+    chum,
+    snagging: _snagging,
+    mooch: _mooch,
+    tug,
+    hookset,
+    ...profile
+  } of data.profiles) {
+    if (chum === true && profile.minMs != null) {
+      profile.minMs = Math.round(profile.minMs / CHUM_MULTIPLIER)
+      profile.maxMs = Math.round(profile.maxMs / CHUM_MULTIPLIER)
+      if (!positive(profile.minMs) || !positive(profile.maxMs))
+        throw new Error('区间数据换算后的时间超出有效范围。')
+    }
+    profiles.set(profileKey(profile), profile)
+    if (tug != null || hookset != null)
+      fishInfo.set(profile.fishId, {
+        ...fishInfo.get(profile.fishId),
+        fishId: profile.fishId,
+        ...(tug != null ? { tug } : {}),
+        ...(hookset != null ? { hookset } : {}),
+      })
+  }
+  for (const info of fish) fishInfo.set(info.fishId, info)
+  if (fishInfo.size > 10000) throw new Error('超过 10000 条鱼种数据。')
+  return {
+    ...result,
+    profiles: [...profiles.values()],
+    fish: [...fishInfo.values()],
+  }
 }
 
 export function mergeArchives(current: Archive, imported: Archive): Archive {
   const catches = new Map(current.catches.map((c) => [c.castId, c]))
   for (const caught of imported.catches) catches.set(caught.castId, caught)
-  const key = (p: Profile) =>
-    [p.placeId, p.fishId, p.baitId, p.chum, p.snagging, p.mooch].join(':')
-  const profiles = new Map(current.profiles.map((p) => [key(p), p]))
-  for (const profile of imported.profiles) profiles.set(key(profile), profile)
+  const fish = new Map(current.fish.map((f) => [f.fishId, f]))
+  for (const info of imported.fish) fish.set(info.fishId, info)
+  if (fish.size > 10000) throw new Error('合并后超过 10000 条鱼种数据。')
+  const profiles = new Map(current.profiles.map((p) => [profileKey(p), p]))
+  for (const profile of imported.profiles)
+    profiles.set(profileKey(profile), profile)
   if (profiles.size > 10000) throw new Error('合并后超过 10000 条区间数据。')
   return {
     version: 1,
     catches: [...catches.values()].sort((a, b) => a.time - b.time).slice(-2000),
     profiles: [...profiles.values()],
+    fish: [...fish.values()],
   }
 }

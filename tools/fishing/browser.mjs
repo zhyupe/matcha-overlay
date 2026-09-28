@@ -71,13 +71,8 @@ try {
     9,
   )
   const profile = {
-    placeId: 425,
     baitId: 29717,
     fishId: 4891,
-    chum: false,
-    snagging: false,
-    mooch: false,
-    tug: 2,
     minMs: 13000,
     maxMs: 19000,
   }
@@ -90,19 +85,16 @@ try {
   await importData({
     format: 'matcha-fishing-ranges',
     version: 1,
+    fish: [{ fishId: 4891, tug: 2, snagging: false, hookset: 'precision' }],
     ranges: [
       {
-        placeId: 425,
         fishId: 4891,
         baitId: 29717,
-        tug: 2,
         biteSeconds: [13, 19],
       },
       {
-        placeId: 425,
         fishId: 4891,
         baitId: 2585,
-        tug: 2,
         biteSeconds: [8, 45],
       },
     ],
@@ -115,6 +107,8 @@ try {
   assert.match(await panel.innerText(), /13.0–19.0 秒/)
   const row = panel.locator('.fishing-candidate[data-fish-id="4891"]')
   assert.match(await row.getAttribute('title'), /所有钓饵：8.0–45.0 秒/)
+  assert.match(await row.innerText(), /精准提勾/)
+  assert.match(await row.getAttribute('title'), /中杆.*精准提勾/)
   const windows = await row.evaluate((element) => {
     const all = element.querySelector('.fishing-window-all')
     const current = element.querySelector('.fishing-window-current')
@@ -168,12 +162,16 @@ try {
   assert.equal(exported.catches.length, 1)
   assert.equal(exported.profiles.length, 2)
   assert.deepEqual(exported.profiles[0], profile)
+  assert.deepEqual(exported.fish, [
+    { fishId: 4891, tug: 2, snagging: false, hookset: 'precision' },
+  ])
   await importData({
     format: 'matcha-fishing-ranges',
     version: 1,
+    fish: [{ fishId: 4891, tug: 2, snagging: false, hookset: 'precision' }],
     ranges: [
-      { placeId: 425, fishId: 4891, baitId: 29717, biteSeconds: [5, 6] },
-      { placeId: 425, fishId: 4891, baitId: 2585, biteSeconds: [20, 10] },
+      { fishId: 4891, baitId: 29717, biteSeconds: [5, 6] },
+      { fishId: 4891, baitId: 2585, biteSeconds: [20, 10] },
     ],
   })
   await page.getByRole('status').filter({ hasText: '第 2 条区间' }).waitFor()
@@ -269,6 +267,17 @@ try {
     1,
   )
   assert.match(await panel.innerText(), /13.0–19.0 秒/)
+  assert.match(await row.innerText(), /精准提勾/)
+  await emit('Fishing', {
+    ...cast,
+    castId: 'another-place',
+    placeId: 978,
+    time: Date.now(),
+    castTime: Date.now(),
+  })
+  await page.waitForTimeout(100)
+  assert.match(await row.innerText(), /13.0–19.0 秒/)
+  assert.match(await row.innerText(), /精准提勾/)
   await emit('Fishing', {
     ...cast,
     castId: 'unknown-bait',
@@ -280,6 +289,7 @@ try {
   assert.equal(await row.locator('.fishing-window-all').count(), 1)
   assert.equal(await row.locator('.fishing-window-current').count(), 0)
   assert.match(await row.getAttribute('title'), /当前钓饵：时间未知/)
+  assert.match(await row.innerText(), /精准提勾/)
   const cancelCast = {
     ...cast,
     castId: 'early-cancel',
@@ -334,6 +344,59 @@ try {
     1,
     'cancelled casts are not recorded as catches',
   )
+  const chumCast = {
+    ...cast,
+    castId: 'chum-cast',
+    chum: true,
+    time: noHookCast.time + 10000,
+    castTime: noHookCast.time + 10000,
+  }
+  await emit('Fishing', chumCast)
+  assert.match(await row.innerText(), /6.5–9.5 秒/)
+  assert.match(await row.getAttribute('title'), /所有钓饵：4.0–22.5 秒/)
+  await importData({
+    format: 'matcha-fishing-ranges',
+    version: 1,
+    fish: [{ fishId: 4891, tug: 2, snagging: true, hookset: 'precision' }],
+    ranges: [],
+  })
+  await page.waitForFunction(
+    () =>
+      JSON.parse(localStorage.getItem('matcha-fishing-v1')).fish[0].snagging ===
+      true,
+  )
+  assert.match(await row.getAttribute('title'), /需要启用钓组/)
+  await emit('Fishing', {
+    ...chumCast,
+    castId: 'snagging-cast',
+    snagging: true,
+    time: chumCast.time + 1000,
+    castTime: chumCast.time + 1000,
+  })
+  assert.match(await row.getAttribute('class'), /fishing-match/)
+  await importData({
+    format: 'matcha-fishing-ranges',
+    version: 1,
+    ranges: [{ fishId: 4891, baitId: 4895, biteSeconds: [10, 20] }],
+  })
+  await page.waitForFunction(
+    () =>
+      JSON.parse(localStorage.getItem('matcha-fishing-v1')).profiles.length ===
+      3,
+  )
+  await emit('Fishing', {
+    ...cast,
+    castId: 'fish-bait-cast',
+    baitId: 4895,
+    mooch: null,
+    snagging: true,
+    time: chumCast.time + 2000,
+    castTime: chumCast.time + 2000,
+  })
+  assert.match(await panel.locator('.fishing-bait').innerText(), /以小钓大/)
+  assert.match(await row.innerText(), /10.0–20.0 秒/)
+  assert.match(await row.innerText(), /精准提勾/)
+  assert.equal(await row.locator('.fishing-tug').innerText(), '!!')
   assert.deepEqual(errors, [])
   console.log(
     'PASS: integrated fishing mode, XIVAPI candidates, frozen timer, import/export, persistence, compact rows, no scrollbars, treasure map and zone reset',

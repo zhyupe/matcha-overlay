@@ -24,6 +24,7 @@ try {
     elapsed,
     catalog,
     mergeArchives,
+    isMoochBait,
   } = await import(pathToFileURL(path))
   const clockPath = join(temp, 'clock.mjs')
   await build({
@@ -75,59 +76,149 @@ try {
     fishId: 4891,
   }
   const profile = {
-    placeId: 425,
     fishId: 4891,
     baitId: 29717,
-    chum: false,
-    snagging: false,
-    mooch: false,
-    tug: 2,
     minMs: 14000,
     maxMs: 18000,
   }
   const range = {
-    placeId: 425,
     fishId: 4891,
     baitId: 29717,
     biteSeconds: [14, 18],
-    tug: 2,
   }
   const rangeFile = {
     format: 'matcha-fishing-ranges',
     version: 1,
+    fish: [],
     ranges: [range],
   }
-  const parseRanges = (ranges) =>
-    parseFishingImport(JSON.stringify({ ...rangeFile, ranges }))
+  const parseRanges = (ranges, fish = []) =>
+    parseFishingImport(JSON.stringify({ ...rangeFile, ranges, fish }))
   assert.deepEqual(parseRanges([range]), {
     version: 1,
+    fish: [],
     catches: [],
     profiles: [profile],
   })
   assert.deepEqual(parseRanges([]), emptyArchive())
+  assert.deepEqual(
+    parseFishingImport(JSON.stringify({ ...rangeFile, fish: undefined })),
+    parseRanges([range]),
+  )
+  const fishInfo = { fishId: 4891, tug: 2, snagging: true }
+  const fishData = parseRanges([range], [fishInfo])
+  const candidate = (event, data = fishData) =>
+    predict(event, data, event.time).find((f) => f.fishId === 4891)
+  assert.deepEqual(fishData.fish, [fishInfo])
+  assert.equal(candidate(bite).result, 'excluded')
+  assert.equal(candidate(bite).reason, '需要启用钓组')
+  assert.equal(candidate({ ...bite, snagging: true }).result, 'match')
+  assert.equal(candidate({ ...bite, snagging: null }).result, 'unknown')
+  assert.equal(candidate({ ...bite, baitId: 2585 }).tug, 2)
+  assert.equal(candidate({ ...bite, baitId: null }).result, 'excluded')
+  assert.equal(candidate({ ...bite, baitId: 2585 }).reason, '需要启用钓组')
+  const optionalSnagging = parseRanges(
+    [range],
+    [{ ...fishInfo, snagging: false }],
+  )
+  assert.equal(
+    candidate({ ...bite, snagging: true }, optionalSnagging).result,
+    'match',
+  )
+  assert.deepEqual(parseFishingImport(JSON.stringify(fishData)), fishData)
+  assert.deepEqual(mergeArchives(fishData, parseRanges([])).fish, [fishInfo])
+  assert.deepEqual(
+    mergeArchives(fishData, parseRanges([], [{ fishId: 4891 }])).fish,
+    [{ fishId: 4891 }],
+  )
+  assert.deepEqual(mergeArchives(fishData, fishData), fishData)
+  for (const invalid of [
+    null,
+    {},
+    1,
+    [],
+    { fishId: '4891' },
+    { fishId: 0 },
+    { fishId: 4891, tug: 0 },
+    { fishId: 4891, tug: null },
+    { fishId: 4891, tug: '2' },
+    { fishId: 4891, snagging: null },
+    { fishId: 4891, snagging: 'true' },
+    { fishId: 4891, baitId: 29717 },
+    { fishId: 4891, chum: false },
+    { fishId: 4891, mooch: false },
+    ...[null, 0, 1, true, '', 'Precision', 'unknown'].map((hookset) => ({
+      fishId: 4891,
+      hookset,
+    })),
+  ])
+    assert.throws(() => parseRanges([], [invalid]), /第 1 条鱼种/)
+  assert.throws(() => parseRanges([], [fishInfo, fishInfo]), /重复/)
+  assert.throws(() => parseRanges([], null), /fish 必须是数组/)
+  assert.throws(() => parseRanges([], Array(10001).fill(fishInfo)), /10000/)
+  const baseData = parseRanges([range])
+  const chumBite = {
+    ...bite,
+    chum: true,
+    biteTime: cast.time + 7500,
+    time: cast.time + 7500,
+  }
+  assert.equal(candidate(chumBite, baseData).minMs, 7000)
+  assert.equal(candidate(chumBite, baseData).maxMs, 9000)
+  assert.equal(candidate(chumBite, baseData).result, 'match')
+  assert.equal(candidate({ ...bite, chum: null }, baseData).minMs, undefined)
+  assert.equal(
+    candidate({ ...bite, chum: null }, baseData).allBaitsMaxMs,
+    undefined,
+  )
+  assert.equal(
+    candidate({ ...bite, chum: null }, baseData).reason,
+    '撒饵状态未知',
+  )
+  const normalizedSamples = {
+    ...emptyArchive(),
+    catches: [
+      caught,
+      { ...caught, ...chumBite, action: 'catch', fishId: 4891, castId: 'chum' },
+      {
+        ...caught,
+        chum: null,
+        castId: 'unknown-chum',
+        biteTime: cast.time + 90000,
+        time: cast.time + 91000,
+      },
+    ],
+  }
+  assert.equal(candidate(bite, normalizedSamples).count, 2)
+  assert.equal(candidate(bite, normalizedSamples).maxMs, 15000)
+  assert.equal(candidate(bite, normalizedSamples).allBaitsMaxMs, 15000)
+  assert.equal(candidate(chumBite, normalizedSamples).minMs, 7500)
+  assert.equal(candidate(chumBite, normalizedSamples).allBaitsMaxMs, 7500)
+  for (const change of [
+    { snagging: true },
+    { snagging: null },
+    { mooch: true },
+    { mooch: null },
+  ])
+    assert.equal(candidate({ ...bite, ...change }, normalizedSamples).count, 2)
+  assert.equal(isMoochBait(4891, emptyArchive()), true)
+  assert.equal(isMoochBait(29717, emptyArchive()), false)
+  assert.equal(isMoochBait(null, emptyArchive()), false)
+  assert.equal(isMoochBait(999999, parseRanges([], [{ fishId: 999999 }])), true)
+  const moochData = parseRanges([{ ...range, baitId: 4895 }])
+  assert.equal(
+    candidate({ ...bite, baitId: 4895, mooch: null }, moochData).minMs,
+    14000,
+  )
   const decimal = parseRanges([{ ...range, biteSeconds: [14.1234, 18.9876] }])
   assert.equal(decimal.profiles[0].minMs, 14123)
   assert.equal(decimal.profiles[0].maxMs, 18988)
-  const states = parseRanges([
-    range,
-    { ...range, chum: true, snagging: true, mooch: true, tug: undefined },
-  ])
-  assert.equal(states.profiles[1].tug, undefined)
-  assert.equal(states.profiles[1].chum, true)
-  assert.equal(states.profiles[1].snagging, true)
-  assert.equal(states.profiles[1].mooch, true)
-  assert.equal(
-    predict({ ...cast, chum: true }, states, cast.time).find(
-      (f) => f.fishId === 4891,
-    ).minMs,
-    undefined,
-    'imported timing only applies to the specified state combination',
-  )
-  assert.throws(() => parseRanges([range, { ...range, chum: false }]), /重复/)
+  assert.throws(() => parseRanges([range, range]), /重复/)
   for (const invalid of [
     null,
     [],
-    { ...range, placeId: undefined },
+    { ...range, placeId: 425 },
+    { ...range, fishId: undefined },
     { ...range, fishId: '4891' },
     { ...range, baitId: 0 },
     { ...range, baitId: 1.5 },
@@ -139,9 +230,18 @@ try {
     { ...range, biteSeconds: [14, 18, 20] },
     { ...range, biteSeconds: [0.00001, 18] },
     { ...range, biteSeconds: [14, 1e20] },
+    { ...range, tug: 2 },
     { ...range, tug: 0 },
     { ...range, tug: null },
+    ...[null, 0, 1, true, '', 'Precision', 'unknown'].map((hookset) => ({
+      ...range,
+      hookset,
+    })),
+    { ...range, chum: false },
+    { ...range, chum: true },
     { ...range, chum: null },
+    { ...range, snagging: false },
+    { ...range, mooch: true },
     { ...range, snagging: 'false' },
     { ...range, mooch: 0 },
     { ...range, minMs: 14000 },
@@ -160,13 +260,18 @@ try {
   assert.throws(() => parseFishingImport('{'), /有效的 JSON/)
   assert.deepEqual(
     parseFishingImport(
-      JSON.stringify({ version: 1, catches: [caught], profiles: [profile] }),
+      JSON.stringify({
+        version: 1,
+        fish: [],
+        catches: [caught],
+        profiles: [profile],
+      }),
     ),
-    { version: 1, catches: [caught], profiles: [profile] },
+    { version: 1, fish: [], catches: [caught], profiles: [profile] },
     'existing backups remain importable',
   )
   const updated = mergeArchives(
-    { version: 1, catches: [caught], profiles: [profile] },
+    { version: 1, fish: [], catches: [caught], profiles: [profile] },
     parseRanges([
       { ...range, biteSeconds: [12, 20] },
       { ...range, baitId: 2585 },
@@ -177,6 +282,112 @@ try {
   assert.equal(updated.profiles[0].minMs, 12000)
   assert.equal(updated.profiles[0].maxMs, 20000)
   assert.deepEqual(parseArchive(JSON.stringify(updated)), updated)
+  for (const hookset of ['precision', 'powerful']) {
+    const imported = parseRanges([range], [{ fishId: 4891, tug: 2, hookset }])
+    assert.equal(imported.fish[0].hookset, hookset)
+    assert.equal(
+      predict(bite, imported, bite.time).find((f) => f.fishId === 4891).hookset,
+      hookset,
+      'hookset is independent of tug strength',
+    )
+    assert.deepEqual(parseFishingImport(JSON.stringify(imported)), imported)
+    assert.deepEqual(
+      mergeArchives(imported, parseRanges([range])).fish,
+      imported.fish,
+    )
+    for (const baitId of [2585, null])
+      assert.equal(candidate({ ...bite, baitId }, imported).hookset, hookset)
+    const replaced = mergeArchives(
+      imported,
+      parseRanges([], [{ fishId: 4891, tug: 2 }]),
+    )
+    assert.equal(replaced.fish[0].hookset, undefined)
+    assert.equal(
+      predict(bite, replaced, bite.time).find((f) => f.fishId === 4891).hookset,
+      undefined,
+      'omitted hookset is not inferred from tug',
+    )
+  }
+  assert.throws(
+    () => parseRanges([range, { ...range, hookset: 'precision' }]),
+    /不支持字段 hookset/,
+  )
+  for (const hookset of [null, 1, 'unknown'])
+    assert.throws(
+      () =>
+        parseArchive(
+          JSON.stringify({
+            version: 1,
+            fish: [],
+            catches: [],
+            profiles: [{ ...profile, hookset }],
+          }),
+        ),
+      /提勾类型/,
+    )
+  const legacyProfile = {
+    ...profile,
+    placeId: 425,
+    chum: false,
+    snagging: false,
+    mooch: false,
+    tug: 2,
+  }
+  const legacyHookset = parseArchive(
+    JSON.stringify({
+      version: 1,
+      catches: [],
+      profiles: [
+        { ...legacyProfile, hookset: 'precision' },
+        { ...profile, baitId: 2585, tug: 3 },
+      ],
+    }),
+  )
+  assert.deepEqual(legacyHookset.fish, [
+    { fishId: 4891, tug: 3, hookset: 'precision' },
+  ])
+  assert.equal(legacyHookset.profiles[0].hookset, undefined)
+  assert.deepEqual(parseArchive(JSON.stringify(legacyHookset)), legacyHookset)
+  const legacyBackup = {
+    version: 1,
+    catches: [caught],
+    profiles: [legacyProfile, { ...legacyProfile, placeId: 978, maxMs: 21000 }],
+  }
+  const migrated = parseFishingImport(JSON.stringify(legacyBackup))
+  const oldChumData = parseArchive(
+    JSON.stringify({
+      ...legacyBackup,
+      profiles: [{ ...legacyProfile, chum: true, minMs: 7000, maxMs: 9000 }],
+    }),
+  )
+  assert.deepEqual(oldChumData.profiles, [profile])
+  assert.deepEqual(oldChumData.fish, [{ fishId: 4891, tug: 2 }])
+  const explicitFish = parseArchive(
+    JSON.stringify({ ...legacyBackup, fish: [fishInfo] }),
+  )
+  assert.deepEqual(explicitFish.fish, [fishInfo])
+  assert.deepEqual(migrated, {
+    version: 1,
+    catches: [caught],
+    profiles: [{ ...profile, maxMs: 21000 }],
+    fish: [{ fishId: 4891, tug: 2 }],
+  })
+  assert.deepEqual(parseArchive(JSON.stringify(migrated)), migrated)
+  assert.throws(
+    () =>
+      parseArchive(
+        JSON.stringify({
+          ...legacyBackup,
+          profiles: [legacyProfile, legacyProfile],
+        }),
+      ),
+    /重复/,
+  )
+  assert.deepEqual(
+    mergeArchives(migrated, parseRanges([range])).profiles,
+    [profile],
+    'global imports replace migrated legacy combinations',
+  )
   let clock = updateClock(null, cast, 100)
   assert.equal(
     elapsed(cast, clockTime(clock, 100)),
@@ -259,7 +470,12 @@ try {
     'client sheets cannot supply tug strength',
   )
   assert(predict(cast, emptyArchive(), cast.time).every((f) => f.tug === null))
-  const imported = { version: 1, catches: [caught], profiles: [profile] }
+  const imported = {
+    version: 1,
+    fish: [],
+    catches: [caught],
+    profiles: [profile],
+  }
   const merged = mergeArchives(imported, {
     ...imported,
     profiles: [{ ...profile, maxMs: 20000 }],
@@ -320,13 +536,59 @@ try {
   assert.equal(transition(bite, { ...bite, action: 'reset' }), null)
   const fish = (c, a = archive) =>
     predict(c, a, c.time).find((f) => f.fishId === 4891)
+  const otherPlace = { ...bite, placeId: 978 }
+  assert(catalog.placefish[978].includes(4891))
+  assert.deepEqual(
+    fish(otherPlace, parseRanges([range])),
+    fish(bite, parseRanges([range])),
+  )
+  assert.deepEqual(
+    fish(otherPlace),
+    fish(bite),
+    'observations are shared across places',
+  )
+  assert.equal(fish(otherPlace, migrated).maxMs, 21000)
+  const foreignFish = parseRanges([{ ...range, fishId: 999999 }])
+  assert(
+    !predict(bite, foreignFish, bite.time).some((f) => f.fishId === 999999),
+  )
+  assert.equal(
+    predict({ ...bite, placeId: 999999 }, parseRanges([range]), bite.time)
+      .length,
+    0,
+  )
+  assert.equal(
+    predict({ ...bite, placeId: null }, parseRanges([range]), bite.time).length,
+    0,
+  )
+  const observedElsewhere = {
+    version: 1,
+    fish: [],
+    profiles: [],
+    catches: [
+      caught,
+      {
+        ...caught,
+        castId: 'another-place',
+        placeId: 978,
+        biteTime: cast.time + 20000,
+        time: cast.time + 21000,
+      },
+    ],
+  }
+  assert.equal(fish(bite, observedElsewhere).count, 2)
+  assert.equal(fish(bite, observedElsewhere).maxMs, 20000)
+  assert.deepEqual(
+    fish(bite, observedElsewhere),
+    fish(otherPlace, observedElsewhere),
+  )
   const ranges = {
     version: 1,
+    fish: [],
     catches: [caught],
     profiles: [
       profile,
       { ...profile, baitId: 2585, minMs: 8000, maxMs: 45000 },
-      { ...profile, placeId: 999999, minMs: 1000, maxMs: 90000 },
       { ...profile, fishId: 4895, minMs: 1000, maxMs: 80000 },
     ],
   }
@@ -335,7 +597,7 @@ try {
   assert.deepEqual(
     [currentRange.allBaitsMinMs, currentRange.allBaitsMaxMs],
     [8000, 45000],
-    'all-bait envelope stays within this fish and place',
+    'all-bait envelope stays within this fish',
   )
   const unknownBait = fish({ ...bite, baitId: 999999 }, ranges)
   assert.equal(
@@ -348,19 +610,17 @@ try {
     [8000, 45000],
   )
   const otherState = fish({ ...bite, chum: true }, ranges)
-  assert.equal(
-    otherState.minMs,
-    undefined,
-    'current range still isolates fishing states',
-  )
-  assert.equal(otherState.allBaitsMaxMs, 45000)
+  assert.equal(otherState.minMs, 7000, 'chum scales the current bait range')
+  assert.equal(otherState.allBaitsMaxMs, 22500)
   const observedRange = fish(bite, {
     version: 1,
+    fish: [],
     profiles: [],
     catches: [
       caught,
       {
         ...caught,
+        placeId: 978,
         baitId: 2585,
         biteTime: cast.time + 40000,
         time: cast.time + 41000,
@@ -375,13 +635,7 @@ try {
   assert.equal(fish(bite, emptyArchive()).allBaitsMinMs, undefined)
   assert.equal(fish(bite).result, 'match')
   assert.equal(fish(bite).count, 1)
-  for (const change of [
-    { baitId: 1 },
-    { chum: true },
-    { snagging: true },
-    { mooch: true },
-    { chum: null },
-  ])
+  for (const change of [{ baitId: 1 }, { baitId: null }])
     assert.equal(
       fish({ ...bite, ...change }).count,
       0,

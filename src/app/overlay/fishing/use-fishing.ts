@@ -99,7 +99,7 @@ export function useFishing({ eventEmitter, active, setActive }: OverlayProps) {
       const imported = parseFishingImport(await file.text())
       updateArchive(mergeArchives(archiveRef.current, imported))
       setMessage(
-        `已合并 ${imported.profiles.length} 条区间、${imported.catches.length} 条鱼获。`,
+        `已合并 ${imported.fish.length} 条鱼种、${imported.profiles.length} 条区间、${imported.catches.length} 条鱼获。`,
       )
     } catch (error) {
       setMessage((error as Error).message)

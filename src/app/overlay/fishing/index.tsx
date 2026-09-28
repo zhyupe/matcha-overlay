@@ -2,6 +2,8 @@ import { type CSSProperties, useRef } from 'react'
 import {
   elapsed,
   type FishingEvent,
+  hooksetName,
+  isMoochBait,
   itemName,
   placeName,
   predict,
@@ -69,7 +71,7 @@ export function FishingPanel({
           title={itemName(cast ? cast.baitId : baseBait)}
         >
           {itemName(cast ? cast.baitId : baseBait)}
-          {cast?.mooch && ' · 以小钓大'}
+          {cast && isMoochBait(cast.baitId, archive) && ' · 以小钓大'}
           {cast?.chum && ' · 撒饵'}
           {cast?.snagging && ' · 钓组'}
         </span>
@@ -96,6 +98,7 @@ export function FishingPanel({
               fishId,
               name,
               tug,
+              hookset,
               minMs,
               maxMs,
               allBaitsMinMs,
@@ -118,7 +121,7 @@ export function FishingPanel({
                 data-tug={tug ?? 0}
                 data-fish-id={fishId}
                 key={fishId}
-                title={`${name} · ${tugName(tug)} · 所有钓饵：${allBaitsRange} · 当前钓饵：${range} · ${reason}${note ? ` · ${note}` : ''}`}
+                title={`${name} · ${tugName(tug)}${hookset ? ` · ${hooksetName(hookset)}` : ''} · 所有钓饵：${allBaitsRange} · 当前钓饵：${range} · ${reason}${note ? ` · ${note}` : ''}`}
               >
                 {allBaitsMinMs != null && allBaitsMaxMs != null && (
                   <span
@@ -147,7 +150,10 @@ export function FishingPanel({
                     left: `${Math.min(99.5, (duration / axis) * 100)}%`,
                   }}
                 />
-                <span className="fishing-name">{name}</span>
+                <span className="fishing-name">
+                  {name}
+                  {hookset && ` · ${hooksetName(hookset)}`}
+                </span>
                 <span className="fishing-tug" aria-label={tugName(tug)}>
                   {tug ? '!'.repeat(tug) : '?'}
                 </span>
