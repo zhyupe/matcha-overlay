@@ -166,14 +166,29 @@ try {
   assert.equal(candidate(chumBite, baseData).minMs, 7000)
   assert.equal(candidate(chumBite, baseData).maxMs, 9000)
   assert.equal(candidate(chumBite, baseData).result, 'match')
-  assert.equal(candidate({ ...bite, chum: null }, baseData).minMs, undefined)
+  assert.equal(candidate({ ...bite, chum: null }, baseData).minMs, 14000)
+  assert.equal(candidate({ ...bite, chum: null }, baseData).maxMs, 18000)
   assert.equal(
     candidate({ ...bite, chum: null }, baseData).allBaitsMaxMs,
-    undefined,
+    18000,
   )
   assert.equal(
     candidate({ ...bite, chum: null }, baseData).reason,
-    '撒饵状态未知',
+    '撒饵状态未知，显示未撒饵区间',
+  )
+  for (const seconds of [5, 15, 40]) {
+    const unknownChum = {
+      ...bite,
+      chum: null,
+      biteTime: cast.time + seconds * 1000,
+      time: cast.time + seconds * 1000,
+    }
+    assert.equal(candidate(unknownChum, baseData).result, 'unknown')
+  }
+  assert.equal(candidate({ ...bite, chum: null }).result, 'excluded')
+  assert.equal(
+    candidate({ ...bite, chum: null, snagging: true, tug: 1 }).result,
+    'excluded',
   )
   const normalizedSamples = {
     ...emptyArchive(),
@@ -194,6 +209,11 @@ try {
   assert.equal(candidate(bite, normalizedSamples).allBaitsMaxMs, 15000)
   assert.equal(candidate(chumBite, normalizedSamples).minMs, 7500)
   assert.equal(candidate(chumBite, normalizedSamples).allBaitsMaxMs, 7500)
+  assert.equal(
+    candidate({ ...bite, chum: null }, normalizedSamples).minMs,
+    15000,
+  )
+  assert.equal(candidate({ ...bite, chum: null }, normalizedSamples).count, 2)
   for (const change of [
     { snagging: true },
     { snagging: null },

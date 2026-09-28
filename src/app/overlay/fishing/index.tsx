@@ -80,6 +80,9 @@ export function FishingPanel({
           {cast ? stateNames[cast.action] : '等待抛竿'}
         </span>
       </div>
+      {cast && cast.chum == null && (
+        <p className="fishing-timing-note">撒饵状态未知，显示未撒饵区间</p>
+      )}
       <div
         className="fishing-candidates"
         style={
@@ -111,6 +114,14 @@ export function FishingPanel({
               minMs != null && maxMs != null
                 ? `${seconds(minMs)}–${seconds(maxMs)} 秒`
                 : '时间未知'
+            const timeLabel =
+              minMs != null && maxMs != null
+                ? range
+                : cast?.baitId == null
+                  ? '鱼饵信息未知'
+                  : allBaitsMinMs != null && allBaitsMaxMs != null
+                    ? '当前饵无区间'
+                    : '暂无时间数据'
             const allBaitsRange =
               allBaitsMinMs != null && allBaitsMaxMs != null
                 ? `${seconds(allBaitsMinMs)}–${seconds(allBaitsMaxMs)} 秒`
@@ -157,7 +168,7 @@ export function FishingPanel({
                 <span className="fishing-tug" aria-label={tugName(tug)}>
                   {tug ? '!'.repeat(tug) : '?'}
                 </span>
-                <span className="fishing-time">{range}</span>
+                <span className="fishing-time">{timeLabel}</span>
               </div>
             )
           })

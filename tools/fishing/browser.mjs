@@ -106,6 +106,12 @@ try {
   )
   assert.match(await panel.innerText(), /13.0–19.0 秒/)
   const row = panel.locator('.fishing-candidate[data-fish-id="4891"]')
+  assert.equal(
+    await panel
+      .locator('.fishing-candidate[data-fish-id="4895"] .fishing-time')
+      .innerText(),
+    '暂无时间数据',
+  )
   assert.match(await row.getAttribute('title'), /所有钓饵：8.0–45.0 秒/)
   assert.match(await row.innerText(), /精准提勾/)
   assert.match(await row.getAttribute('title'), /中杆.*精准提勾/)
@@ -289,7 +295,50 @@ try {
   assert.equal(await row.locator('.fishing-window-all').count(), 1)
   assert.equal(await row.locator('.fishing-window-current').count(), 0)
   assert.match(await row.getAttribute('title'), /当前钓饵：时间未知/)
+  assert.equal(await row.locator('.fishing-time').innerText(), '当前饵无区间')
   assert.match(await row.innerText(), /精准提勾/)
+  await emit('Fishing', {
+    ...cast,
+    castId: 'unknown-chum',
+    chum: null,
+    time: Date.now(),
+    castTime: Date.now(),
+  })
+  assert.equal(await row.locator('.fishing-time').innerText(), '13.0–19.0 秒')
+  assert.equal(await row.locator('.fishing-window').count(), 2)
+  assert.match(await row.getAttribute('class'), /fishing-unknown/)
+  assert.equal(
+    await panel.locator('.fishing-timing-note').innerText(),
+    '撒饵状态未知，显示未撒饵区间',
+  )
+  assert.equal(await panel.locator('.fishing-timing-note').isVisible(), true)
+  const unknownChumLayout = await panel.evaluate((element) => ({
+    overflow:
+      element.scrollHeight > element.clientHeight + 1 ||
+      element.scrollWidth > element.clientWidth + 1,
+    rowHeights: [...element.querySelectorAll('.fishing-candidate')].map(
+      (row) => row.getBoundingClientRect().height,
+    ),
+  }))
+  assert.equal(unknownChumLayout.overflow, false)
+  assert(unknownChumLayout.rowHeights.every((height) => height >= 16))
+  assert.match(await row.innerText(), /精准提勾/)
+  const missingTimeLayout = await row
+    .locator('.fishing-time')
+    .evaluate((element) => ({
+      width: element.clientWidth,
+      contentWidth: element.scrollWidth,
+    }))
+  assert(missingTimeLayout.contentWidth <= missingTimeLayout.width)
+  await emit('Fishing', {
+    ...cast,
+    castId: 'missing-bait',
+    baitId: null,
+    time: Date.now(),
+    castTime: Date.now(),
+  })
+  assert.equal(await row.locator('.fishing-time').innerText(), '鱼饵信息未知')
+  assert.equal(await panel.locator('.fishing-timing-note').count(), 0)
   const cancelCast = {
     ...cast,
     castId: 'early-cancel',

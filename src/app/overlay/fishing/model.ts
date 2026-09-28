@@ -181,7 +181,7 @@ export function predict(
       )
       .map(baseTime)
       .filter((t) => Number.isFinite(t) && t > 0)
-    const multiplier = timeMultiplier(cast.chum)
+    const multiplier = timeMultiplier(cast.chum) ?? 1
     // Empirical bounds are soft evidence: sparse observations are never absolute exclusions.
     const minMs = scaleTime(
       profile?.minMs ?? (times.length ? Math.min(...times) : undefined),
@@ -226,7 +226,10 @@ export function predict(
       ),
       count: times.length,
       result: 'unknown',
-      reason: multiplier == null ? '撒饵状态未知' : '缺少此鱼饵的时间统计',
+      reason:
+        cast.chum == null && minMs != null && maxMs != null
+          ? '撒饵状态未知，显示未撒饵区间'
+          : '缺少此鱼饵的时间统计',
       note: profile?.note,
       source:
         profile?.minMs != null ? 'manual' : times.length ? 'observed' : 'none',
@@ -254,6 +257,7 @@ export function predict(
       !profile.weatherIds.includes(weatherId)
     )
       return { ...row, result: 'excluded', reason: '天气条件不满足' }
+    if (cast.chum == null) return row
     const unknownCondition =
       (info?.snagging === true && cast.snagging == null) ||
       (profile?.requiredStatuses?.length && cast.statuses == null) ||

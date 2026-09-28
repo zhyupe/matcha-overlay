@@ -124,10 +124,14 @@
   outline-offset: -1px;
 }
 .fishing-empty,
+.fishing-timing-note,
 .fishing-message {
   margin: 0;
   color: #fffb;
   font-size: 12px;
+}
+.fishing-timing-note {
+  flex-shrink: 0;
 }
 .fishing-message {
   margin-right: auto;
