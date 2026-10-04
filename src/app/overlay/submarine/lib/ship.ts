@@ -29,6 +29,7 @@ export interface Ship {
   parts: ShipParts
   status: number
   returnTime: number
+  conditions?: (number | null)[]
 }
 
 export interface SubmarineStatusLog {

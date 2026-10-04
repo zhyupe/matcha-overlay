@@ -1,8 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { submarineMap } from '../../../data/submarine'
+import { submarineMap, submarineParts } from '../../../data/submarine'
 import { useEvent } from '../../../lib/event'
 import type { OverlayProps } from '../../interface'
 import type { Route } from './lib/interface'
+import {
+  readPartCondition,
+  updateConditionSnapshots,
+  type ConditionSnapshots,
+  type SubmarinePartsLog,
+} from './lib/condition'
 import {
   calculateRoutes,
   formatSubmarine,
@@ -22,7 +28,21 @@ export function SubmarineOverlay({
   active,
   setActive,
 }: OverlayProps) {
-  const [ships, setShips] = useState<Ship[]>([])
+  const [shipStatus, setShips] = useState<Ship[]>([])
+  const [conditions, setConditions] = useState<ConditionSnapshots>([])
+  const ships = useMemo(
+    () =>
+      shipStatus.map((ship) => ({
+        ...ship,
+        conditions: ship.parts.map((part, slot) =>
+          readPartCondition(
+            conditions[ship.index]?.[slot],
+            submarineParts[part]?.itemId,
+          ),
+        ),
+      })),
+    [shipStatus, conditions],
+  )
   const [activeKey, setActiveKey] = useState(0)
 
   const [activeMap, setActiveMap] = useState('1')
@@ -38,6 +58,15 @@ export function SubmarineOverlay({
     })
 
     setActive()
+  })
+
+  useEvent<SubmarinePartsLog>(eventEmitter, 'SubmarineParts', (data) => {
+    setConditions((previous) => updateConditionSnapshots(previous, data))
+    if (data.reset) {
+      setShips([])
+      setActiveKey(0)
+      setRoutes([])
+    }
   })
 
   const activeShip = ships[activeKey]

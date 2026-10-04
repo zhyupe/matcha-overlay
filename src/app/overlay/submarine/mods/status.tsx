@@ -3,6 +3,7 @@ import type { PropsWithChildren } from 'react'
 import { Button } from '#components/ui/button'
 import { cn } from '#lib/utils'
 import type { SubmarineRank } from '../../../../data/submarine'
+import { formatCondition } from '../lib/condition'
 import { getShipPartName, type Ship } from '../lib/ship'
 
 const partSlots = [0, 1, 2, 3] as const
@@ -11,6 +12,7 @@ const partSlots = [0, 1, 2, 3] as const
 const tagColors = {
   white: 'border-white/20 bg-white/10 text-white/90',
   matcha: 'border-[#b7ca32]/60 bg-[#b7ca32]/15 text-[#d8eb5d]',
+  damaged: 'border-red-400/60 bg-red-950/40 text-red-200',
 }
 
 function Tag({
@@ -38,7 +40,13 @@ function ShipPart({
   ship: Ship
   slot: (typeof partSlots)[number]
 }) {
-  return <Tag>{getShipPartName(ship.type, slot, ship.parts[slot])}</Tag>
+  const condition = ship.conditions?.[slot]
+  return (
+    <Tag color={condition === 0 ? 'damaged' : 'white'}>
+      {getShipPartName(ship.type, slot, ship.parts[slot])}
+      <span className="ml-1.5 tabular-nums">{formatCondition(condition)}</span>
+    </Tag>
+  )
 }
 
 function formatReturnTime(returnTime: number) {
