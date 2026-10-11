@@ -51,7 +51,6 @@ try {
     biteTime: null,
     hookTime: null,
     castId: 'one',
-    actorId: 1,
     baitId: 29717,
     baseBaitId: 29717,
     placeId: 425,

@@ -1,3 +1,4 @@
+import { validStatistics, type FishingStatistics } from './statistics'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useEvent } from '../../../lib/event'
 import { useTimer } from '../../../lib/hook'
@@ -6,6 +7,7 @@ import { clockTime, type FishingClock, updateClock } from './clock'
 import { parseFishingImport } from './import'
 import {
   type Archive,
+  cleanFishingEvent,
   emptyArchive,
   type FishingEvent,
   mergeArchives,
@@ -17,6 +19,9 @@ import {
 const storageKey = 'matcha-fishing-v1'
 
 export function useFishing({ eventEmitter, active, setActive }: OverlayProps) {
+  const [statistics, setStatistics] = useState<FishingStatistics | null>(null)
+  const statisticsRef = useRef<FishingStatistics | null>(null)
+  const retiredSessions = useRef(new Set<string>())
   const [cast, setCast] = useState<FishingEvent | null>(null)
   const castRef = useRef<FishingEvent | null>(null)
   const clockRef = useRef<FishingClock | null>(null)
@@ -52,7 +57,8 @@ export function useFishing({ eventEmitter, active, setActive }: OverlayProps) {
     }
   }, [archive, loaded, storageError])
 
-  useEvent<FishingEvent>(eventEmitter, 'Fishing', (event) => {
+  const receiveFishing = (input: FishingEvent) => {
+    const event = cleanFishingEvent(input)
     const next = transition(castRef.current, event)
     const receivedAt = performance.now()
     clockRef.current = updateClock(clockRef.current, next, receivedAt)
@@ -67,6 +73,27 @@ export function useFishing({ eventEmitter, active, setActive }: OverlayProps) {
       setMessage('')
       setActive()
     }
+  }
+  useEvent<FishingEvent>(eventEmitter, 'Fishing', receiveFishing)
+  useEvent<FishingStatistics>(eventEmitter, 'FishingStatistics', (incoming) => {
+    if (!validStatistics(incoming) || retiredSessions.current.has(incoming.session)) return
+    const previous = statisticsRef.current
+    if (previous?.session === incoming.session && previous.revision >= incoming.revision) return
+    if (previous && previous.session !== incoming.session) retiredSessions.current.add(previous.session)
+    const next = { ...incoming, cast: incoming.cast ? cleanFishingEvent(incoming.cast) : null }
+    statisticsRef.current = next
+    setStatistics(next)
+    // A heartbeat can restore a newly opened overlay without touching an established clock.
+    if (next.cast) {
+      if (!castRef.current || next.cast.time > castRef.current.time ||
+        (next.cast.castId === castRef.current.castId && next.cast.action !== castRef.current.action))
+        receiveFishing(next.cast)
+    } else if (previous?.cast && next.enabled) {
+      castRef.current = null
+      clockRef.current = null
+      setCast(null)
+      setNow(0)
+    }
   })
   useEvent(eventEmitter, 'InitZone', () => {
     castRef.current = null
@@ -74,6 +101,7 @@ export function useFishing({ eventEmitter, active, setActive }: OverlayProps) {
     setCast(null)
     setNow(0)
     setBaseBait(null)
+    setStatistics(null)
   })
   const running = cast?.action === 'cast' || cast?.action === 'place'
   useTimer(100, active && running, () =>
@@ -108,6 +136,7 @@ export function useFishing({ eventEmitter, active, setActive }: OverlayProps) {
 
   return {
     cast,
+    statistics,
     archive,
     now,
     baseBait,

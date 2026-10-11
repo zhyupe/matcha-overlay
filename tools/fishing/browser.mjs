@@ -29,7 +29,6 @@ try {
     biteTime: null,
     hookTime: null,
     castId: 'browser-example',
-    actorId: 1,
     baitId: 29717,
     baseBaitId: 29717,
     placeId: 425,
@@ -304,7 +303,7 @@ try {
     time: Date.now(),
     castTime: Date.now(),
   })
-  assert.equal(await row.locator('.fishing-time').innerText(), '13.0–19.0 秒')
+  assert.equal(await row.locator('.fishing-time').innerText(), '13.0–19.0 秒手动')
   assert.equal(await row.locator('.fishing-window').count(), 2)
   assert.match(await row.getAttribute('class'), /fishing-unknown/)
   assert.equal(

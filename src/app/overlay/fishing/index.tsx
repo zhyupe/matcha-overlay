@@ -1,3 +1,4 @@
+import { statisticsMessage } from './statistics'
 import { type CSSProperties, useRef } from 'react'
 import {
   elapsed,
@@ -34,6 +35,7 @@ export function FishingPanel({
   const fileInput = useRef<HTMLInputElement>(null)
   const {
     cast,
+    statistics,
     archive,
     now,
     baseBait,
@@ -43,7 +45,7 @@ export function FishingPanel({
     exportArchive,
   } = fishing
   const duration = cast ? elapsed(cast, now) : 0
-  const candidates = cast ? predict(cast, archive, now) : []
+  const candidates = cast ? predict(cast, archive, now, 1500, undefined, statistics) : []
   const axis = Math.max(
     30_000,
     duration + 3000,
@@ -80,6 +82,7 @@ export function FishingPanel({
           {cast ? stateNames[cast.action] : '等待抛竿'}
         </span>
       </div>
+      {statisticsMessage(statistics, cast) && <p className="fishing-timing-note" role="status">{statisticsMessage(statistics, cast)}</p>}
       {cast && cast.chum == null && (
         <p className="fishing-timing-note">撒饵状态未知，显示未撒饵区间</p>
       )}
@@ -132,7 +135,7 @@ export function FishingPanel({
                 data-tug={tug ?? 0}
                 data-fish-id={fishId}
                 key={fishId}
-                title={`${name} · ${tugName(tug)}${hookset ? ` · ${hooksetName(hookset)}` : ''} · 所有钓饵：${allBaitsRange} · 当前钓饵：${range} · ${reason}${note ? ` · ${note}` : ''}`}
+                title={`${name} · ${tugName(tug)}${hookset ? ` · ${hooksetName(hookset)}` : ''} · 所有钓饵：${allBaitsRange} · 当前钓饵：${range} · ${reason}${note ? ` · ${note}` : ''}${candidate.source === 'community' ? ` · 鱼漂 ${candidate.count} 样本 · 全部 ${seconds(candidate.sampleMinMs!)}–${seconds(candidate.sampleMaxMs!)} 秒 · 中位数 ${seconds(candidate.medianMs!)} 秒 · 更新 ${statistics?.cachedAt ? new Date(statistics.cachedAt).toLocaleTimeString() : '未知'}` : ''}`}
               >
                 {allBaitsMinMs != null && allBaitsMaxMs != null && (
                   <span
@@ -168,7 +171,7 @@ export function FishingPanel({
                 <span className="fishing-tug" aria-label={tugName(tug)}>
                   {tug ? '!'.repeat(tug) : '?'}
                 </span>
-                <span className="fishing-time">{timeLabel}</span>
+                <span className="fishing-time">{timeLabel}{candidate.source !== 'none' && <small className="fishing-source">{candidate.source === 'manual' ? '手动' : candidate.source === 'community' ? `鱼漂 · ${candidate.count}` : `本地 · ${candidate.count}`}</small>}</span>
               </div>
             )
           })

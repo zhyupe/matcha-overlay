@@ -1,3 +1,4 @@
+import { matchingStatistics, type FishingStatistics } from './statistics'
 import { FishingCatalog } from '../../../data/fishing'
 
 export interface FishingEvent {
@@ -14,7 +15,6 @@ export interface FishingEvent {
     | 'bait'
   time: number
   castId: string | null
-  actorId: number
   castTime: number | null
   biteTime: number | null
   hookTime: number | null
@@ -112,6 +112,15 @@ export function transition(
   return next
 }
 
+// Reconstruct public records: legacy actorId and arbitrary imported fields never persist.
+export function cleanFishingEvent(event: FishingEvent): FishingEvent {
+  const { action, time, castId, castTime, biteTime, hookTime, baitId, baseBaitId,
+    placeId, tug, fishId, mooch, chum, snagging, statuses } = event
+  return { action, time, castId, castTime, biteTime, hookTime, baitId, baseBaitId,
+    placeId, tug, fishId, mooch, chum, snagging,
+    statuses: statuses == null ? null : [...statuses] }
+}
+
 export function recordCatch(archive: Archive, event: FishingEvent): Archive {
   if (
     event.action !== 'catch' ||
@@ -125,7 +134,7 @@ export function recordCatch(archive: Archive, event: FishingEvent): Archive {
   )
     return archive
   if (archive.catches.some((c) => c.castId === event.castId)) return archive
-  return { ...archive, catches: [...archive.catches, event].slice(-2000) }
+  return { ...archive, catches: [...archive.catches, cleanFishingEvent(event)].slice(-2000) }
 }
 
 export const CHUM_MULTIPLIER = 0.5
@@ -151,7 +160,10 @@ export interface Candidate {
   result: 'match' | 'unknown' | 'outside' | 'excluded'
   reason: string
   note?: string
-  source: 'manual' | 'observed' | 'none'
+  source: 'manual' | 'community' | 'observed' | 'none'
+  medianMs?: number
+  sampleMinMs?: number
+  sampleMaxMs?: number
 }
 
 export function predict(
@@ -160,8 +172,11 @@ export function predict(
   now: number,
   toleranceMs = 1500,
   weatherId?: number,
+  statistics: FishingStatistics | null = null,
 ): Candidate[] {
+  const online = matchingStatistics(statistics, cast)
   const ids = new Set(catalog.placefish[cast.placeId ?? ''] || [])
+  online.forEach(d => ids.add(d.fish_id))
   archive.catches
     .filter((c) => c.placeId === cast.placeId && c.fishId)
     .forEach((c) => {
@@ -174,6 +189,8 @@ export function predict(
     const profile = archive.profiles.find(
       (p) => p.fishId === fishId && p.baitId === cast.baitId,
     )
+    const community = online.find(d => d.fish_id === fishId && d.bait_id === cast.baitId && d.is_chum === (cast.chum ?? false))
+    const useCommunity = profile?.minMs == null && community != null
     const times = archive.catches
       .filter(
         (c) =>
@@ -183,11 +200,11 @@ export function predict(
       .filter((t) => Number.isFinite(t) && t > 0)
     const multiplier = timeMultiplier(cast.chum) ?? 1
     // Empirical bounds are soft evidence: sparse observations are never absolute exclusions.
-    const minMs = scaleTime(
+    const minMs = useCommunity ? community.range.effective_min : scaleTime(
       profile?.minMs ?? (times.length ? Math.min(...times) : undefined),
       multiplier,
     )
-    const maxMs = scaleTime(
+    const maxMs = useCommunity ? community.range.effective_max : scaleTime(
       profile?.maxMs ?? (times.length ? Math.max(...times) : undefined),
       multiplier,
     )
@@ -206,7 +223,7 @@ export function predict(
       archive.catches.filter((c) => c.fishId === fishId).map((c) => c.tug),
     )
     const tug =
-      info?.tug ??
+      info?.tug ?? community?.tug_type ??
       (observedTugs.size === 1 ? [...observedTugs][0] : null) ??
       null
     const row: Candidate = {
@@ -224,7 +241,10 @@ export function predict(
         allBaitBounds.length ? Math.max(...allBaitBounds) : undefined,
         multiplier,
       ),
-      count: times.length,
+      count: profile?.minMs != null ? 0 : useCommunity ? community.count : times.length,
+      medianMs: useCommunity ? community.percentiles.p50 : undefined,
+      sampleMinMs: useCommunity ? community.range.min : undefined,
+      sampleMaxMs: useCommunity ? community.range.max : undefined,
       result: 'unknown',
       reason:
         cast.chum == null && minMs != null && maxMs != null
@@ -232,7 +252,7 @@ export function predict(
           : '缺少此鱼饵的时间统计',
       note: profile?.note,
       source:
-        profile?.minMs != null ? 'manual' : times.length ? 'observed' : 'none',
+        profile?.minMs != null ? 'manual' : useCommunity ? 'community' : times.length ? 'observed' : 'none',
     }
     if (info?.snagging === true && cast.snagging === false)
       return { ...row, result: 'excluded', reason: '需要启用钓组' }
@@ -384,7 +404,6 @@ export function parseArchive(text: string): Archive {
       !c ||
       typeof c.castId !== 'string' ||
       !positive(c.time) ||
-      !positive(c.actorId) ||
       !positive(c.castTime) ||
       !positive(c.biteTime) ||
       !positive(c.fishId) ||
