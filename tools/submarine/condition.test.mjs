@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import {
-  updateConditionSnapshots,
-  readPartCondition,
   formatCondition,
+  readPartCondition,
+  updateConditionSnapshots,
 } from '../../src/app/overlay/submarine/lib/condition.ts'
 
 test('partial snapshots, repair and resets preserve unknown versus broken', () => {

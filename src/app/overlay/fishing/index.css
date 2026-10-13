@@ -171,4 +171,8 @@
   }
 }
 
-.fishing-source { margin-left: 0.5em; font-size: 0.8em; opacity: 0.75; }
+.fishing-source {
+  margin-left: 0.5em;
+  font-size: 0.8em;
+  opacity: 0.75;
+}

@@ -48,7 +48,10 @@ test('existing persisted values are available on the first render', () => {
     stored.set(`config:${key}`, JSON.stringify(value))
     assert.deepEqual(getConfig(key, fallback), value)
     assert.deepEqual(readHook(() => useConfig(key, fallback))[0], value)
-    assert.deepEqual(getConfigWithInit(key, () => assert.fail('must not initialize')), value)
+    assert.deepEqual(
+      getConfigWithInit(key, () => assert.fail('must not initialize')),
+      value,
+    )
   }
 })
 
@@ -66,8 +69,13 @@ test('hook updates share state and persist functional updates', () => {
 
 test('imperative initialization is shared with hooks', () => {
   setConfig('initialized', { enabled: true })
-  assert.deepEqual(readHook(() => useConfig('initialized'))[0], { enabled: true })
-  assert.equal(getConfigWithInit('generated', () => 42), 42)
+  assert.deepEqual(readHook(() => useConfig('initialized'))[0], {
+    enabled: true,
+  })
+  assert.equal(
+    getConfigWithInit('generated', () => 42),
+    42,
+  )
   assert.equal(readHook(() => useConfig('generated'))[0], 42)
 })
 

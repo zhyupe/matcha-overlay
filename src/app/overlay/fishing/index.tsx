@@ -1,4 +1,3 @@
-import { statisticsMessage } from './statistics'
 import { type CSSProperties, useRef } from 'react'
 import {
   elapsed,
@@ -10,6 +9,7 @@ import {
   predict,
   tugName,
 } from './model'
+import { statisticsMessage } from './statistics'
 import type { useFishing } from './use-fishing'
 import './index.css'
 
@@ -45,7 +45,9 @@ export function FishingPanel({
     exportArchive,
   } = fishing
   const duration = cast ? elapsed(cast, now) : 0
-  const candidates = cast ? predict(cast, archive, now, 1500, undefined, statistics) : []
+  const candidates = cast
+    ? predict(cast, archive, now, 1500, undefined, statistics)
+    : []
   const axis = Math.max(
     30_000,
     duration + 3000,
@@ -82,7 +84,11 @@ export function FishingPanel({
           {cast ? stateNames[cast.action] : '等待抛竿'}
         </span>
       </div>
-      {statisticsMessage(statistics, cast) && <p className="fishing-timing-note" role="status">{statisticsMessage(statistics, cast)}</p>}
+      {statisticsMessage(statistics, cast) && (
+        <p className="fishing-timing-note" role="status">
+          {statisticsMessage(statistics, cast)}
+        </p>
+      )}
       {cast && cast.chum == null && (
         <p className="fishing-timing-note">撒饵状态未知，显示未撒饵区间</p>
       )}
@@ -171,7 +177,18 @@ export function FishingPanel({
                 <span className="fishing-tug" aria-label={tugName(tug)}>
                   {tug ? '!'.repeat(tug) : '?'}
                 </span>
-                <span className="fishing-time">{timeLabel}{candidate.source !== 'none' && <small className="fishing-source">{candidate.source === 'manual' ? '手动' : candidate.source === 'community' ? `鱼漂 · ${candidate.count}` : `本地 · ${candidate.count}`}</small>}</span>
+                <span className="fishing-time">
+                  {timeLabel}
+                  {candidate.source !== 'none' && (
+                    <small className="fishing-source">
+                      {candidate.source === 'manual'
+                        ? '手动'
+                        : candidate.source === 'community'
+                          ? `鱼漂 · ${candidate.count}`
+                          : `本地 · ${candidate.count}`}
+                    </small>
+                  )}
+                </span>
               </div>
             )
           })

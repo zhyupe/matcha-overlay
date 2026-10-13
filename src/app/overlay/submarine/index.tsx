@@ -2,13 +2,13 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { submarineMap, submarineParts } from '../../../data/submarine'
 import { useEvent } from '../../../lib/event'
 import type { OverlayProps } from '../../interface'
-import type { Route } from './lib/interface'
 import {
-  readPartCondition,
-  updateConditionSnapshots,
   type ConditionSnapshots,
+  readPartCondition,
   type SubmarinePartsLog,
+  updateConditionSnapshots,
 } from './lib/condition'
+import type { Route } from './lib/interface'
 import {
   calculateRoutes,
   formatSubmarine,

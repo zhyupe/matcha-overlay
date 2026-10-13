@@ -1,4 +1,3 @@
-import { validStatistics, type FishingStatistics } from './statistics'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useEvent } from '../../../lib/event'
 import { useTimer } from '../../../lib/hook'
@@ -15,6 +14,7 @@ import {
   recordCatch,
   transition,
 } from './model'
+import { type FishingStatistics, validStatistics } from './statistics'
 
 const storageKey = 'matcha-fishing-v1'
 
@@ -76,17 +76,33 @@ export function useFishing({ eventEmitter, active, setActive }: OverlayProps) {
   }
   useEvent<FishingEvent>(eventEmitter, 'Fishing', receiveFishing)
   useEvent<FishingStatistics>(eventEmitter, 'FishingStatistics', (incoming) => {
-    if (!validStatistics(incoming) || retiredSessions.current.has(incoming.session)) return
+    if (
+      !validStatistics(incoming) ||
+      retiredSessions.current.has(incoming.session)
+    )
+      return
     const previous = statisticsRef.current
-    if (previous?.session === incoming.session && previous.revision >= incoming.revision) return
-    if (previous && previous.session !== incoming.session) retiredSessions.current.add(previous.session)
-    const next = { ...incoming, cast: incoming.cast ? cleanFishingEvent(incoming.cast) : null }
+    if (
+      previous?.session === incoming.session &&
+      previous.revision >= incoming.revision
+    )
+      return
+    if (previous && previous.session !== incoming.session)
+      retiredSessions.current.add(previous.session)
+    const next = {
+      ...incoming,
+      cast: incoming.cast ? cleanFishingEvent(incoming.cast) : null,
+    }
     statisticsRef.current = next
     setStatistics(next)
     // A heartbeat can restore a newly opened overlay without touching an established clock.
     if (next.cast) {
-      if (!castRef.current || next.cast.time > castRef.current.time ||
-        (next.cast.castId === castRef.current.castId && next.cast.action !== castRef.current.action))
+      if (
+        !castRef.current ||
+        next.cast.time > castRef.current.time ||
+        (next.cast.castId === castRef.current.castId &&
+          next.cast.action !== castRef.current.action)
+      )
         receiveFishing(next.cast)
     } else if (previous?.cast && next.enabled) {
       castRef.current = null
