@@ -77,6 +77,7 @@ export interface XivapiPagedResponse<T> {
 }
 
 const itemCache = new Cache<number, ItemRecord>('gearset-item', {
+  max: 10_000,
   version: '2026.06.13',
 })
 

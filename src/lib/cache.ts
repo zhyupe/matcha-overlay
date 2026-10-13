@@ -1,20 +1,20 @@
 import { debounce } from 'debounce'
-import LRU, { type Entry } from 'lru-cache'
+import { LRUCache } from 'lru-cache'
 import { tryParseJson } from './json'
 
-export class Cache<K, V> extends LRU<K, V> {
+export class Cache<K extends {}, V extends {}> extends LRUCache<K, V> {
   private version?: string
 
   constructor(
     private name: string,
-    options: LRU.Options<K, V> & { version?: string } = {},
+    options: LRUCache.Options<K, V, unknown> & { version?: string },
   ) {
     super({
       ...options,
-      dispose: (key: K, value: V) => {
+      dispose: (value, key, reason) => {
         this.saveToStorage()
         if (options.dispose) {
-          options.dispose(key, value)
+          options.dispose(value, key, reason)
         }
       },
     })
@@ -37,8 +37,12 @@ export class Cache<K, V> extends LRU<K, V> {
     const dump = window.localStorage.getItem(this.name)
     if (!dump) return
 
-    const data = tryParseJson<Entry<K, V>[]>(dump)
-    if (data) {
+    const data = tryParseJson<[K, LRUCache.Entry<V>][]>(dump)
+    // Older lru-cache versions stored objects instead of [key, entry] tuples.
+    if (
+      Array.isArray(data) &&
+      data.every((entry) => Array.isArray(entry) && entry.length === 2)
+    ) {
       this.load(data)
     }
   }
@@ -48,8 +52,12 @@ export class Cache<K, V> extends LRU<K, V> {
     window.localStorage.setItem(this.name, JSON.stringify(this.dump()))
   }, 200)
 
-  set(key: K, value: V, maxAge?: number): boolean {
-    const result = super.set(key, value, maxAge)
+  override set(
+    key: K,
+    value: V | undefined,
+    options?: LRUCache.SetOptions<K, V, unknown>,
+  ): this {
+    const result = super.set(key, value, options)
     this.saveToStorage()
 
     return result

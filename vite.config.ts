@@ -1,7 +1,6 @@
 import 'dotenv/config'
 import { defineConfig } from 'vite'
 import { existsSync, readFileSync } from 'fs'
-import react from '@vitejs/plugin-react-swc'
 import tailwindcss from '@tailwindcss/vite'
 
 const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'))
@@ -17,10 +16,14 @@ export default defineConfig({
     'process.env.MOCK_LOGS': JSON.stringify(mockLogs)
   },
   plugins: [
-    react(),
     tailwindcss(),
   ],
   build: {
+    rolldownOptions: {
+      checks: {
+        moduleLevelDirective: false,
+      },
+    },
     rollupOptions: {
       input: {
         main: 'index.html',
