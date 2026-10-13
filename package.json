@@ -30,8 +30,8 @@
   "scripts": {
     "start": "vite",
     "build": "vite build",
-    "predeploy": "npm run build",
-    "staging": "npm run build -- --staging && bash ./deploy.sh --staging",
+    "predeploy": "pnpm run build",
+    "staging": "pnpm run build --staging && bash ./deploy.sh --staging",
     "deploy": "bash ./deploy.sh",
     "lint": "biome check . --fix"
   },
@@ -55,5 +55,5 @@
     "#lib/*": "./src/lib/*.ts",
     "#hooks/*": "./src/hooks/*.ts"
   },
-  "packageManager": "yarn@4.8.1"
+  "packageManager": "pnpm@11.6.0"
 }

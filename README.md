@@ -13,6 +13,18 @@ An overlay for FFXIV providing market recorder, treasure spot and more function.
 A proper version of **Cafe.Matcha** plugin is required. At this time, the plugin is only
 available to Chinese servers and can be acquired in [CafeACT](https://ffcafe.org/act/)
 
+### Development
+
+Use Node.js 24 and pnpm 11.6.0 (pinned in `package.json`).
+
+```sh
+corepack enable
+pnpm install --frozen-lockfile
+pnpm start
+```
+
+Run `pnpm build` to create the production build in `dist/`.
+
 ### License
 
 AGPL-3.0 © [zhyupe](https://github.com/zhyupe)

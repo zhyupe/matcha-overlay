@@ -10,13 +10,13 @@ jobs:
           persist-credentials: false
 
       - name: Cache Node Dependencies 🎶
-        id: cache
-        uses: actions/cache@v3
+        uses: pnpm/action-setup@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          path: |
-            .pnp.*
-            .yarn/cache
-          key: ${{runner.OS}}-yarn-caches-${{ hashFiles('yarn.lock') }}
+          node-version: 24
+          cache: pnpm
 
       - name: Create env file 🍕
         run: |
@@ -24,9 +24,8 @@ jobs:
 
       - name: Install and Build 🔧
         run: |
-          corepack enable
-          yarn install
-          yarn build
+          pnpm install --frozen-lockfile
+          pnpm run build
 
       - name: Upload artifact 🎁
         uses: actions/upload-artifact@v4
