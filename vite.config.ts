@@ -11,8 +11,6 @@ export default defineConfig({
   base: '',
   define: {
     'process.env.build': `'${pkg.version}-${Math.floor(buildTime / 1000 / 60 / 60)}'`,
-    'process.env.POST_MOOGLE_API': `'${process.env.POST_MOOGLE_API}'`,
-    'process.env.POST_MOOGLE_NATS': `'${process.env.POST_MOOGLE_NATS}'`,
     'process.env.MOCK_LOGS': JSON.stringify(mockLogs)
   },
   plugins: [
@@ -30,8 +28,5 @@ export default defineConfig({
         map: 'map.html',
       },
     },
-  },
-  esbuild: {
-    jsxInject: 'import React from "react"',
   },
 })
