@@ -66,6 +66,18 @@ try {
   assert.equal(row.maxMs, 9000)
   assert.equal(row.count, 40)
   assert.equal(row.medianMs, 7500)
+  const noChum = { ...online, distributions: online.distributions.map(d => ({ ...d, is_chum: false })) }
+  row = predict(cast, emptyArchive(), 16000, 1500, undefined, noChum)[0]
+  assert.equal(row.source, 'community')
+  assert.equal(row.minMs, 3000); assert.equal(row.maxMs, 4500)
+  assert.equal(row.medianMs, 3750); assert.equal(row.sampleMinMs, 2500); assert.equal(row.sampleMaxMs, 5000)
+  assert.equal(row.count, 40); assert.match(row.note, /50%/)
+  row = predict(cast, emptyArchive(), 16000, 1500, undefined,
+    { ...online, distributions: [...noChum.distributions, ...online.distributions] })[0]
+  assert.equal(row.minMs, 6000); assert.equal(row.maxMs, 9000) // exact state wins, no double scaling
+  const unknownCast = { ...cast, chum: null }
+  row = predict(unknownCast, emptyArchive(), 16000, 1500, undefined, { ...noChum, cast: unknownCast })[0]
+  assert.equal(row.minMs, 6000); assert.equal(row.result, 'unknown')
   const archive = emptyArchive()
   archive.profiles.push({ fishId: 30, baitId: 10, minMs: 8000, maxMs: 12000 })
   row = predict(cast, archive, 16000, 1500, undefined, online)[0]

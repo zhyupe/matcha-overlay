@@ -221,12 +221,10 @@ export function predict(
     const profile = archive.profiles.find(
       (p) => p.fishId === fishId && p.baitId === cast.baitId,
     )
-    const community = online.find(
-      (d) =>
-        d.fish_id === fishId &&
-        d.bait_id === cast.baitId &&
-        d.is_chum === (cast.chum ?? false),
-    )
+    const matching = online.filter(d => d.fish_id === fishId && d.bait_id === cast.baitId)
+    const community = matching.find(d => d.is_chum === (cast.chum ?? false)) ??
+      (cast.chum === true ? matching.find(d => !d.is_chum) : undefined)
+    const communityMultiplier = cast.chum === true && community?.is_chum === false ? CHUM_MULTIPLIER : 1
     const useCommunity = profile?.minMs == null && community != null
     const times = archive.catches
       .filter(
@@ -237,18 +235,14 @@ export function predict(
       .filter((t) => Number.isFinite(t) && t > 0)
     const multiplier = timeMultiplier(cast.chum) ?? 1
     // Empirical bounds are soft evidence: sparse observations are never absolute exclusions.
-    const minMs = useCommunity
-      ? community.range.effective_min
-      : scaleTime(
-          profile?.minMs ?? (times.length ? Math.min(...times) : undefined),
-          multiplier,
-        )
-    const maxMs = useCommunity
-      ? community.range.effective_max
-      : scaleTime(
-          profile?.maxMs ?? (times.length ? Math.max(...times) : undefined),
-          multiplier,
-        )
+    const minMs = useCommunity ? community.range.effective_min * communityMultiplier : scaleTime(
+      profile?.minMs ?? (times.length ? Math.min(...times) : undefined),
+      multiplier,
+    )
+    const maxMs = useCommunity ? community.range.effective_max * communityMultiplier : scaleTime(
+      profile?.maxMs ?? (times.length ? Math.max(...times) : undefined),
+      multiplier,
+    )
     const allBaitProfiles = archive.profiles.filter((p) => p.fishId === fishId)
     const allBaitTimes = archive.catches
       .filter((c) => c.fishId === fishId)
@@ -283,21 +277,16 @@ export function predict(
         allBaitBounds.length ? Math.max(...allBaitBounds) : undefined,
         multiplier,
       ),
-      count:
-        profile?.minMs != null
-          ? 0
-          : useCommunity
-            ? community.count
-            : times.length,
-      medianMs: useCommunity ? community.percentiles.p50 : undefined,
-      sampleMinMs: useCommunity ? community.range.min : undefined,
-      sampleMaxMs: useCommunity ? community.range.max : undefined,
+      count: profile?.minMs != null ? 0 : useCommunity ? community.count : times.length,
+      medianMs: useCommunity ? community.percentiles.p50 * communityMultiplier : undefined,
+      sampleMinMs: useCommunity ? community.range.min * communityMultiplier : undefined,
+      sampleMaxMs: useCommunity ? community.range.max * communityMultiplier : undefined,
       result: 'unknown',
       reason:
         cast.chum == null && minMs != null && maxMs != null
           ? '撒饵状态未知，显示未撒饵区间'
           : '缺少此鱼饵的时间统计',
-      note: profile?.note,
+      note: useCommunity && communityMultiplier !== 1 ? '未撒饵样本按 50% 换算' : profile?.note,
       source:
         profile?.minMs != null
           ? 'manual'
