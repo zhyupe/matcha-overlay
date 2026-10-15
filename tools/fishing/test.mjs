@@ -515,6 +515,11 @@ try {
   assert.equal(archive.catches.length, 1)
   assert.equal(recordCatch(archive, caught), archive, 'duplicate catch ignored')
   assert.equal(
+    recordCatch(archive, { ...caught, castId: 'unknown-chum', chum: null }),
+    archive,
+    'unknown chum is not saved locally',
+  )
+  assert.equal(
     recordCatch(archive, { ...caught, castId: 'other', biteTime: null }),
     archive,
     'missing bite not trained',

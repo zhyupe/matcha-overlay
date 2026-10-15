@@ -153,6 +153,7 @@ export function cleanFishingEvent(event: FishingEvent): FishingEvent {
 export function recordCatch(archive: Archive, event: FishingEvent): Archive {
   if (
     event.action !== 'catch' ||
+    event.chum == null ||
     !event.castId ||
     !event.fishId ||
     event.castTime == null ||
