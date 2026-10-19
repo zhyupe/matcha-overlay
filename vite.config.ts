@@ -21,8 +21,6 @@ export default defineConfig({
       checks: {
         moduleLevelDirective: false,
       },
-    },
-    rollupOptions: {
       input: {
         main: 'index.html',
         map: 'map.html',

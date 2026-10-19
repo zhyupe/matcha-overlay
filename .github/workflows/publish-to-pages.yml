@@ -26,6 +26,8 @@ jobs:
         run: |
           pnpm install --frozen-lockfile
           pnpm run build
+          test -s dist/index.html
+          test -s dist/map.html
 
       - name: Upload artifact 🎁
         uses: actions/upload-artifact@v4
