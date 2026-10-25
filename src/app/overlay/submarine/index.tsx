@@ -49,6 +49,13 @@ export function SubmarineOverlay({
   const [routes, setRoutes] = useState<Route[]>([])
   const spotStatus = useSpotStatus()
 
+  useEvent(eventEmitter, 'Reset', () => {
+    setShips([])
+    setConditions([])
+    setActiveKey(0)
+    setRoutes([])
+  })
+
   useEvent<SubmarineStatusLog>(eventEmitter, 'SubmarineStatus', (data) => {
     const ship = formatSubmarine(data)
     setShips((prev) => {

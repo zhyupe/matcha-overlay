@@ -52,6 +52,8 @@ export function MarketOverlay({
     setItems((items) => items.clear())
   }
 
+  useEvent(eventEmitter, 'Reset', reset)
+
   useEvent<MarketBoardItemListingDTO>(
     eventEmitter,
     'MarketBoardItemListing',

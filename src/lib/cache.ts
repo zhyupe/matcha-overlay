@@ -1,3 +1,4 @@
+import { sourceStorage } from '../source'
 import { debounce } from 'debounce'
 import { LRUCache } from 'lru-cache'
 import { tryParseJson } from './json'
@@ -27,14 +28,14 @@ export class Cache<K extends {}, V extends {}> extends LRUCache<K, V> {
   }
 
   loadFromStorage() {
-    if (!window.localStorage) return
+    if (!sourceStorage) return
 
     if (this.version) {
-      const storageVersion = window.localStorage.getItem(`${this.name}:ver`)
+      const storageVersion = sourceStorage.getItem(`${this.name}:ver`)
       if (storageVersion !== this.version) return
     }
 
-    const dump = window.localStorage.getItem(this.name)
+    const dump = sourceStorage.getItem(this.name)
     if (!dump) return
 
     const data = tryParseJson<[K, LRUCache.Entry<V>][]>(dump)
@@ -48,8 +49,8 @@ export class Cache<K extends {}, V extends {}> extends LRUCache<K, V> {
   }
 
   saveToStorage = debounce(() => {
-    if (!window.localStorage) return
-    window.localStorage.setItem(this.name, JSON.stringify(this.dump()))
+    if (!sourceStorage) return
+    sourceStorage.setItem(this.name, JSON.stringify(this.dump()))
   }, 200)
 
   override set(

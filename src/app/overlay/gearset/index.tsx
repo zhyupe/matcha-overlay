@@ -62,6 +62,11 @@ export function GearsetOverlay({
   const [mine, setMine] = useState(List<TimedGearsetDTO>())
   const [others, setOthers] = useState(List<TimedGearsetDTO>())
 
+  useEvent(eventEmitter, 'Reset', () => {
+    setMine(List())
+    setOthers(List())
+  })
+
   useEvent<GearsetDTO>(eventEmitter, 'Gearset', (info, log) => {
     if (!active && !info.self) {
       setActive()

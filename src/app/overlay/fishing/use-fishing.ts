@@ -1,8 +1,9 @@
+import { sourceStorage, mojitoSource, getSourceClock } from '../../../source'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useEvent } from '../../../lib/event'
 import { useTimer } from '../../../lib/hook'
 import type { OverlayProps } from '../../interface'
-import { clockTime, type FishingClock, updateClock } from './clock'
+import { displayClockTime, type FishingClock, updateClock } from './clock'
 import { parseFishingImport } from './import'
 import {
   type Archive,
@@ -40,7 +41,7 @@ export function useFishing({ eventEmitter, active, setActive }: OverlayProps) {
 
   useEffect(() => {
     try {
-      const text = localStorage.getItem(storageKey)
+      const text = sourceStorage.getItem(storageKey)
       if (text) updateArchive(parseArchive(text))
     } catch {
       setStorageError('本地数据读取失败，原数据未覆盖。')
@@ -51,7 +52,7 @@ export function useFishing({ eventEmitter, active, setActive }: OverlayProps) {
   useEffect(() => {
     if (!loaded || storageError) return
     try {
-      localStorage.setItem(storageKey, JSON.stringify(archive))
+      sourceStorage.setItem(storageKey, JSON.stringify(archive))
     } catch {
       setStorageError('本地保存失败，请导出备份。')
     }
@@ -62,7 +63,7 @@ export function useFishing({ eventEmitter, active, setActive }: OverlayProps) {
     const next = transition(castRef.current, event)
     const receivedAt = performance.now()
     clockRef.current = updateClock(clockRef.current, next, receivedAt)
-    setNow(clockTime(clockRef.current, receivedAt))
+    setNow(displayClockTime(clockRef.current, receivedAt, mojitoSource ? getSourceClock() : undefined))
     castRef.current = next
     setCast(next)
     if (next === event && event.action === 'catch') {
@@ -111,17 +112,21 @@ export function useFishing({ eventEmitter, active, setActive }: OverlayProps) {
       setNow(0)
     }
   })
-  useEvent(eventEmitter, 'InitZone', () => {
+  const resetSession = () => {
     castRef.current = null
     clockRef.current = null
     setCast(null)
     setNow(0)
     setBaseBait(null)
     setStatistics(null)
-  })
+    statisticsRef.current = null
+    retiredSessions.current.clear()
+  }
+  useEvent(eventEmitter, 'InitZone', resetSession)
+  useEvent(eventEmitter, 'Reset', resetSession)
   const running = cast?.action === 'cast' || cast?.action === 'place'
   useTimer(100, active && running, () =>
-    setNow(clockTime(clockRef.current, performance.now())),
+    setNow(displayClockTime(clockRef.current, performance.now(), mojitoSource ? getSourceClock() : undefined)),
   )
 
   function exportArchive() {

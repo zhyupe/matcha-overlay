@@ -1,3 +1,4 @@
+import { sourceStorage } from '../../source'
 import {
   type CSSProperties,
   createContext,
@@ -13,7 +14,7 @@ const matchaIcon = {
 }
 
 const useAprilStyle = (() => {
-  const setting = localStorage.getItem('force-april-style')
+  const setting = sourceStorage.getItem('force-april-style')
   if (setting === 'true') {
     return true
   }

@@ -13,6 +13,8 @@ export interface TreasureSpotDTO {
 export function useTreasureSpot(eventEmitter: EventEmitter) {
   const [info, setInfo] = useState<TreasureSpotDTO>()
 
+  useEvent(eventEmitter, 'Reset', () => setInfo(undefined))
+
   useEvent<TreasureSpotDTO>(eventEmitter, 'TreasureSpot', (data) => {
     if (
       (info && data.item === info.item && data.location === info.location) ||

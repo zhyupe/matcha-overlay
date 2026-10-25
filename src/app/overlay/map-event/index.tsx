@@ -160,6 +160,10 @@ export function MapEventOverlay(props: OverlayProps) {
     setActive: showFishing,
   })
   useEvent(eventEmitter, 'InitZone', () => setMode('map'))
+  useEvent(eventEmitter, 'Reset', () => {
+    setMode('map')
+    setMapInfo({ map: 0 })
+  })
 
   const action = useCallback<MapAction>(
     (nextMapInfo: MapInfo) => {

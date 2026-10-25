@@ -1,4 +1,5 @@
 import { tryParseJson } from './lib/json'
+import { mojitoSource } from './source'
 
 export interface NgldMessage {
   [x: string]: any
@@ -15,6 +16,7 @@ const subscribers: Record<string, NgldSubscriber<any>[] | undefined> = {}
 let eventsStarted = false
 
 const sendMessage = (() => {
+  if (mojitoSource) return () => {}
   const wsUrl = /[?&]OVERLAY_WS=([^&]+)/.exec(window.location.href)
 
   if (wsUrl) {
@@ -171,7 +173,7 @@ export const callOverlayHandler = (msg: NgldMessage) => {
 }
 
 export const startOverlayEvents = () => {
-  eventsStarted = false
+  eventsStarted = true
 
   sendMessage({
     call: 'subscribe',

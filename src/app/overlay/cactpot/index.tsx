@@ -14,6 +14,8 @@ export function CactpotOverlay({
 }: OverlayProps) {
   const [table, setTable] = useState(makeEmptyState)
 
+  useEvent(eventEmitter, 'Reset', () => setTable(makeEmptyState()))
+
   useEvent<MiniCactpotDTO>(eventEmitter, 'MiniCactpot', (info) => {
     if (!active) {
       setActive()

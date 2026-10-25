@@ -14,7 +14,8 @@ import { useConfigBoolean } from '../lib/config'
 import { tryParseJson } from '../lib/json'
 import { SeasonContext } from '../lib/season'
 import { trackVersion } from '../lib/track'
-import { addOverlayListener, startOverlayEvents } from '../ngld'
+import { addOverlayListener, removeOverlayListener, startOverlayEvents } from '../ngld'
+import { mojitoSource, startMojito } from '../source'
 import type { LogEvent, OverlayProps } from './interface'
 import { ActWsNotice } from './notice/actws'
 import { WelcomeNotice } from './notice/welcome'
@@ -139,7 +140,7 @@ function Header({
 }
 
 function App() {
-  const isActWS = window.location.search.includes('HOST_PORT')
+  const isActWS = !mojitoSource && window.location.search.includes('HOST_PORT')
   const eventEmitter = useMemo(() => new EventEmitter(), [])
   const [minified, { set: setMinified }] = useConfigBoolean(
     'app-minified',
@@ -152,6 +153,35 @@ function App() {
   const { className, style } = useContext(SeasonContext)
 
   useEffect(() => {
+    if (mojitoSource) {
+      let stopped = false
+      let dispose: (() => void) | undefined
+      void startMojito(
+        (event) => {
+          if (stopped) return
+          eventEmitter.emit(event.type, {
+            time: new Date(event.timestamp),
+            type: event.type,
+            version: 'Mojito',
+            content: event.content,
+          })
+        },
+        (metadata) => {
+          if (stopped) return
+          setVersion(metadata.version || 'Mojito')
+          setLanguage(metadata.language || 'chs')
+        },
+      )
+        .then((cleanup) => {
+          if (stopped) cleanup()
+          else dispose = cleanup
+        })
+        .catch(console.error)
+      return () => {
+        stopped = true
+        dispose?.()
+      }
+    }
     if (isActWS) {
       ;(window as any).__OverlayPlugin_ws_faker = () => {}
       return
@@ -185,7 +215,8 @@ function App() {
       eventEmitter.emit(type, event)
     }
 
-    addOverlayListener('LogLine', ({ line }: LogEvent) => handler(line))
+    const listener = ({ line }: LogEvent) => handler(line)
+    addOverlayListener('LogLine', listener)
 
     const { hostname } = window.location
     if (hostname === '127.0.0.1' || hostname === 'localhost') {
@@ -200,6 +231,7 @@ function App() {
     }
 
     startOverlayEvents()
+    return () => removeOverlayListener('LogLine', listener)
   }, [eventEmitter, isActWS])
 
   useEffect(() => {
