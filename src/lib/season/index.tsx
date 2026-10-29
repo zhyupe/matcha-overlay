@@ -1,10 +1,11 @@
-import { sourceStorage } from '../../source'
 import {
   type CSSProperties,
   createContext,
   type PropsWithChildren,
   useMemo,
 } from 'react'
+import { mojitoSource, sourceStorage } from '../../source'
+import { useImageUrl } from '../image'
 import './2025.scss'
 
 const matchaIcon = {
@@ -134,7 +135,21 @@ export function SeasonProvider({ children }: PropsWithChildren) {
     }
   }, [])
 
+  const background = useImageUrl(value.style?.backgroundImage?.slice(4, -1))
+  const resolved = useMemo(
+    () =>
+      mojitoSource && value.style
+        ? {
+            ...value,
+            style: {
+              ...value.style,
+              backgroundImage: background ? `url(${background})` : 'none',
+            },
+          }
+        : value,
+    [value, background],
+  )
   return (
-    <SeasonContext.Provider value={value}>{children}</SeasonContext.Provider>
+    <SeasonContext.Provider value={resolved}>{children}</SeasonContext.Provider>
   )
 }

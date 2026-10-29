@@ -118,3 +118,15 @@
   height: calc(100% - 40px);
   overflow: auto;
 }
+
+html[data-matcha-view="overlay"] .header {
+  -webkit-app-region: drag;
+}
+html[data-matcha-view="overlay"] .logo,
+html[data-matcha-view="overlay"] .header .tab,
+html[data-matcha-view="overlay"] .header-menu,
+html[data-matcha-view="overlay"] button,
+html[data-matcha-view="overlay"] input,
+html[data-matcha-view="overlay"] select {
+  -webkit-app-region: no-drag;
+}

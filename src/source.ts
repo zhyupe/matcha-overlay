@@ -1,5 +1,6 @@
 import type { Value } from '@ffcafe/mojito-plugin-sdk'
 import type { ViewBridge } from '@ffcafe/mojito-plugin-sdk/view'
+import { hostFetch } from './transport'
 
 interface DataSourceInfo {
   revision: string
@@ -226,7 +227,17 @@ export async function command(
 export async function prepareSource() {
   if (!mojitoSource) return
   const { connectView } = await import('@ffcafe/mojito-plugin-sdk/view')
-  bridge = await connectView()
+  const connection = await connectView()
+  bridge = connection
+  window.fetch = hostFetch(
+    (url, signal) =>
+      connection.command(
+        'matcha.command',
+        { action: 'http', url, options: { method: 'GET' } },
+        { signal },
+      ),
+    window.fetch.bind(window),
+  )
   document.documentElement.dataset.matchaView = bridge.identity.kind
   const touched = new Set<string>()
   const changes = bridge.subscribe('matcha.config', (batch) => {

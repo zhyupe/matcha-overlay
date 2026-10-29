@@ -1,4 +1,8 @@
-import { useCallback, useEffect, useRef } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useRef } from 'react'
+import { mojitoSource } from '../../source'
+
+const MojitoMap = lazy(() => import('./mojito'))
+
 import type { Marker } from '../../map/interface'
 
 export interface MapInfo {
@@ -6,7 +10,16 @@ export interface MapInfo {
   markers?: Marker[]
 }
 
-export function EorzeaMap({ map, markers }: MapInfo) {
+export function EorzeaMap(value: MapInfo) {
+  return mojitoSource ? (
+    <Suspense fallback={null}>
+      <MojitoMap {...value} />
+    </Suspense>
+  ) : (
+    <LegacyMap {...value} />
+  )
+}
+function LegacyMap({ map, markers }: MapInfo) {
   const ref = useRef<HTMLIFrameElement>(null)
   const notify = useCallback(() => {
     const iframe = ref.current
@@ -17,7 +30,7 @@ export function EorzeaMap({ map, markers }: MapInfo) {
 
   useEffect(() => {
     notify()
-  }, [notify, ref.current])
+  }, [notify])
 
   return (
     <iframe

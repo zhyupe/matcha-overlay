@@ -8,6 +8,7 @@ import {
   SelectValue,
 } from '#components/ui/select'
 import type { SubmarineMap } from '../../../../data/submarine'
+import { useImageUrl } from '../../../../lib/image'
 import { xivapi } from '../../../../lib/xivapi'
 import type { useSpotStatus } from '../lib/ship'
 
@@ -37,7 +38,8 @@ const spotToCanvas = ({ x, y }: { x: number; y: number }): [number, number] => [
 const distance2 = (x1: number, y1: number, x2: number, y2: number) =>
   Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
 
-function useImage(src?: string) {
+function useImage(input?: string) {
+  const src = useImageUrl(input)
   const [image, setImage] = useState<HTMLImageElement>()
 
   useEffect(() => {

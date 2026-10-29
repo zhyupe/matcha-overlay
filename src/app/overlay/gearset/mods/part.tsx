@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Glamour, HQ, ILvl } from '../../../../components/icon'
+import { useImageUrl } from '../../../../lib/image'
 import {
   type ItemRecord,
   itemName,
@@ -136,6 +137,8 @@ export function GearsetPart({
     }
   }, [language, part])
 
+  const icon = useImageUrl(record ? xivapi.formatIconUrl(record.i) : undefined)
+
   if (!part?.item) {
     return <div className="gearset-item gearset-item-empty">空栏位</div>
   }
@@ -144,7 +147,6 @@ export function GearsetPart({
     return <div className="gearset-item gearset-item-empty">载入中，请稍候</div>
   }
 
-  const icon = xivapi.formatIconUrl(record.i)
   return (
     <div className="gearset-item">
       <div className="gearset-item-icon">

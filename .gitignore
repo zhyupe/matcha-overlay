@@ -6,6 +6,8 @@
 
 # production
 /dist
+/dist-mojito
+/.tmp
 
 # misc
 .DS_Store
