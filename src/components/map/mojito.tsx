@@ -1,11 +1,15 @@
 import libraryCss from '@thewakingsands/eorzea-interactive-map/dist/map.css?inline'
-import { useEffect, useRef, useSyncExternalStore } from 'react'
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { mapDataProvider } from '../../map/data-provider'
 import { displayMap } from '../../map/display'
 import type { EoMap } from '../../map/eorzea-map'
 import mapCss from '../../map/index.css?inline'
 import { mapImages } from '../../map/transport'
-import { getMapDataGeneration, watchMapDataGeneration } from '../../source'
+import {
+  getMapDataGeneration,
+  getSourceStatus,
+  watchMapDataGeneration,
+} from '../../source'
 import iconCss from '../icon/index.css?inline'
 import type { MapInfo } from './index'
 
@@ -18,6 +22,7 @@ export default function MojitoMap(value: MapInfo) {
 }
 
 function MapInstance(value: MapInfo) {
+  const [error, setError] = useState<string>()
   const host = useRef<HTMLDivElement>(null)
   const latest = useRef(value)
   latest.current = value
@@ -29,6 +34,15 @@ function MapInstance(value: MapInfo) {
     let instance: EoMap | undefined
     let resources: ReturnType<typeof mapImages> | undefined
     let queued = Promise.resolve()
+    const failed = (error: unknown) => {
+      if (disposed) return
+      console.error(error)
+      setError(
+        getSourceStatus().state === 'error'
+          ? getSourceStatus().message
+          : '当前客户端地图资料不可用',
+      )
+    }
     const element = host.current
     if (!element) return
     const shadow = element.shadowRoot ?? element.attachShadow({ mode: 'open' })
@@ -89,15 +103,11 @@ function MapInstance(value: MapInfo) {
                 shadow.getElementById('title') as HTMLElement,
               )
           })
-          .catch((error) => {
-            if (!disposed) console.error(error)
-          })
+          .catch(failed)
       }
       update.current(latest.current)
     }
-    void initialize().catch((error) => {
-      if (!disposed) console.error(error)
-    })
+    void initialize().catch(failed)
     return () => {
       disposed = true
       source.dispose()
@@ -112,14 +122,18 @@ function MapInstance(value: MapInfo) {
     update.current?.({ map: value.map, markers: value.markers })
   }, [value.map, value.markers])
   return (
-    <div
-      ref={host}
-      style={{
-        border: 0,
-        background: 'transparent',
-        height: '100%',
-        width: '100%',
-      }}
-    />
+    <>
+      {error && <div role="status">{error}</div>}
+      <div
+        ref={host}
+        style={{
+          display: error ? 'none' : undefined,
+          border: 0,
+          background: 'transparent',
+          height: '100%',
+          width: '100%',
+        }}
+      />
+    </>
   )
 }
