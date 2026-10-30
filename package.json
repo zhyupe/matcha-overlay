@@ -38,7 +38,7 @@
     "build:mojito": "vite build --mode mojito --outDir dist-mojito"
   },
   "devDependencies": {
-    "@thewakingsands/eorzea-interactive-map": "1.1.1",
+    "@thewakingsands/eorzea-interactive-map": "2.0.0-beta.1",
     "@types/debounce": "^1.2.0",
     "@types/events": "^3.0.0",
     "@types/leaflet": "^1.7.9",

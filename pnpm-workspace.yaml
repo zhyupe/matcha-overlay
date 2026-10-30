@@ -2,3 +2,6 @@ allowBuilds:
   '@parcel/watcher': true
   '@swc/core': true
   esbuild: true
+minimumReleaseAgeExclude:
+  - '@thewakingsands/eorzea-interactive-map@2.0.0-beta.1'
+  - '@thewakingsands/xivapi-v2@1.1.0'

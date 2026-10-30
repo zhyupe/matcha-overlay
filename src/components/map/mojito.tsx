@@ -1,5 +1,4 @@
 import libraryCss from '@thewakingsands/eorzea-interactive-map/dist/map.css?inline'
-import leafletCss from 'leaflet/dist/leaflet.css?inline'
 import { useEffect, useRef } from 'react'
 import { displayMap } from '../../map/display'
 import type { EoMap } from '../../map/eorzea-map'
@@ -34,11 +33,8 @@ export default function MojitoMap(value: MapInfo) {
     const resize = new ResizeObserver(syncSize)
     resize.observe(element)
     const initialize = async () => {
-      const { default: library } = await import(
-        '@thewakingsands/eorzea-interactive-map'
-      )
+      const library = await import('@thewakingsands/eorzea-interactive-map')
       if (disposed) return
-      library.setCdnUrl('https://map.ffcafe.cn/assets')
       await library.getRegion()
       if (disposed) return
       resources = mapImages(library)
@@ -46,7 +42,6 @@ export default function MojitoMap(value: MapInfo) {
       sheet.replaceSync(
         resources.css(
           [
-            leafletCss,
             libraryCss,
             mapCss,
             iconCss,

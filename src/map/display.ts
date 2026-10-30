@@ -9,12 +9,13 @@ export async function displayMap(
   title: HTMLElement,
 ) {
   await instance.loadMapKey(map)
-  title.textContent = instance.mapInfo.placeName
+  title.textContent = instance.mapInfo.placeName ?? ''
   if (!markers?.length) return
   for (const { x, y, icon, title } of markers) {
     const iconUrl = library.loader.getIconUrl(
       `ui/icon/${icon.substring(0, 3)}000/${icon}.tex`,
     )
+    if (!iconUrl) continue
     const marker = library.simpleMarker(x, y, iconUrl, instance.mapInfo)
     if (title)
       marker
