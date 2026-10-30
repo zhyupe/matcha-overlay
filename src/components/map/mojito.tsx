@@ -35,6 +35,10 @@ export default function MojitoMap(value: MapInfo) {
     const initialize = async () => {
       const library = await import('@thewakingsands/eorzea-interactive-map')
       if (disposed) return
+      // Lossless maps can exceed the host's HTTP response limit.
+      library.setMapUrlResolver(
+        (id) => `https://xivapi-v2.xivcdn.com/api/asset/map/${id}?format=jpg`,
+      )
       await library.getRegion()
       if (disposed) return
       resources = mapImages(library)
