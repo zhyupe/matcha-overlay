@@ -1,4 +1,5 @@
 allowBuilds:
+  '@thewakingsands/eorzea-interactive-map@github:thewakingsands/cafe-kit#da43f67f3eeca47507986053fed2edf3adad7499&path:/pkgs/eorzea-map': true
   '@parcel/watcher': true
   '@swc/core': true
   esbuild: true
