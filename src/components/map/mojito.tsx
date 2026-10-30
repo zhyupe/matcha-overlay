@@ -1,19 +1,31 @@
 import libraryCss from '@thewakingsands/eorzea-interactive-map/dist/map.css?inline'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useSyncExternalStore } from 'react'
+import { mapDataProvider } from '../../map/data-provider'
 import { displayMap } from '../../map/display'
 import type { EoMap } from '../../map/eorzea-map'
 import mapCss from '../../map/index.css?inline'
 import { mapImages } from '../../map/transport'
+import { getMapDataGeneration, watchMapDataGeneration } from '../../source'
 import iconCss from '../icon/index.css?inline'
 import type { MapInfo } from './index'
 
 export default function MojitoMap(value: MapInfo) {
+  const dataGeneration = useSyncExternalStore(
+    watchMapDataGeneration,
+    getMapDataGeneration,
+  )
+  return <MapInstance key={dataGeneration} {...value} />
+}
+
+function MapInstance(value: MapInfo) {
   const host = useRef<HTMLDivElement>(null)
   const latest = useRef(value)
   latest.current = value
   const update = useRef<((value: MapInfo) => void) | undefined>(undefined)
   useEffect(() => {
     let disposed = false
+    const source = mapDataProvider()
+    let clearProvider: (() => void) | undefined
     let instance: EoMap | undefined
     let resources: ReturnType<typeof mapImages> | undefined
     let queued = Promise.resolve()
@@ -35,6 +47,8 @@ export default function MojitoMap(value: MapInfo) {
     const initialize = async () => {
       const library = await import('@thewakingsands/eorzea-interactive-map')
       if (disposed) return
+      library.setDataProvider(source.provider)
+      clearProvider = () => library.setDataProvider()
       // Lossless maps can exceed the host's HTTP response limit.
       library.setMapUrlResolver(
         (id) => `https://xivapi-v2.xivcdn.com/api/asset/map/${id}?format=jpg`,
@@ -86,6 +100,8 @@ export default function MojitoMap(value: MapInfo) {
     })
     return () => {
       disposed = true
+      source.dispose()
+      clearProvider?.()
       update.current = undefined
       resize.disconnect()
       instance?.remove()

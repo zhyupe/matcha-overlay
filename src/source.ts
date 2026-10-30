@@ -183,7 +183,26 @@ function setItemDataSource(next: DataSourceInfo | null) {
   itemDataSource = next
   for (const listener of itemDataListeners) listener()
 }
+let mapDataGeneration = 0
+const mapDataListeners = new Set<() => void>()
+export const getMapDataGeneration = () => mapDataGeneration
+export function watchMapDataGeneration(listener: () => void) {
+  mapDataListeners.add(listener)
+  return () => {
+    mapDataListeners.delete(listener)
+  }
+}
 export function updateSourceData(value: Value) {
+  if (
+    value &&
+    typeof value === 'object' &&
+    'mapDataGeneration' in value &&
+    typeof value.mapDataGeneration === 'number' &&
+    value.mapDataGeneration !== mapDataGeneration
+  ) {
+    mapDataGeneration = value.mapDataGeneration
+    for (const listener of mapDataListeners) listener()
+  }
   if (!value || typeof value !== 'object' || !('dataSourceInfo' in value))
     return
   const info = value.dataSourceInfo

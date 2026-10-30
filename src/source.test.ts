@@ -9,11 +9,13 @@ import { displayClockTime } from './app/overlay/fishing/clock'
 import {
   envelope,
   getItemDataSource,
+  getMapDataGeneration,
   isMojitoSource,
   type MatchaEnvelope,
   subscribeMojito,
   updateSourceData,
   watchItemDataSource,
+  watchMapDataGeneration,
 } from './source'
 
 const event = (sequence: number): MatchaEnvelope => ({
@@ -214,4 +216,16 @@ describe('Matcha data-source adapter', () => {
     expect(seen).toEqual([1, 4])
     expect(snapshot).toHaveBeenCalledOnce()
   })
+})
+
+it('notifies map consumers only when the client data generation changes', () => {
+  updateSourceData({ mapDataGeneration: 0 })
+  const listener = vi.fn(),
+    stop = watchMapDataGeneration(listener)
+  updateSourceData({ mapDataGeneration: 1 })
+  updateSourceData({ mapDataGeneration: 1 })
+  expect(getMapDataGeneration()).toBe(1)
+  expect(listener).toHaveBeenCalledOnce()
+  stop()
+  updateSourceData({ mapDataGeneration: 0 })
 })
