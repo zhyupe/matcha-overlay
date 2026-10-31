@@ -4,7 +4,6 @@ import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { mapDataProvider } from '../../map/data-provider'
 import { displayMap } from '../../map/display'
 import mapCss from '../../map/index.css?inline'
-import { mapStyles } from '../../map/styles'
 import {
   getMapDataGeneration,
   getSourceStatus,
@@ -33,7 +32,6 @@ function MapInstance(value: MapInfo) {
     const source = mojitoSource ? mapDataProvider() : undefined
     let clearProvider: (() => void) | undefined
     let instance: EoMap | undefined
-    let resources: ReturnType<typeof mapStyles> | undefined
     let queued = Promise.resolve()
     const failed = (error: unknown) => {
       if (disposed) return
@@ -77,7 +75,6 @@ function MapInstance(value: MapInfo) {
       }
       await library.getRegion()
       if (disposed) return
-      if (mojitoSource) resources = mapStyles()
       const sheet = new CSSStyleSheet()
       const css = [
         libraryCss,
@@ -85,7 +82,7 @@ function MapInstance(value: MapInfo) {
         iconCss,
         ':host{all:initial;display:block;position:relative;width:100%;height:100%;overflow:hidden;background:transparent}',
       ].join('\n')
-      sheet.replaceSync(resources ? resources.css(css) : css)
+      sheet.replaceSync(css)
       shadow.adoptedStyleSheets = [sheet]
       syncSize()
       const map = await library.create(
@@ -124,7 +121,6 @@ function MapInstance(value: MapInfo) {
       update.current = undefined
       resize.disconnect()
       instance?.remove()
-      resources?.dispose()
     }
   }, [])
   useEffect(() => {

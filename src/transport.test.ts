@@ -44,11 +44,15 @@ it('bounds concurrent requests and skips a cancelled queued read', async () => {
   expect(maximum).toBe(4)
   expect(invoke).toHaveBeenCalledTimes(4)
 })
-it('converts original inline map images to owned blob URLs and releases them', async () => {
-  const images = imageUrls()
-  const url = images.data('data:image/svg+xml,%3Csvg%2F%3E')
-  expect(url).toBe(images.data('data:image/svg+xml,%3Csvg%2F%3E'))
-  expect(await (await fetch(url)).text()).toBe('<svg/>')
-  images.dispose()
-  await expect(fetch(url)).rejects.toThrow()
+it('preserves inline image URLs without allocating blobs', async () => {
+  const create = vi.spyOn(URL, 'createObjectURL')
+  try {
+    const images = imageUrls()
+    const url = 'data:image/svg+xml,%3Csvg%2F%3E'
+    expect(await images.load(url)).toBe(url)
+    images.dispose()
+    expect(create).not.toHaveBeenCalled()
+  } finally {
+    create.mockRestore()
+  }
 })

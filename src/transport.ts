@@ -44,7 +44,6 @@ export function hostFetch(
 
 export function imageUrls() {
   const pending = new Map<string, Promise<string>>()
-  const inline = new Map<string, string>()
   const urls = new Set<string>()
   const controller = new AbortController()
   const keep = (blob: Blob) => {
@@ -53,23 +52,9 @@ export function imageUrls() {
     urls.add(url)
     return url
   }
-  const data = (url: string) => {
-    const existing = inline.get(url)
-    if (existing) return existing
-    const comma = url.indexOf(',')
-    const header = url.slice(5, comma)
-    const content = url.slice(comma + 1)
-    const bytes = header.endsWith(';base64')
-      ? Uint8Array.from(atob(content), (letter) => letter.charCodeAt(0))
-      : new TextEncoder().encode(decodeURIComponent(content))
-    const result = keep(new Blob([bytes], { type: header.split(';')[0] }))
-    inline.set(url, result)
-    return result
-  }
   return {
-    data,
     load(url: string) {
-      if (url.startsWith('data:')) return Promise.resolve(data(url))
+      if (url.startsWith('data:')) return Promise.resolve(url)
       let result = pending.get(url)
       if (!result) {
         result = fetch(url, { signal: controller.signal }).then(
