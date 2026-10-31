@@ -57,5 +57,5 @@
     "#lib/*": "./src/lib/*.ts",
     "#hooks/*": "./src/hooks/*.ts"
   },
-  "packageManager": "pnpm@11.6.0"
+  "packageManager": "pnpm@12.13.0"
 }
