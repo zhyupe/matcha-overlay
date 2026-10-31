@@ -24,14 +24,46 @@ export function mapDataProvider(invoke: typeof command = command) {
       throw error
     }
   }
+  const maps = new Map<string, string>()
+  const icons = new Map<number, string | null>()
+  const loadIcons = async (ids: number[]) => {
+    for (const id of new Set(ids)) {
+      if (!icons.has(id))
+        icons.set(id, await request<string | null>('map.icon', { id }))
+    }
+  }
   const provider: MapDataProvider = {
     getRegion: () => request('map.regions'),
-    getMap: (rowId) => request('map.get', { rowId }),
+    getMap: async (rowId) => {
+      const map = await request<Awaited<ReturnType<MapDataProvider['getMap']>>>(
+        'map.get',
+        { rowId },
+      )
+      const url = await request<string | null>('map.image', { id: map.id })
+      if (!url) throw new Error('当前客户端地图图片不存在')
+      maps.set(map.id, url)
+      return map
+    },
     getMapKeyById: (id) => request('map.key', { id }),
-    getMapMarkers: (map) => request('map.markers', { rowId: map.rowId }),
+    getMapMarkers: async (map) => {
+      const markers = await request<
+        Awaited<ReturnType<MapDataProvider['getMapMarkers']>>
+      >('map.markers', { rowId: map.rowId })
+      await loadIcons(
+        markers.flatMap((marker) => (marker.icon ? [marker.icon] : [])),
+      )
+      return markers
+    },
   }
   return {
     provider,
+    loadIcons,
+    mapUrl(id: string) {
+      const url = maps.get(id)
+      if (!url) throw new Error('地图图片尚未加载')
+      return url
+    },
+    iconUrl: (id: number) => icons.get(id) ?? null,
     dispose: () => {
       disposed = true
     },

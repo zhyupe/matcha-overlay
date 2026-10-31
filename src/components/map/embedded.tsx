@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { mapDataProvider } from '../../map/data-provider'
 import { displayMap } from '../../map/display'
 import mapCss from '../../map/index.css?inline'
-import { mapImages } from '../../map/transport'
+import { mapStyles } from '../../map/styles'
 import {
   getMapDataGeneration,
   getSourceStatus,
@@ -33,7 +33,7 @@ function MapInstance(value: MapInfo) {
     const source = mojitoSource ? mapDataProvider() : undefined
     let clearProvider: (() => void) | undefined
     let instance: EoMap | undefined
-    let resources: ReturnType<typeof mapImages> | undefined
+    let resources: ReturnType<typeof mapStyles> | undefined
     let queued = Promise.resolve()
     const failed = (error: unknown) => {
       if (disposed) return
@@ -66,15 +66,18 @@ function MapInstance(value: MapInfo) {
       if (disposed) return
       if (source) {
         library.setDataProvider(source.provider)
-        clearProvider = () => library.setDataProvider()
-        // Lossless maps can exceed the host's HTTP response limit.
-        library.setMapUrlResolver(
-          (id) => `https://xivapi-v2.xivcdn.com/api/asset/map/${id}?format=jpg`,
-        )
+        library.setMapUrlResolver(source.mapUrl)
+        library.setIconUrlResolver(source.iconUrl)
+        clearProvider = () => {
+          library.setDataProvider()
+          library.setMapUrlResolver()
+          library.setIconUrlResolver()
+        }
+        await source.loadIcons([60561])
       }
       await library.getRegion()
       if (disposed) return
-      if (mojitoSource) resources = mapImages(library)
+      if (mojitoSource) resources = mapStyles()
       const sheet = new CSSStyleSheet()
       const css = [
         libraryCss,
@@ -97,6 +100,10 @@ function MapInstance(value: MapInfo) {
       update.current = (current) => {
         queued = queued
           .then(async () => {
+            if (disposed) return
+            await source?.loadIcons(
+              current.markers?.map(({ icon }) => Number(icon)) ?? [],
+            )
             if (!disposed)
               await displayMap(
                 map,
