@@ -73,8 +73,8 @@ importers:
         version: 1.4.0
     devDependencies:
       '@thewakingsands/eorzea-interactive-map':
-        specifier: 2.0.0-beta.1
-        version: 2.0.0-beta.1
+        specifier: github:thewakingsands/cafe-kit#da43f67f3eeca47507986053fed2edf3adad7499&path:/pkgs/eorzea-map
+        version: https://codeload.github.com/thewakingsands/cafe-kit/tar.gz/da43f67f3eeca47507986053fed2edf3adad7499#path:/pkgs/eorzea-map
       '@types/debounce':
         specifier: ^1.2.0
         version: 1.2.0
@@ -653,8 +653,9 @@ packages:
     peerDependencies:
       vite: ^5.2.0 || ^6 || ^7 || ^8
 
-  '@thewakingsands/eorzea-interactive-map@2.0.0-beta.1':
-    resolution: {integrity: sha512-nowoUSflqP10wvvun1O2u0+pW9+DTAF6t+MHrGYXovbh2SKEPswwB858VG/t2gLeDrQpga4UZm+k3aXuEzNY0w==}
+  '@thewakingsands/eorzea-interactive-map@https://codeload.github.com/thewakingsands/cafe-kit/tar.gz/da43f67f3eeca47507986053fed2edf3adad7499#path:/pkgs/eorzea-map':
+    resolution: {gitHosted: true, integrity: sha512-HZB1TKRnLa0kryWYsHTBqU5yQewdquTnfCg2N2YzvfF+npTdyf6yCky9HHXQfhbSkC+gkj+mBEfjHVP2POPOEg==, tarball: https://codeload.github.com/thewakingsands/cafe-kit/tar.gz/da43f67f3eeca47507986053fed2edf3adad7499}
+    version: 2.0.0-beta.1
 
   '@thewakingsands/xivapi-v2@1.0.0':
     resolution: {integrity: sha512-fRGrt573xEX1c+CFl1X19EvG60c1Flf1hK6qXBD781GH+1CRh89Uw8wPU65TpJewuEUcPBCPfvQV69qzZvqnxA==}
@@ -2892,7 +2893,7 @@ snapshots:
       tailwindcss: 4.3.1
       vite: 8.3.4(@types/node@22.20.5)(jiti@2.7.0)(sass@1.105.1)
 
-  '@thewakingsands/eorzea-interactive-map@2.0.0-beta.1':
+  '@thewakingsands/eorzea-interactive-map@https://codeload.github.com/thewakingsands/cafe-kit/tar.gz/da43f67f3eeca47507986053fed2edf3adad7499#path:/pkgs/eorzea-map':
     dependencies:
       '@thewakingsands/xivapi-v2': 1.1.0
       '@types/leaflet': 1.9.22
