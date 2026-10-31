@@ -1,7 +1,7 @@
 import type * as Leaflet from 'leaflet'
 import { imageUrls } from '../transport'
 
-type Library = typeof import('./eorzea-map')
+type Library = typeof import('@thewakingsands/eorzea-interactive-map')
 export function mapImages(library: Library) {
   const images = imageUrls()
   const empty = images.data(

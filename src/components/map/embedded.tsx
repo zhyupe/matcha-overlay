@@ -1,24 +1,25 @@
+import type { EoMap } from '@thewakingsands/eorzea-interactive-map'
 import libraryCss from '@thewakingsands/eorzea-interactive-map/dist/map.css?inline'
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { mapDataProvider } from '../../map/data-provider'
 import { displayMap } from '../../map/display'
-import type { EoMap } from '../../map/eorzea-map'
 import mapCss from '../../map/index.css?inline'
 import { mapImages } from '../../map/transport'
 import {
   getMapDataGeneration,
   getSourceStatus,
+  mojitoSource,
   watchMapDataGeneration,
 } from '../../source'
 import iconCss from '../icon/index.css?inline'
 import type { MapInfo } from './index'
 
-export default function MojitoMap(value: MapInfo) {
+export default function EmbeddedMap(value: MapInfo) {
   const dataGeneration = useSyncExternalStore(
     watchMapDataGeneration,
     getMapDataGeneration,
   )
-  return <MapInstance key={dataGeneration} {...value} />
+  return <MapInstance key={mojitoSource ? dataGeneration : 0} {...value} />
 }
 
 function MapInstance(value: MapInfo) {
@@ -29,7 +30,7 @@ function MapInstance(value: MapInfo) {
   const update = useRef<((value: MapInfo) => void) | undefined>(undefined)
   useEffect(() => {
     let disposed = false
-    const source = mapDataProvider()
+    const source = mojitoSource ? mapDataProvider() : undefined
     let clearProvider: (() => void) | undefined
     let instance: EoMap | undefined
     let resources: ReturnType<typeof mapImages> | undefined
@@ -38,9 +39,11 @@ function MapInstance(value: MapInfo) {
       if (disposed) return
       console.error(error)
       setError(
-        getSourceStatus().state === 'error'
+        mojitoSource && getSourceStatus().state === 'error'
           ? getSourceStatus().message
-          : '当前客户端地图资料不可用',
+          : mojitoSource
+            ? '当前客户端地图资料不可用'
+            : '地图资料不可用',
       )
     }
     const element = host.current
@@ -61,26 +64,25 @@ function MapInstance(value: MapInfo) {
     const initialize = async () => {
       const library = await import('@thewakingsands/eorzea-interactive-map')
       if (disposed) return
-      library.setDataProvider(source.provider)
-      clearProvider = () => library.setDataProvider()
-      // Lossless maps can exceed the host's HTTP response limit.
-      library.setMapUrlResolver(
-        (id) => `https://xivapi-v2.xivcdn.com/api/asset/map/${id}?format=jpg`,
-      )
+      if (source) {
+        library.setDataProvider(source.provider)
+        clearProvider = () => library.setDataProvider()
+        // Lossless maps can exceed the host's HTTP response limit.
+        library.setMapUrlResolver(
+          (id) => `https://xivapi-v2.xivcdn.com/api/asset/map/${id}?format=jpg`,
+        )
+      }
       await library.getRegion()
       if (disposed) return
-      resources = mapImages(library)
+      if (mojitoSource) resources = mapImages(library)
       const sheet = new CSSStyleSheet()
-      sheet.replaceSync(
-        resources.css(
-          [
-            libraryCss,
-            mapCss,
-            iconCss,
-            ':host{all:initial;display:block;position:relative;width:100%;height:100%;overflow:hidden;background:transparent}',
-          ].join('\n'),
-        ),
-      )
+      const css = [
+        libraryCss,
+        mapCss,
+        iconCss,
+        ':host{all:initial;display:block;position:relative;width:100%;height:100%;overflow:hidden;background:transparent}',
+      ].join('\n')
+      sheet.replaceSync(resources ? resources.css(css) : css)
       shadow.adoptedStyleSheets = [sheet]
       syncSize()
       const map = await library.create(
@@ -110,7 +112,7 @@ function MapInstance(value: MapInfo) {
     void initialize().catch(failed)
     return () => {
       disposed = true
-      source.dispose()
+      source?.dispose()
       clearProvider?.()
       update.current = undefined
       resize.disconnect()

@@ -1,7 +1,7 @@
+import type { EoMap } from '@thewakingsands/eorzea-interactive-map'
 import type { MapInfo } from '../components/map'
-import type { EoMap } from './eorzea-map'
 
-type Library = typeof import('./eorzea-map')
+type Library = typeof import('@thewakingsands/eorzea-interactive-map')
 export async function displayMap(
   instance: EoMap,
   { map, markers }: MapInfo,

@@ -30,7 +30,6 @@ export default defineConfig(({ mode }) => ({
       },
       input: {
         main: 'index.html',
-        ...(mode === 'mojito' ? {} : { map: 'map.html' }),
       },
     },
   },
