@@ -1,8 +1,7 @@
 allowBuilds:
-  '@thewakingsands/eorzea-interactive-map@https://codeload.github.com/thewakingsands/cafe-kit/tar.gz/da43f67f3eeca47507986053fed2edf3adad7499#path:/pkgs/eorzea-map': true
   '@parcel/watcher': true
   '@swc/core': true
   esbuild: true
 minimumReleaseAgeExclude:
-  - '@thewakingsands/eorzea-interactive-map@2.0.0-beta.1'
+  - '@thewakingsands/eorzea-interactive-map@2.0.0'
   - '@thewakingsands/xivapi-v2@1.1.0'
