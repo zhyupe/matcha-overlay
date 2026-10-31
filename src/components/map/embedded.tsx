@@ -1,24 +1,18 @@
 import type { EoMap } from '@thewakingsands/eorzea-interactive-map'
 import libraryCss from '@thewakingsands/eorzea-interactive-map/dist/map.css?inline'
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
-import { mapDataProvider } from '../../map/data-provider'
+import { adapter, type MapSession } from '../../adapter'
 import { displayMap } from '../../map/display'
 import mapCss from '../../map/index.css?inline'
-import {
-  getMapDataGeneration,
-  getSourceStatus,
-  mojitoSource,
-  watchMapDataGeneration,
-} from '../../source'
 import iconCss from '../icon/index.css?inline'
 import type { MapInfo } from './index'
 
 export default function EmbeddedMap(value: MapInfo) {
-  const dataGeneration = useSyncExternalStore(
-    watchMapDataGeneration,
-    getMapDataGeneration,
+  const { mapGeneration } = useSyncExternalStore(
+    adapter.subscribeState,
+    adapter.getState,
   )
-  return <MapInstance key={mojitoSource ? dataGeneration : 0} {...value} />
+  return <MapInstance key={mapGeneration} {...value} />
 }
 
 function MapInstance(value: MapInfo) {
@@ -29,20 +23,14 @@ function MapInstance(value: MapInfo) {
   const update = useRef<((value: MapInfo) => void) | undefined>(undefined)
   useEffect(() => {
     let disposed = false
-    const source = mojitoSource ? mapDataProvider() : undefined
-    let clearProvider: (() => void) | undefined
+    let session: MapSession | undefined
     let instance: EoMap | undefined
     let queued = Promise.resolve()
     const failed = (error: unknown) => {
       if (disposed) return
       console.error(error)
-      setError(
-        mojitoSource && getSourceStatus().state === 'error'
-          ? getSourceStatus().message
-          : mojitoSource
-            ? '当前客户端地图资料不可用'
-            : '地图资料不可用',
-      )
+      const state = adapter.getState()
+      setError(state.status === 'error' ? state.message : '地图资料不可用')
     }
     const element = host.current
     if (!element) return
@@ -62,16 +50,10 @@ function MapInstance(value: MapInfo) {
     const initialize = async () => {
       const library = await import('@thewakingsands/eorzea-interactive-map')
       if (disposed) return
-      if (source) {
-        library.setDataProvider(source.provider)
-        library.setMapUrlResolver(source.mapUrl)
-        library.setIconUrlResolver(source.iconUrl)
-        clearProvider = () => {
-          library.setDataProvider()
-          library.setMapUrlResolver()
-          library.setIconUrlResolver()
-        }
-        await source.loadIcons([60561])
+      session = await adapter.createMapSession(library)
+      if (disposed) {
+        session.dispose()
+        return
       }
       await library.getRegion()
       if (disposed) return
@@ -98,7 +80,7 @@ function MapInstance(value: MapInfo) {
         queued = queued
           .then(async () => {
             if (disposed) return
-            await source?.loadIcons(
+            await session?.prepareIcons(
               current.markers?.map(({ icon }) => Number(icon)) ?? [],
             )
             if (!disposed)
@@ -116,8 +98,7 @@ function MapInstance(value: MapInfo) {
     void initialize().catch(failed)
     return () => {
       disposed = true
-      source?.dispose()
-      clearProvider?.()
+      session?.dispose()
       update.current = undefined
       resize.disconnect()
       instance?.remove()

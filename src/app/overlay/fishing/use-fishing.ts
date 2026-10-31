@@ -1,5 +1,5 @@
-import { sourceStorage, mojitoSource, getSourceClock } from '../../../source'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { adapter } from '../../../adapter'
 import { useEvent } from '../../../lib/event'
 import { useTimer } from '../../../lib/hook'
 import type { OverlayProps } from '../../interface'
@@ -41,7 +41,7 @@ export function useFishing({ eventEmitter, active, setActive }: OverlayProps) {
 
   useEffect(() => {
     try {
-      const text = sourceStorage.getItem(storageKey)
+      const text = adapter.storage.getItem(storageKey)
       if (text) updateArchive(parseArchive(text))
     } catch {
       setStorageError('本地数据读取失败，原数据未覆盖。')
@@ -52,7 +52,7 @@ export function useFishing({ eventEmitter, active, setActive }: OverlayProps) {
   useEffect(() => {
     if (!loaded || storageError) return
     try {
-      sourceStorage.setItem(storageKey, JSON.stringify(archive))
+      adapter.storage.setItem(storageKey, JSON.stringify(archive))
     } catch {
       setStorageError('本地保存失败，请导出备份。')
     }
@@ -63,7 +63,13 @@ export function useFishing({ eventEmitter, active, setActive }: OverlayProps) {
     const next = transition(castRef.current, event)
     const receivedAt = performance.now()
     clockRef.current = updateClock(clockRef.current, next, receivedAt)
-    setNow(displayClockTime(clockRef.current, receivedAt, mojitoSource ? getSourceClock() : undefined))
+    setNow(
+      displayClockTime(
+        clockRef.current,
+        receivedAt,
+        adapter.getState().clock ?? undefined,
+      ),
+    )
     castRef.current = next
     setCast(next)
     if (next === event && event.action === 'catch') {
@@ -126,7 +132,13 @@ export function useFishing({ eventEmitter, active, setActive }: OverlayProps) {
   useEvent(eventEmitter, 'Reset', resetSession)
   const running = cast?.action === 'cast' || cast?.action === 'place'
   useTimer(100, active && running, () =>
-    setNow(displayClockTime(clockRef.current, performance.now(), mojitoSource ? getSourceClock() : undefined)),
+    setNow(
+      displayClockTime(
+        clockRef.current,
+        performance.now(),
+        adapter.getState().clock ?? undefined,
+      ),
+    ),
   )
 
   function exportArchive() {

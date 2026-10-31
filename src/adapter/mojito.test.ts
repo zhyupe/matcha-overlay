@@ -5,18 +5,18 @@ import type {
 } from '@ffcafe/mojito-plugin-sdk'
 import type { ViewBridge } from '@ffcafe/mojito-plugin-sdk/view'
 import { describe, expect, it, vi } from 'vitest'
-import { displayClockTime } from './app/overlay/fishing/clock'
+import { displayClockTime } from '../app/overlay/fishing/clock'
+import { isMojitoSource } from './index'
 import {
   envelope,
   getItemDataSource,
   getMapDataGeneration,
-  isMojitoSource,
   type MatchaEnvelope,
   subscribeMojito,
   updateSourceData,
   watchItemDataSource,
   watchMapDataGeneration,
-} from './source'
+} from './mojito'
 
 const event = (sequence: number): MatchaEnvelope => ({
   sequence,

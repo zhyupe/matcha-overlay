@@ -1,16 +1,16 @@
 import { createStore, useAtom, type WritableAtom } from 'jotai'
 import { atomWithStorage, createJSONStorage } from 'jotai/utils'
 import { type Dispatch, type SetStateAction, useMemo } from 'react'
+import { adapter } from '../adapter'
 import { tryParseJson } from './json'
 import { debug } from './log'
-import { sourceStorage } from '../source'
 
 export function getConfig<T = unknown>(
   key: string,
   defaultValue?: T,
 ): T | undefined {
   debug('[config:get]', key)
-  const stored = sourceStorage.getItem(`config:${key}`)
+  const stored = adapter.storage.getItem(`config:${key}`)
   if (stored) {
     const value = tryParseJson<T>(stored)
     return value === undefined ? defaultValue : value
@@ -48,7 +48,7 @@ const atomMap = new Map<string, ConfigAtom<any>>()
 function getConfigAtom<T>(key: string, defaultValue?: T): ConfigAtom<T> {
   let cached = atomMap.get(key)
   if (!cached) {
-    const storage = createJSONStorage<T | undefined>(() => sourceStorage)
+    const storage = createJSONStorage<T | undefined>(() => adapter.storage)
     cached = atomWithStorage<T | undefined>(
       `config:${key}`,
       defaultValue,

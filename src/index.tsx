@@ -1,3 +1,7 @@
-import { prepareSource } from './source'
+import { adapter } from './adapter'
 
-void prepareSource().then(() => import('./render')).catch(console.error)
+window.addEventListener('pagehide', () => adapter.dispose(), { once: true })
+void adapter
+  .prepare()
+  .then(() => import('./render'))
+  .catch(console.error)

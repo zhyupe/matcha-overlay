@@ -1,11 +1,4 @@
 import type { EventEmitter } from 'events'
-import type { NgldMessage } from '../ngld'
-
-export interface LogEvent extends NgldMessage {
-  type: string
-  line: string[]
-  rawLine: string
-}
 
 export interface MatchaEvent<T = string> {
   time: Date

@@ -1,5 +1,6 @@
 import { expect, it, vi } from 'vitest'
-import { hostFetch, imageUrls } from './transport'
+import { imageUrls } from '../lib/image-urls'
+import { hostFetch } from './mojito'
 
 it('uses the authorized read-only bridge and preserves response bytes and MIME type', async () => {
   const invoke = vi.fn(async () => ({

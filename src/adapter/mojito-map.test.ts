@@ -1,5 +1,5 @@
 import { expect, it, vi } from 'vitest'
-import { mapDataProvider } from './data-provider'
+import { mapDataProvider } from './mojito'
 
 it('uses worker map commands for every query and discards late replies after disposal', async () => {
   const invoke = vi.fn(async (action: string) => {

@@ -4,19 +4,18 @@ import {
   useEffect,
   useMemo,
   useState,
+  useSyncExternalStore,
 } from 'react'
 import './index.css'
 import { EventEmitter } from 'events'
+import { adapter } from '../adapter'
 import { Draggable } from '../components/draggable'
 import { LockClosed, LockOpen } from '../components/icon'
 import { Logo } from '../components/logo'
 import { useConfigBoolean } from '../lib/config'
-import { tryParseJson } from '../lib/json'
 import { SeasonContext } from '../lib/season'
 import { trackVersion } from '../lib/track'
-import { addOverlayListener, removeOverlayListener, startOverlayEvents } from '../ngld'
-import { mojitoSource, startMojito } from '../source'
-import type { LogEvent, OverlayProps } from './interface'
+import type { OverlayProps } from './interface'
 import { ActWsNotice } from './notice/actws'
 import { WelcomeNotice } from './notice/welcome'
 import { CactpotOverlay } from './overlay/cactpot'
@@ -140,99 +139,37 @@ function Header({
 }
 
 function App() {
-  const isActWS = !mojitoSource && window.location.search.includes('HOST_PORT')
+  const {
+    version,
+    language,
+    unsupportedActWebSocket: isActWS,
+  } = useSyncExternalStore(adapter.subscribeState, adapter.getState)
   const eventEmitter = useMemo(() => new EventEmitter(), [])
   const [minified, { set: setMinified }] = useConfigBoolean(
     'app-minified',
     false,
   )
   const [activeTab, setActiveTab] = useState('welcome')
-  const [version, setVersion] = useState<string>()
-  const [language, setLanguage] = useState<string>('chs')
   const [lock, setLock] = useState<boolean>(false)
   const { className, style } = useContext(SeasonContext)
 
   useEffect(() => {
-    if (mojitoSource) {
-      let stopped = false
-      let dispose: (() => void) | undefined
-      void startMojito(
-        (event) => {
-          if (stopped) return
-          eventEmitter.emit(event.type, {
-            time: new Date(event.timestamp),
-            type: event.type,
-            version: 'Mojito',
-            content: event.content,
-          })
-        },
-        (metadata) => {
-          if (stopped) return
-          setVersion(metadata.version || 'Mojito')
-          setLanguage(metadata.language || 'chs')
-        },
-      )
-        .then((cleanup) => {
-          if (stopped) cleanup()
-          else dispose = cleanup
-        })
-        .catch(console.error)
-      return () => {
-        stopped = true
-        dispose?.()
-      }
+    let stopped = false
+    let dispose: (() => void) | undefined
+    void adapter
+      .subscribeEvents((event) => {
+        if (!stopped) eventEmitter.emit(event.type, event)
+      })
+      .then((cleanup) => {
+        if (stopped) cleanup()
+        else dispose = cleanup
+      })
+      .catch(console.error)
+    return () => {
+      stopped = true
+      dispose?.()
     }
-    if (isActWS) {
-      ;(window as any).__OverlayPlugin_ws_faker = () => {}
-      return
-    }
-
-    const handler = (line: string[]) => {
-      if (line?.length !== 5 || line[0] !== '00') return
-
-      const label = line[3]
-      if (!label.startsWith('Matcha')) return
-
-      const typePos = label.indexOf('-')
-      if (typePos === -1) return
-
-      const type = label.substr(typePos + 1)
-
-      const [, logVersion, logLanguage] = label.substr(0, typePos).split('#')
-      const normalizedVersion = logVersion || 'Legacy'
-      const normalizedLanguage = logLanguage || 'chs'
-
-      const content = tryParseJson(line[4]) || line[4]
-      const event = {
-        time: new Date(line[1]),
-        type,
-        version: logVersion,
-        content,
-      }
-
-      setVersion(normalizedVersion)
-      setLanguage(normalizedLanguage)
-      eventEmitter.emit(type, event)
-    }
-
-    const listener = ({ line }: LogEvent) => handler(line)
-    addOverlayListener('LogLine', listener)
-
-    const { hostname } = window.location
-    if (hostname === '127.0.0.1' || hostname === 'localhost') {
-      ;(window as any)._dev_mock = (log: string) => handler(log.split('|'))
-
-      const mockLogs = process.env.MOCK_LOGS
-      if (mockLogs) {
-        for (const line of mockLogs.split('\n')) {
-          handler(line.trim().split('|'))
-        }
-      }
-    }
-
-    startOverlayEvents()
-    return () => removeOverlayListener('LogLine', listener)
-  }, [eventEmitter, isActWS])
+  }, [eventEmitter])
 
   useEffect(() => {
     if (!version) return

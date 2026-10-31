@@ -4,7 +4,7 @@ import {
   type PropsWithChildren,
   useMemo,
 } from 'react'
-import { mojitoSource, sourceStorage } from '../../source'
+import { adapter } from '../../adapter'
 import { useImageUrl } from '../image'
 import './2025.scss'
 
@@ -15,7 +15,7 @@ const matchaIcon = {
 }
 
 const useAprilStyle = (() => {
-  const setting = sourceStorage.getItem('force-april-style')
+  const setting = adapter.storage.getItem('force-april-style')
   if (setting === 'true') {
     return true
   }
@@ -138,7 +138,7 @@ export function SeasonProvider({ children }: PropsWithChildren) {
   const background = useImageUrl(value.style?.backgroundImage?.slice(4, -1))
   const resolved = useMemo(
     () =>
-      mojitoSource && value.style
+      value.style
         ? {
             ...value,
             style: {

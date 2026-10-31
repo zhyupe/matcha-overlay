@@ -1,24 +1,27 @@
 import { useEffect, useState } from 'react'
-import { mojitoSource } from '../source'
-import { imageUrls } from '../transport'
+import { adapter } from '../adapter'
 
 export function useImageUrl(input?: string) {
   const [url, setUrl] = useState<string>()
   useEffect(() => {
-    if (!mojitoSource || !input) return
-    const images = imageUrls()
     let disposed = false
+    let release: (() => void) | undefined
     setUrl(undefined)
-    void images
-      .load(input)
-      .then((value) => {
-        if (!disposed) setUrl(value)
-      })
-      .catch(() => {})
+    if (input)
+      void adapter
+        .resolveImage(input)
+        .then((image) => {
+          if (disposed) image.dispose()
+          else {
+            release = image.dispose
+            setUrl(image.url)
+          }
+        })
+        .catch(console.error)
     return () => {
       disposed = true
-      images.dispose()
+      release?.()
     }
   }, [input])
-  return mojitoSource ? url : input
+  return url
 }
