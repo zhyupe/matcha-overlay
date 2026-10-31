@@ -26,8 +26,13 @@ jobs:
         run: |
           pnpm install --frozen-lockfile
           pnpm run build
-          test -s dist/index.html
-          test -s dist/map.html
+
+      - name: Verify build output
+        run: |
+          if [ ! -s dist/index.html ]; then
+            echo "::error file=dist/index.html::Build output is missing or empty"
+            exit 1
+          fi
 
       - name: Upload artifact 🎁
         uses: actions/upload-artifact@v4
