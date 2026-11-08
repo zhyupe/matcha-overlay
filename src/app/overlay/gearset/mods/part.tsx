@@ -117,23 +117,40 @@ export function GearsetPart({
 }) {
   const [record, setRecord] = useState<ItemRecord | null>()
   const [glamour, setGlamour] = useState<ItemRecord | null>()
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     setRecord(null)
     setGlamour(null)
+    setError(null)
 
     if (!part) return
+    let active = true
 
     if (part.item) {
       queryItem(part.item, language)
-        .then((newRecord) => setRecord(newRecord))
-        .catch(() => 0)
+        .then((newRecord) => {
+          if (active) setRecord(newRecord)
+        })
+        .catch((error) => {
+          if (active)
+            setError(
+              String(error).includes('permission_denied')
+                ? '需要联网权限'
+                : '物品读取失败',
+            )
+        })
     }
 
     if (part.glamour) {
       queryItem(part.glamour, language)
-        .then((newRecord) => setGlamour(newRecord))
+        .then((newRecord) => {
+          if (active) setGlamour(newRecord)
+        })
         .catch(() => 0)
+    }
+    return () => {
+      active = false
     }
   }, [language, part])
 
@@ -144,7 +161,11 @@ export function GearsetPart({
   }
 
   if (!record) {
-    return <div className="gearset-item gearset-item-empty">载入中，请稍候</div>
+    return (
+      <div className="gearset-item gearset-item-empty">
+        {error ?? '载入中，请稍候'}
+      </div>
+    )
   }
 
   return (
