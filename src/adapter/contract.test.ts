@@ -189,3 +189,33 @@ it('discards an initial snapshot arriving after adapter disposal', async () => {
   expect(adapter.getState().language).toBe('chs')
   expect(f.disposers.at(-1)).toHaveBeenCalled()
 })
+
+it('queries local item commands and uses client image URLs without a fetch', async () => {
+  const f = fixture()
+  const { adapter, queryItems } = await import('./mojito')
+  await adapter.prepare()
+  f.command.mockResolvedValueOnce([
+    {
+      id: 42,
+      n: { chs: '本地装备' },
+      i: 'mojito-plugin://runtime/icon/42',
+      s: 2,
+      a: 0,
+      l: 740,
+      local: true,
+    },
+  ] as never)
+  expect(await queryItems([42])).toMatchObject([{ id: 42, local: true }])
+  expect(f.command).toHaveBeenLastCalledWith(
+    'matcha.command',
+    { action: 'item.get', ids: [42] },
+    expect.anything(),
+  )
+  const calls = f.command.mock.calls.length
+  const image = await adapter.resolveImage('mojito-plugin://runtime/icon/42')
+  expect(image.url).toBe('mojito-plugin://runtime/icon/42')
+  image.dispose()
+  expect(f.command).toHaveBeenCalledTimes(calls)
+  expect(f.originalFetch).not.toHaveBeenCalled()
+  adapter.dispose()
+})

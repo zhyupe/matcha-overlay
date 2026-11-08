@@ -1,5 +1,7 @@
 import type { Models } from '@thewakingsands/xivapi-v2'
 import { debounce } from 'debounce'
+import { adapter } from '../../adapter'
+import { queryItems } from '../../adapter/mojito'
 import { Cache } from '../cache'
 import { xivapi } from '../xivapi'
 
@@ -39,6 +41,7 @@ export type ItemInfo = ItemNameFields & {
 }
 
 export interface ItemRecord {
+  local?: boolean
   /**
    * Name
    */
@@ -165,12 +168,28 @@ const doQuery = debounce(() => {
   const list = itemQueryList.slice()
   itemQueryList = []
 
-  queryXivapi(list)
+  if (adapter.name === 'Mojito') {
+    const generation = adapter.getState().mapGeneration
+    void queryItems([...new Set(list.map((item) => item.id))])
+      .then((rows) => {
+        if (generation !== adapter.getState().mapGeneration)
+          throw new Error('物品数据源已改变')
+        const records = new Map(rows.map((row) => [row.id, row]))
+        for (const task of list) {
+          const value = records.get(task.id)
+          if (value) task.resolve(value)
+          else task.reject(new Error('本地物品不存在'))
+        }
+      })
+      .catch((error) => {
+        for (const task of list) task.reject(error)
+      })
+  } else queryXivapi(list)
 }, 200)
 
 export function queryItem(id: number, language: string): Promise<ItemRecord> {
   const queryLanguage = queryLanguages.has(language) ? language : 'en'
-  const fromCache = itemCache.get(id)
+  const fromCache = adapter.name === 'ACT' ? itemCache.get(id) : undefined
   if (
     fromCache &&
     typeof fromCache.l === 'number' &&
@@ -187,5 +206,5 @@ export function queryItem(id: number, language: string): Promise<ItemRecord> {
 }
 
 export function itemName(item: ItemRecord, language: string): string {
-  return item.n[language] || item.n.en
+  return item.n[language] || item.n.en || Object.values(item.n)[0] || ''
 }

@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
+import { adapter } from '../../../../adapter'
 import { Glamour, HQ, ILvl } from '../../../../components/icon'
 import { useImageUrl } from '../../../../lib/image'
 import {
@@ -108,13 +109,20 @@ function Materias({
   )
 }
 
-export function GearsetPart({
-  part,
-  language,
-}: {
+type Props = {
   part?: GearsetDTO
   language: string
-}) {
+}
+
+export function GearsetPart(props: Props) {
+  const { mapGeneration } = useSyncExternalStore(
+    adapter.subscribeState,
+    adapter.getState,
+  )
+  return <Part key={mapGeneration} {...props} />
+}
+
+function Part({ part, language }: Props) {
   const [record, setRecord] = useState<ItemRecord | null>()
   const [glamour, setGlamour] = useState<ItemRecord | null>()
   const [error, setError] = useState<string | null>(null)
@@ -136,7 +144,7 @@ export function GearsetPart({
           if (active)
             setError(
               String(error).includes('permission_denied')
-                ? '需要联网权限'
+                ? '需要读取游戏数据权限'
                 : '物品读取失败',
             )
         })
@@ -154,7 +162,13 @@ export function GearsetPart({
     }
   }, [language, part])
 
-  const icon = useImageUrl(record ? xivapi.formatIconUrl(record.i) : undefined)
+  const icon = useImageUrl(
+    record?.i
+      ? record.local
+        ? record.i
+        : xivapi.formatIconUrl(record.i)
+      : undefined,
+  )
 
   if (!part?.item) {
     return <div className="gearset-item gearset-item-empty">空栏位</div>

@@ -1,18 +1,26 @@
 import type { List } from 'immutable'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
+import { adapter } from '../../../../adapter'
 import { ILvl } from '../../../../components/icon'
 import { queryItem } from '../../../../lib/store/item'
 import type { GearsetDTO } from '../interface'
 
 const InvalidAvgILvl = -1
 
-export function AvgLevel({
-  list,
-  language,
-}: {
+type Props = {
   list: List<GearsetDTO>
   language: string
-}) {
+}
+
+export function AvgLevel(props: Props) {
+  const { mapGeneration } = useSyncExternalStore(
+    adapter.subscribeState,
+    adapter.getState,
+  )
+  return <Level key={mapGeneration} {...props} />
+}
+
+function Level({ list, language }: Props) {
   const [ilvl, setILvl] = useState(InvalidAvgILvl)
 
   useEffect(() => {

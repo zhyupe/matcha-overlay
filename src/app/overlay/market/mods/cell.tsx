@@ -1,4 +1,10 @@
-import { type ReactElement, useEffect, useState } from 'react'
+import {
+  type ReactElement,
+  useEffect,
+  useState,
+  useSyncExternalStore,
+} from 'react'
+import { adapter } from '../../../../adapter'
 import { HQ } from '../../../../components/icon'
 import type { MarketItemMap } from '../interface'
 import './cell.css'
@@ -68,19 +74,23 @@ Cell.Empty = function Empty() {
   )
 }
 
-Cell.ItemName = function ItemName({
-  item,
-  language,
-}: {
-  item: number
-  language: string
-}) {
+type ItemNameProps = { item: number; language: string }
+
+Cell.ItemName = function ItemNameSource(props: ItemNameProps) {
+  const { mapGeneration } = useSyncExternalStore(
+    adapter.subscribeState,
+    adapter.getState,
+  )
+  return <ItemName key={mapGeneration} {...props} />
+}
+
+function ItemName({ item, language }: ItemNameProps) {
   const [name, setName] = useState<string>('')
   useEffect(() => {
     setName('载入中')
     queryItem(item, language)
       .then((record) => setName(itemName(record, language)))
-      .catch(() => item)
+      .catch(() => setName(String(item)))
   }, [item, language])
 
   return (

@@ -1,4 +1,5 @@
 import { useContext, useMemo } from 'react'
+import { adapter } from '../../../adapter'
 import { Dialog } from '../../../components/dialog'
 import { SeasonContext } from '../../../lib/season'
 import type { OverlayProps } from '../../interface'
@@ -10,19 +11,22 @@ const build = process.env.build
 const appointedVersion = '22.4.15.1906'
 const parseVersion = (version: string) =>
   version.split('.').map((item) => +item)
+export function isOutdatedActVersion(
+  version: string | undefined,
+  source: 'ACT' | 'Mojito',
+) {
+  if (!version || source !== 'ACT') return false
+  const current = parseVersion(version),
+    appointed = parseVersion(appointedVersion)
+  for (let i = 0; i < 4; ++i) {
+    if (current[i] > appointed[i]) return false
+    if (current[i] < appointed[i]) return true
+  }
+  return false
+}
 function VersionCheck({ version }: { version: string | undefined }) {
   const showNotice = useMemo(() => {
-    if (!version) return false
-
-    const current = parseVersion(version)
-    const appointed = parseVersion(appointedVersion)
-
-    for (let i = 0; i < 4; ++i) {
-      if (current[i] > appointed[i]) return false
-      if (current[i] < appointed[i]) return true
-    }
-
-    return false
+    return isOutdatedActVersion(version, adapter.name)
   }, [version])
 
   return showNotice ? (

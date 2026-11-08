@@ -258,6 +258,11 @@ async function command(
     { signal: lifetime.signal },
   )
 }
+export async function queryItems(ids: number[]) {
+  return command('item.get', { ids }) as unknown as Promise<
+    (import('../lib/store/item').ItemRecord & { id: number })[]
+  >
+}
 export async function prepareSource() {
   if (bridge) return
   if (lifetime.signal.aborted) lifetime = new AbortController()
@@ -492,6 +497,7 @@ export const adapter: OverlayAdapter = {
     return window.fetch(url, options)
   },
   async resolveImage(url) {
+    if (url.startsWith('mojito-plugin://runtime/')) return { url, dispose() {} }
     const images = imageUrls(adapter.fetch)
     const dispose = () => {
       images.dispose()
