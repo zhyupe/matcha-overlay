@@ -1,0 +1,54 @@
+.overlay-treasure {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+}
+
+.treasure-map {
+  position: absolute;
+  inset: 0;
+}
+
+.treasure-card {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  left: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid oklch(1 0 0 / 0.1);
+  border-radius: var(--radius-control);
+  background: var(--color-panel);
+  box-shadow: var(--shadow-pop);
+}
+
+.treasure-place {
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.treasure-position {
+  margin-left: auto;
+  color: var(--color-fg-3);
+  font: 12px var(--font-mono);
+  white-space: nowrap;
+}
+.treasure-position b {
+  color: var(--color-fg);
+  font-weight: 500;
+}
+
+.map-error {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 44px;
+  color: var(--color-fg-3);
+}

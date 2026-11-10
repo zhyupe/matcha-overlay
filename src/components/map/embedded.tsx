@@ -109,7 +109,11 @@ function MapInstance(value: MapInfo) {
   }, [value.map, value.markers])
   return (
     <>
-      {error && <div role="status">{error}</div>}
+      {error && (
+        <div role="status" className="map-error">
+          {error}
+        </div>
+      )}
       <div
         ref={host}
         style={{

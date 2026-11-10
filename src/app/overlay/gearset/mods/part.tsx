@@ -1,13 +1,12 @@
 import { useEffect, useState, useSyncExternalStore } from 'react'
 import { adapter } from '../../../../adapter'
 import { Glamour, HQ, ILvl } from '../../../../components/icon'
-import { useImageUrl } from '../../../../lib/image'
+import { ItemIcon } from '../../../../components/item-icon'
 import {
   type ItemRecord,
   itemName,
   queryItem,
 } from '../../../../lib/store/item'
-import { xivapi } from '../../../../lib/xivapi'
 import type { GearsetDTO, GearsetMateria } from '../interface'
 
 const materiaMap = [
@@ -162,54 +161,50 @@ function Part({ part, language }: Props) {
     }
   }, [language, part])
 
-  const icon = useImageUrl(
-    record?.i
-      ? record.local
-        ? record.i
-        : xivapi.formatIconUrl(record.i)
-      : undefined,
-  )
-
   if (!part?.item) {
-    return <div className="gearset-item gearset-item-empty">空栏位</div>
+    return (
+      <div className="gear-slot gear-slot-empty">
+        <span className="item-icon" />
+        <span className="gear-name">空栏位</span>
+      </div>
+    )
   }
 
   if (!record) {
     return (
-      <div className="gearset-item gearset-item-empty">
-        {error ?? '载入中，请稍候'}
+      <div className="gear-slot gear-slot-empty">
+        <span className="item-icon item-icon-empty" />
+        <span className="gear-name">{error ?? '载入中'}</span>
       </div>
     )
   }
 
   return (
-    <div className="gearset-item">
-      <div className="gearset-item-icon">
-        <img alt="" src={icon} />
-      </div>
-      <div
-        className={`gearset-item-name ${glamour ? 'gearset-item-animated' : ''}`}
-      >
-        <span>
-          {itemName(record, language)} {part.hq ? <HQ /> : null}
-        </span>
-        {glamour ? (
-          <span className="delay">
-            <Glamour /> {itemName(glamour, language)}
+    <div className="gear-slot">
+      <ItemIcon record={record} />
+      <div className="gear-text">
+        <div className={`gear-name ${glamour ? 'gearset-item-animated' : ''}`}>
+          <span>
+            {itemName(record, language)} {part.hq ? <HQ /> : null}
           </span>
-        ) : null}
-      </div>
-      <div className="gearset-item-materia gearset-item-animated">
-        <span>
-          <Materias
-            materias={part.materias}
-            slot={record ? record.s : 5}
-            overmeld={record ? !!record.a : false}
-          />
-        </span>
-        <span className="delay">
-          <ILvl /> {record.l}
-        </span>
+          {glamour ? (
+            <span className="delay">
+              <Glamour /> {itemName(glamour, language)}
+            </span>
+          ) : null}
+        </div>
+        <div className="gear-meta">
+          <span className="gear-ilvl">
+            <ILvl /> {record.l}
+          </span>
+          <span className="gear-materia">
+            <Materias
+              materias={part.materias}
+              slot={record ? record.s : 5}
+              overmeld={record ? !!record.a : false}
+            />
+          </span>
+        </div>
       </div>
     </div>
   )

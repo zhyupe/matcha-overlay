@@ -3,7 +3,7 @@ import type { OverlayProps } from '../../interface'
 import type { GameState, MiniCactpotDTO } from './interface'
 import { InputBody, Table } from './mods/table'
 import './index.scss'
-import { Alert } from '../../../components/alert'
+import { Empty } from '#components/ui/controls'
 import { useEvent } from '../../../lib/event'
 import { makeEmptyState } from './libs/constant'
 
@@ -39,24 +39,27 @@ export function CactpotOverlay({
 
   if (table.every((item) => item === 0)) {
     return (
-      <Alert title="未检测到仙人微彩">
-        请与 NPC 对话参加“仙人微彩”有奖竞猜
-      </Alert>
+      <div className="overlay">
+        <Empty>请与 NPC 对话参加“仙人微彩”有奖竞猜，翻开第一格后显示推荐</Empty>
+      </div>
     )
   }
 
   return (
     <div className="overlay overlay-cactpot">
       <Table input={table} />
-      <ul>
+      <ul className="cactpot-legend">
         <li>
-          <InputBody unknown /> 未翻开格子
+          <InputBody unknown /> 未翻开
         </li>
         <li>
-          <InputBody value={1} /> 已翻开格子
+          <InputBody value={1} /> 已翻开
         </li>
         <li>
-          <InputBody suggested /> 推荐格子
+          <InputBody suggested unknown /> 推荐翻开
+        </li>
+        <li>
+          <span className="cactpot-legend-sum">72</span> 期望奖励最高的连线
         </li>
       </ul>
     </div>

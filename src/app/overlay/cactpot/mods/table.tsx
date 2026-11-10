@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import { Check } from 'lucide-react'
 import { useMemo } from 'react'
 import type { GameState } from '../interface'
 import { candidates, tableHeader, tableRow } from '../libs/constant'
@@ -10,7 +11,7 @@ function SumCell({ state, index }: { state: CactpotState; index: number }) {
 
   return (
     <th className={suggested ? 'cactpot-max' : ''}>
-      <span>{value ? value.toFixed() : '\u00A0'}</span>
+      <span>{value ? value.toFixed() : ''}</span>
     </th>
   )
 }
@@ -50,7 +51,7 @@ export function InputBody({
         suggested && 'suggested',
       )}
     >
-      {value || ' '}
+      {value || (suggested && !value ? <Check aria-label="推荐翻开" /> : null)}
     </span>
   )
 }
@@ -59,7 +60,7 @@ export function Table({ input }: { input: GameState }) {
   const state = useCactpot(input)
 
   return (
-    <table>
+    <table className="cactpot-board">
       <tbody>
         <tr>
           {tableHeader.map((key) => (

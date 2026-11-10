@@ -52,7 +52,10 @@ export function VoyageRoutes({
       <TableBody>
         {routes.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={6}>
+            <TableCell
+              colSpan={6}
+              className="whitespace-normal py-4 text-center text-fg-3"
+            >
               {ship?.status === 2
                 ? '潜水艇正在探索，返回后再计算路线。'
                 : '选择潜水艇并标记探索点后计算。'}

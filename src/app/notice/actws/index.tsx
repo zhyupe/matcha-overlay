@@ -1,6 +1,6 @@
 export function ActWsNotice() {
   return (
-    <div style={{ padding: '0 10px' }}>
+    <div className="overlay text-fg-2">
       <p>
         检测到您可能启用了 ACTWS
         兼容模式，在此模式下本页面无法正常工作。请尝试通过以下操作进行修复

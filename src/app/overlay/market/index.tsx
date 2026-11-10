@@ -95,11 +95,13 @@ export function MarketOverlay({
   if (!active) return null
 
   return (
-    <MarketTable
-      worlds={worlds}
-      items={items}
-      language={language}
-      onReset={reset}
-    />
+    <div className="overlay overlay-market-wrap">
+      <MarketTable
+        worlds={worlds}
+        items={items}
+        language={language}
+        onReset={reset}
+      />
+    </div>
   )
 }

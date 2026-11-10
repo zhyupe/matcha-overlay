@@ -1,6 +1,5 @@
 import { useContext, useMemo } from 'react'
 import { adapter } from '../../../adapter'
-import { Dialog } from '../../../components/dialog'
 import { SeasonContext } from '../../../lib/season'
 import type { OverlayProps } from '../../interface'
 import './index.css'
@@ -30,7 +29,7 @@ function VersionCheck({ version }: { version: string | undefined }) {
   }, [version])
 
   return showNotice ? (
-    <Dialog direction="top-left">您的插件版本较旧，请到插件中心更新</Dialog>
+    <p className="callout-warn">您的插件版本较旧，请到插件中心更新</p>
   ) : null
 }
 
@@ -39,7 +38,7 @@ export function WelcomeNotice({ version, language, active }: OverlayProps) {
   if (!active) return null
 
   return (
-    <div className="notice-welcome">
+    <div className="overlay notice-welcome">
       <p>欢迎使用 {titleEn} 悬浮窗。点击左上角图标可进入最小化模式。</p>
       <p>如遇功能异常，请检查：</p>
       <ol>

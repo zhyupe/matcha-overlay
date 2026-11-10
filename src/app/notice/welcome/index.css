@@ -1,18 +1,27 @@
 .notice-welcome {
-  padding: 0 10px;
-  font-size: 0.875em;
+  display: flex;
+  flex-direction: column;
+  color: var(--color-fg-2);
 }
 
 .notice-welcome p {
-  margin: 5px 0 10px;
+  margin: 0 0 8px;
 }
 
 .notice-welcome ol {
-  margin: 0;
+  margin: 0 0 8px;
+  padding-left: 20px;
+}
+
+.notice-welcome .callout-warn {
+  padding: 8px 12px;
+  border-radius: var(--radius-control);
+  background: var(--color-warn-soft);
+  color: var(--color-warn-fg);
 }
 
 .copyright {
-  position: absolute;
-  bottom: 0;
-  opacity: 0.6;
+  margin-top: auto;
+  color: var(--color-fg-3);
+  font-size: 12px;
 }

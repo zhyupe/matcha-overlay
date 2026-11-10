@@ -65,8 +65,8 @@ function Level({ list, language }: Props) {
   if (ilvl === InvalidAvgILvl) return null
 
   return (
-    <small>
-      <ILvl /> {ilvl}
-    </small>
+    <span className="gearset-avg">
+      平均 <ILvl /> {ilvl}
+    </span>
   )
 }

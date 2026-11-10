@@ -1,21 +1,23 @@
-import classNames from 'classnames'
 import type { List, Seq } from 'immutable'
-import type { CSSProperties, PropsWithChildren, ReactElement } from 'react'
-import { HQ, SwitchHorizontal, Trash } from '../../../../components/icon'
+import { Trash2 } from 'lucide-react'
+import type { ReactElement } from 'react'
+import { Button } from '#components/ui/button'
+import { Empty, SegmentedControl, ToggleButton } from '#components/ui/controls'
+import { HQ } from '../../../../components/icon'
 import { useConfigBoolean } from '../../../../lib/config'
 import type { MarketItemsMap } from '../interface'
 import { Cell } from './cell'
 
 const renderWorldHeader = (world: number | null) =>
   world === null ? (
-    <th key="_null">服务器</th>
+    <th key="_null" />
   ) : (
     <Cell.WorldName id={world} key={world} />
   )
 
 const renderItemHeader = (language: string, id: number | null) => {
   if (id === null) {
-    return <th key="0">物品名</th>
+    return <th key="0" />
   }
 
   return <Cell.ItemName key={id} item={id} language={language} />
@@ -53,34 +55,6 @@ const handleTranspose = <X, Y>(columns: X[], rows: Y[], transpose = false) => {
   }
 }
 
-function Button({
-  active,
-  className,
-  style,
-  children,
-  onClick,
-}: PropsWithChildren<{
-  active?: boolean
-  className?: string
-  style?: CSSProperties
-  onClick?: () => void
-}>) {
-  return (
-    <button
-      className={classNames(
-        'button',
-        'button-circle',
-        className,
-        active && 'button-active',
-      )}
-      onClick={onClick}
-      style={style}
-    >
-      {children}
-    </button>
-  )
-}
-
 export function MarketTable({
   worlds,
   items,
@@ -108,63 +82,75 @@ export function MarketTable({
     transpose,
   )
 
+  if (items.isEmpty()) {
+    return <Empty>在市场板查询物品后，各服务器的价格会显示在这里</Empty>
+  }
+
   return (
-    <table className="overlay-market">
-      <thead>
-        <tr>
-          <th style={{ width: 100 }}>
-            <div className="buttons">
-              <Button
-                active={transpose}
-                className="transpose"
-                onClick={toggleTranspose}
-                style={{ marginRight: 10 }}
-              >
-                <SwitchHorizontal />
-              </Button>
-              <Button
-                active={hqOnly}
-                onClick={toggleHQOnly}
-                style={{ marginRight: 10 }}
-              >
-                <HQ />
-              </Button>
-              <Button onClick={onReset}>
-                <Trash />
-              </Button>
-            </div>
-          </th>
-          {columns.map((item) => item.header)}
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((row, rowIndex) => {
-          return (
-            <tr key={row.value}>
-              {row.header}
-              {columns.map((_, columnIndex) => {
-                const cell = at(columnIndex, rowIndex)
-                const item = cell.column.value
-                const world = cell.row.value
-
-                const itemMap = item ? items.get(item) : undefined
-                if (!item || !world || !itemMap) {
-                  return <Cell.Empty />
-                }
-
-                return (
-                  <Cell
-                    key={`${world}-${item}`}
-                    world={world}
-                    item={itemMap}
-                    hqOnly={hqOnly}
-                  />
-                )
-              })}
+    <>
+      <div className="market-toolbar">
+        <SegmentedControl
+          label="排列"
+          value={transpose ? 'item' : 'world'}
+          onValueChange={(value) => {
+            if ((value === 'item') !== transpose) toggleTranspose()
+          }}
+          options={[
+            { value: 'world', label: '按服务器' },
+            { value: 'item', label: '按物品' },
+          ]}
+        />
+        <ToggleButton pressed={hqOnly} onPressedChange={toggleHQOnly}>
+          <HQ /> 仅 HQ
+        </ToggleButton>
+        <span className="flex-1" />
+        <Button variant="ghost" onClick={onReset}>
+          <Trash2 />
+          清空
+        </Button>
+      </div>
+      <div className="market-panel">
+        <table className="overlay-market">
+          <thead>
+            <tr>
+              <th>{transpose ? '物品' : '服务器'}</th>
+              {columns.map((item) => item.header)}
             </tr>
-          )
-        })}
-      </tbody>
-    </table>
+          </thead>
+          <tbody>
+            {rows.map((row, rowIndex) => {
+              return (
+                <tr key={row.value}>
+                  {row.header}
+                  {columns.map((_, columnIndex) => {
+                    const cell = at(columnIndex, rowIndex)
+                    const item = cell.column.value
+                    const world = cell.row.value
+
+                    const itemMap = item ? items.get(item) : undefined
+                    if (!item || !world || !itemMap) {
+                      return (
+                        <td key={`${world}-${item}`} className="no-record">
+                          —
+                        </td>
+                      )
+                    }
+
+                    return (
+                      <Cell
+                        key={`${world}-${item}`}
+                        world={world}
+                        item={itemMap}
+                        hqOnly={hqOnly}
+                      />
+                    )
+                  })}
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+    </>
   )
 }

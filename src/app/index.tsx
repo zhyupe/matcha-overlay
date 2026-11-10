@@ -8,9 +8,11 @@ import {
 } from 'react'
 import './index.css'
 import { EventEmitter } from 'events'
+import { ChevronDown, Lock, LockOpen } from 'lucide-react'
+import { Button, IconButton } from '#components/ui/button'
+import { Menu, MenuItem, MenuSeparator } from '#components/ui/menu'
 import { adapter } from '../adapter'
 import { Draggable } from '../components/draggable'
-import { LockClosed, LockOpen } from '../components/icon'
 import { Logo } from '../components/logo'
 import { useConfigBoolean } from '../lib/config'
 import { SeasonContext } from '../lib/season'
@@ -19,121 +21,91 @@ import type { OverlayProps } from './interface'
 import { ActWsNotice } from './notice/actws'
 import { WelcomeNotice } from './notice/welcome'
 import { CactpotOverlay } from './overlay/cactpot'
+import { FishingOverlay } from './overlay/fishing'
 import { GearsetOverlay } from './overlay/gearset'
-import { MapEventOverlay } from './overlay/map-event'
 import { MarketOverlay } from './overlay/market'
 import { SubmarineOverlay } from './overlay/submarine'
+import { TreasureOverlay } from './overlay/treasure'
 
 interface Tab {
-  title: string | null
-  right?: boolean
+  title: string
+  /** Only in ACT, where its troubleshooting steps apply */
+  actOnly?: boolean
   Component: (props: OverlayProps) => ReactElement | null
 }
 
 const tabs: Record<string, Tab> = {
-  market: {
-    title: '物价对比',
-    Component: MarketOverlay,
-  },
-  gearset: {
-    title: '配装比较',
-    Component: GearsetOverlay,
-  },
-  cactpot: {
-    title: '仙人微彩',
-    Component: CactpotOverlay,
-  },
-  treasure: {
-    title: '地图事件',
-    Component: MapEventOverlay,
-  },
-  submarine: {
-    title: '部队潜水艇',
-    Component: SubmarineOverlay,
-  },
-  welcome: {
-    title: '关于',
-    right: true,
-    Component: WelcomeNotice,
-  },
+  market: { title: '物价对比', Component: MarketOverlay },
+  gearset: { title: '配装比较', Component: GearsetOverlay },
+  cactpot: { title: '仙人微彩', Component: CactpotOverlay },
+  treasure: { title: '寻宝', Component: TreasureOverlay },
+  fishing: { title: '钓鱼', Component: FishingOverlay },
+  submarine: { title: '部队潜水艇', Component: SubmarineOverlay },
+  welcome: { title: '关于', actOnly: true, Component: WelcomeNotice },
 }
-
-interface HeaderProps {
-  isActWS: boolean
-  minified: boolean
-  setMinified: (minified: boolean) => void
-  activeTab: string
-  setActiveTab: (activeTab: string) => void
-  lock: boolean
-  setLock: (lock: boolean) => void
-}
+const available = Object.entries(tabs).filter(
+  ([, tab]) => !tab.actOnly || adapter.name === 'ACT',
+)
+const defaultTab = adapter.name === 'ACT' ? 'welcome' : 'market'
 
 function Header({
-  isActWS,
-  minified,
-  setMinified,
   activeTab,
   setActiveTab,
+  setMinified,
   lock,
   setLock,
-}: HeaderProps) {
-  const [menuVisible, setMenuVisible] = useState<boolean>(false)
-  const logo = (
-    <Draggable onClick={() => setMinified(!minified)}>
-      <Logo />
-    </Draggable>
-  )
-
-  if (minified) {
-    return logo
-  }
-
-  if (isActWS) {
-    return <header className="header">{logo}</header>
-  }
-
-  const activeTabItem = tabs[activeTab] || tabs.welcome
-  const tabEntries = Object.entries(tabs)
-
-  const onMenuClick = (key: string) => {
-    setActiveTab(key)
-    setMenuVisible(false)
-  }
-
+}: {
+  activeTab: string
+  setActiveTab: (tab: string) => void
+  setMinified: (minified: boolean) => void
+  lock: boolean
+  setLock: (lock: boolean) => void
+}) {
+  const features = available.filter(([, tab]) => !tab.actOnly)
+  const about = available.filter(([, tab]) => tab.actOnly)
   return (
-    <header className="header">
-      {logo}
-      <Draggable onClick={() => setMenuVisible(!menuVisible)}>
-        <span className={`tab left ${activeTabItem.right ? '' : ' active'}`}>
-          {activeTabItem.right ? '功能' : activeTabItem.title}
-          <Draggable onClick={() => setLock(!lock)}>
-            <span className={`header-lock${lock ? ' locked' : ''}`}>
-              {lock ? <LockClosed /> : <LockOpen />}
-            </span>
-          </Draggable>
+    <header className="app-header">
+      <Draggable onClick={() => setMinified(true)}>
+        <span className="app-logo" title="收起">
+          <Logo />
         </span>
       </Draggable>
-      <div
-        className="header-menu"
-        style={{ display: menuVisible ? '' : 'none' }}
+      <Menu
+        trigger={
+          <Button variant="ghost" className="app-title">
+            {tabs[activeTab]?.title}
+            <ChevronDown />
+          </Button>
+        }
       >
-        {tabEntries
-          .filter(([, tab]) => !tab.right && tab.title)
-          .map(([key, { title }]) => (
-            <Draggable key={key} onClick={() => onMenuClick(key)}>
-              <span>{title}</span>
-            </Draggable>
-          ))}
-      </div>
-      {tabEntries
-        .filter(([, tab]) => tab.right && tab.title)
-        .map(([key, { title }]) => (
-          <Draggable key={key} onClick={() => setActiveTab(key)}>
-            <span className={key === activeTab ? 'tab active' : 'tab'}>
-              {title}
-            </span>
-          </Draggable>
+        {features.map(([key, { title }]) => (
+          <MenuItem
+            key={key}
+            checked={key === activeTab}
+            onClick={() => setActiveTab(key)}
+          >
+            {title}
+          </MenuItem>
         ))}
+        {about.length > 0 && <MenuSeparator />}
+        {about.map(([key, { title }]) => (
+          <MenuItem
+            key={key}
+            checked={key === activeTab}
+            onClick={() => setActiveTab(key)}
+          >
+            {title}
+          </MenuItem>
+        ))}
+      </Menu>
+      <span className="flex-1" />
+      <IconButton
+        label={lock ? '已锁定当前功能，点击解锁' : '锁定当前功能'}
+        className={lock ? 'text-lime hover:text-lime' : undefined}
+        onClick={() => setLock(!lock)}
+      >
+        {lock ? <Lock /> : <LockOpen />}
+      </IconButton>
     </header>
   )
 }
@@ -149,7 +121,7 @@ function App() {
     'app-minified',
     false,
   )
-  const [activeTab, setActiveTab] = useState('welcome')
+  const [activeTab, setActiveTab] = useState(defaultTab)
   const [lock, setLock] = useState<boolean>(false)
   const { className, style } = useContext(SeasonContext)
 
@@ -176,37 +148,51 @@ function App() {
     trackVersion('plugin', version)
   }, [version])
 
+  const content = available.map(([key, { Component }]) => (
+    <Component
+      key={key}
+      {...{
+        version,
+        language,
+        eventEmitter,
+        active: !minified && key === activeTab,
+        setActive: () => minified || lock || setActiveTab(key),
+      }}
+    />
+  ))
+
+  if (minified) {
+    return (
+      <div className={`app app-minified ${className ?? ''}`} style={style}>
+        <Draggable onClick={() => setMinified(false)}>
+          <span className="app-logo" title="展开">
+            <Logo />
+          </span>
+        </Draggable>
+        {/* Panels stay mounted, so events keep their state while the overlay is folded */}
+        <div hidden>{content}</div>
+      </div>
+    )
+  }
+
   return (
-    <div
-      className={`app app-${minified ? 'minified' : 'wrap'} ${className}`}
-      style={style}
-    >
-      <Header
-        {...{
-          isActWS,
-          minified,
-          setMinified,
-          activeTab,
-          setActiveTab,
-          lock,
-          setLock,
-        }}
-      />
+    <div className={`app ${className ?? ''}`} style={style}>
       {isActWS ? (
-        <ActWsNotice />
+        <>
+          <header className="app-header">
+            <span className="app-logo">
+              <Logo />
+            </span>
+          </header>
+          <ActWsNotice />
+        </>
       ) : (
-        Object.entries(tabs).map(([key, { Component }]) => (
-          <Component
-            key={key}
-            {...{
-              version,
-              language,
-              eventEmitter,
-              active: !minified && key === activeTab,
-              setActive: () => minified || lock || setActiveTab(key),
-            }}
+        <>
+          <Header
+            {...{ activeTab, setActiveTab, setMinified, lock, setLock }}
           />
-        ))
+          <main className="app-body">{content}</main>
+        </>
       )}
     </div>
   )

@@ -27,8 +27,11 @@ const width = imageWidth - clipLeft - clipRight
 const height = imageHeight - clipTop - clipBottom
 const canvasSize = Math.max(width, height)
 
-const colorStart = '#22b14c'
-const colorSpot = '#00a2e8'
+// Mojito's overlay palette: the start in white, explored spots in lime, unexplored ones as dashed outlines
+const colorStart = '#f4f4f8'
+const colorSpot = '#bfe85a'
+const colorSpotInk = '#1f2a0e'
+const colorOpen = 'rgba(255, 255, 255, 0.55)'
 
 const spotToCanvas = ({ x, y }: { x: number; y: number }): [number, number] => [
   x * scale + offsetX - clipLeft,
@@ -71,13 +74,12 @@ function useImage(input?: string) {
 
 function drawBackground(ctx: CanvasRenderingContext2D) {
   const gradient = ctx.createLinearGradient(0, 0, canvasSize, canvasSize)
-  gradient.addColorStop(0, '#172634')
-  gradient.addColorStop(0.55, '#203e4d')
-  gradient.addColorStop(1, '#111821')
+  gradient.addColorStop(0, '#20262f')
+  gradient.addColorStop(1, '#171b22')
   ctx.fillStyle = gradient
   ctx.fillRect(0, 0, canvasSize, canvasSize)
 
-  ctx.strokeStyle = '#ffffff12'
+  ctx.strokeStyle = '#ffffff0d'
   ctx.lineWidth = 1
   for (let x = 0; x < canvasSize; x += 60) {
     ctx.beginPath()
@@ -94,43 +96,47 @@ function drawBackground(ctx: CanvasRenderingContext2D) {
 }
 
 function Circle({
-  text = ' ',
+  text = '',
   color,
+  ink,
   dashed = false,
 }: {
   color: string
+  ink?: string
   text?: string
   dashed?: boolean
 }) {
   return (
-    <div
-      className="size-[22px] box-border rounded-full border-2 border-dashed text-center"
+    <span
+      className="box-border inline-grid size-[18px] place-items-center rounded-full border-[1.5px] text-[10px] font-semibold"
       style={{
         borderColor: color,
-        backgroundColor: dashed ? '#fff' : color,
-        color: dashed ? color : '#fff',
+        borderStyle: dashed ? 'dashed' : 'solid',
+        backgroundColor: dashed ? 'transparent' : color,
+        color: ink ?? '#fff',
       }}
     >
       {text}
-    </div>
+    </span>
   )
 }
 
 function Legend() {
   return (
-    <div className="flex flex-wrap items-center gap-4 text-sm">
-      <div className="flex item-center gap-2">
+    <div className="flex flex-wrap items-center gap-4 text-xs text-fg-2">
+      <span className="flex items-center gap-1.5">
         <Circle color={colorStart} />
-        起始点
-      </div>
-      <div className="flex item-center gap-2">
-        <Circle color={colorSpot} text="A" dashed />
+        起点
+      </span>
+      <span className="flex items-center gap-1.5">
+        <Circle color={colorOpen} text="A" dashed />
         未探索
-      </div>
-      <div className="flex item-center gap-2">
-        <Circle color={colorSpot} text="A" />
+      </span>
+      <span className="flex items-center gap-1.5">
+        <Circle color={colorSpot} ink={colorSpotInk} text="A" />
         已探索
-      </div>
+      </span>
+      <span className="text-fg-3">点击探索点切换</span>
     </div>
   )
 }
@@ -169,12 +175,11 @@ export function VoyageMap({
     }
 
     ctx.save()
-    ctx.setLineDash([8, 8])
-    ctx.lineWidth = 4
-    ctx.strokeStyle = '#000'
-    ctx.shadowColor = '#fff'
-    ctx.shadowOffsetX = 2
-    ctx.shadowOffsetY = 2
+    ctx.setLineDash([6, 8])
+    ctx.lineWidth = 3
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)'
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)'
+    ctx.shadowOffsetY = 1
 
     for (const spot of Object.values(map.spots)) {
       if (!spot.parent) continue
@@ -189,7 +194,7 @@ export function VoyageMap({
 
     const points: Array<[number, number, string, boolean]> = []
     ctx.save()
-    ctx.font = '20px Arial'
+    ctx.font = '600 18px "Geist Variable", sans-serif'
     ctx.textAlign = 'center'
     for (const spot of Object.values(map.spots)) {
       const [x, y] = spotToCanvas(spot)
@@ -197,10 +202,10 @@ export function VoyageMap({
       const color = isStart ? colorStart : colorSpot
       const isDiscovered = isStart || spotStatus.get(mapId, spot.location)
 
-      ctx.strokeStyle = color
-      ctx.fillStyle = isDiscovered ? color : '#fff'
-      ctx.setLineDash(isDiscovered ? [] : [8, 8])
-      ctx.lineWidth = 4
+      ctx.strokeStyle = isDiscovered ? color : colorOpen
+      ctx.fillStyle = isDiscovered ? color : 'rgba(23, 27, 34, 0.85)'
+      ctx.setLineDash(isDiscovered ? [] : [6, 6])
+      ctx.lineWidth = 3
 
       ctx.beginPath()
       ctx.arc(x, y, radius, 0, 2 * Math.PI)
@@ -209,8 +214,8 @@ export function VoyageMap({
 
       if (!isStart) {
         points.push([x, y, spot.location, isDiscovered])
-        ctx.fillStyle = isDiscovered ? '#fff' : color
-        ctx.fillText(spot.location, x, y + 8)
+        ctx.fillStyle = isDiscovered ? colorSpotInk : '#ffffffcc'
+        ctx.fillText(spot.location, x, y + 6)
       }
     }
     ctx.restore()
@@ -245,7 +250,7 @@ export function VoyageMap({
 
   return (
     <>
-      <div className="mb-2.5 flex items-center justify-between gap-2">
+      <div className="mb-2 flex items-center justify-between gap-2">
         <Select
           items={mapItems}
           value={mapId}
@@ -253,7 +258,7 @@ export function VoyageMap({
             if (value !== null) setActiveMap(value)
           }}
         >
-          <SelectTrigger size="sm" className="w-[220px]">
+          <SelectTrigger className="min-w-0 flex-1">
             <SelectValue placeholder="选择地图" />
           </SelectTrigger>
           <SelectContent>
@@ -264,28 +269,20 @@ export function VoyageMap({
             ))}
           </SelectContent>
         </Select>
-        <div className="flex items-center gap-2">
-          <Button
-            type="button"
-            size="sm"
-            onClick={() => spotStatus.updateAll(mapId, true)}
-          >
+        <div className="flex items-center gap-1">
+          <Button onClick={() => spotStatus.updateAll(mapId, true)}>
             全选
           </Button>
-          <Button
-            type="button"
-            size="sm"
-            onClick={() => spotStatus.updateAll(mapId, false)}
-          >
+          <Button onClick={() => spotStatus.updateAll(mapId, false)}>
             清空
           </Button>
         </div>
       </div>
-      <div className="mb-2.5">
+      <div className="mb-2">
         <Legend />
       </div>
       <canvas
-        className="mx-auto block aspect-square h-auto max-w-[100%] cursor-pointer rounded-[5px]"
+        className="mx-auto block aspect-square h-auto max-w-[100%] rounded-sm"
         height={canvasSize}
         ref={ref}
         width={canvasSize}

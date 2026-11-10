@@ -1,37 +1,10 @@
-import { ChevronLeft, ChevronRight } from 'lucide-react'
-import type { PropsWithChildren } from 'react'
 import { Button } from '#components/ui/button'
-import { cn } from '#lib/utils'
+import { Chip, Empty, SegmentedControl } from '#components/ui/controls'
 import type { SubmarineRank } from '../../../../data/submarine'
 import { formatCondition } from '../lib/condition'
 import { getShipPartName, type Ship } from '../lib/ship'
 
 const partSlots = [0, 1, 2, 3] as const
-// border-[#b7ca32]/60 bg-[#b7ca32]/15 px-2 py-1 text-xs text-[#d8eb5d]
-
-const tagColors = {
-  white: 'border-white/20 bg-white/10 text-white/90',
-  matcha: 'border-[#b7ca32]/60 bg-[#b7ca32]/15 text-[#d8eb5d]',
-  damaged: 'border-red-400/60 bg-red-950/40 text-red-200',
-}
-
-function Tag({
-  color = 'white',
-  children,
-}: PropsWithChildren<{
-  color?: keyof typeof tagColors
-}>) {
-  return (
-    <span
-      className={cn(
-        'min-w-0 rounded border h-6 px-2.5 text-sm',
-        tagColors[color],
-      )}
-    >
-      {children}
-    </span>
-  )
-}
 
 function ShipPart({
   ship,
@@ -42,10 +15,10 @@ function ShipPart({
 }) {
   const condition = ship.conditions?.[slot]
   return (
-    <Tag color={condition === 0 ? 'damaged' : 'white'}>
+    <Chip tone={condition === 0 ? 'danger' : undefined}>
       {getShipPartName(ship.type, slot, ship.parts[slot])}
-      <span className="ml-1.5 tabular-nums">{formatCondition(condition)}</span>
-    </Tag>
+      <span className="text-fg-3">{formatCondition(condition)}</span>
+    </Chip>
   )
 }
 
@@ -63,7 +36,7 @@ function formatReturnTime(returnTime: number) {
   })
 }
 
-function ShipStatusColumn({
+function ShipStatus({
   ship,
   shipStatus,
   onCalculate,
@@ -74,37 +47,28 @@ function ShipStatusColumn({
 }) {
   if (ship.status === 1) {
     return (
-      <div className="flex min-w-[100px] flex-wrap items-center justify-end gap-2">
-        <Tag>
-          速度: {shipStatus?.speed ?? '-'} / 距离: {shipStatus?.range ?? '-'}
-        </Tag>
-        <Button type="button" size="xs" onClick={onCalculate}>
-          计算路径
+      <>
+        <span className="text-xs text-fg-2 tabular-nums">
+          速度 {shipStatus?.speed ?? '-'} · 航程 {shipStatus?.range ?? '-'}
+        </span>
+        <Button variant="primary" size="xs" onClick={onCalculate}>
+          计算航线
         </Button>
-      </div>
+      </>
     )
   }
 
   if (ship.status === 2) {
     const isExploring =
       ship.returnTime > 0 && ship.returnTime * 1000 > Date.now()
-
-    return (
-      <div className="flex min-w-[100px] justify-end items-center gap-2 text-xs">
-        <Tag>
-          {isExploring
-            ? `探索中 [${formatReturnTime(ship.returnTime)}]`
-            : '探索完成'}
-        </Tag>
-      </div>
+    return isExploring ? (
+      <Chip tone="ok">探索中 · {formatReturnTime(ship.returnTime)} 返回</Chip>
+    ) : (
+      <Chip tone="ok">探索完成</Chip>
     )
   }
 
-  return (
-    <div className="min-w-[120px] text-right text-xs text-white/70">
-      <Tag>状态: {ship.status}</Tag>
-    </div>
-  )
+  return <Chip>状态 {ship.status}</Chip>
 }
 
 export function VoyageEdit({
@@ -121,57 +85,35 @@ export function VoyageEdit({
   onCalculate: () => void
 }) {
   const activeShip = ships[activeIndex]
-  const selectByOffset = (offset: number) => {
-    if (ships.length === 0) return
-    const base = activeIndex === -1 ? 0 : activeIndex
-    const nextIndex = (base + offset + ships.length) % ships.length
-    setActiveKey(nextIndex)
-  }
 
-  if (ships.length === 0) {
-    return (
-      <div className="min-w-[220px] flex-1 text-sm text-white/90">
-        请到部队工房管理潜水艇
-      </div>
-    )
+  if (!activeShip) {
+    return <Empty>请到部队工房管理潜水艇</Empty>
   }
 
   return (
-    <div className="flex items-center gap-2">
-      <div className="flex min-w-[150px] items-center gap-1">
-        <Button
-          aria-label="Previous submarine"
-          disabled={ships.length <= 1}
-          size="icon-sm"
-          type="button"
-          onClick={() => selectByOffset(-1)}
-        >
-          <ChevronLeft size={16} />
-        </Button>
-        <div className="flex-1 truncate text-sm font-medium text-white text-center">
-          {activeShip.name}
-        </div>
-        <Button
-          aria-label="Next submarine"
-          disabled={ships.length <= 1}
-          size="icon-sm"
-          type="button"
-          onClick={() => selectByOffset(1)}
-        >
-          <ChevronRight size={16} />
-        </Button>
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-wrap items-center gap-2">
+        <SegmentedControl
+          label="潜水艇"
+          value={String(activeIndex)}
+          onValueChange={(value) => setActiveKey(Number(value))}
+          options={ships.flatMap((ship, index) =>
+            ship ? [{ value: String(index), label: ship.name }] : [],
+          )}
+        />
+        <span className="flex-1" />
+        <ShipStatus
+          ship={activeShip}
+          shipStatus={shipStatus}
+          onCalculate={onCalculate}
+        />
       </div>
-      <Tag color="matcha">Lv {activeShip.rank}</Tag>
-      <div className="flex min-w-0 flex-[3] flex-wrap gap-1.5">
+      <div className="flex flex-wrap items-center gap-1.5">
+        <Chip className="text-fg">Lv {activeShip.rank}</Chip>
         {partSlots.map((slot) => (
           <ShipPart key={slot} ship={activeShip} slot={slot} />
         ))}
       </div>
-      <ShipStatusColumn
-        ship={activeShip}
-        shipStatus={shipStatus}
-        onCalculate={onCalculate}
-      />
     </div>
   )
 }

@@ -1,22 +1,35 @@
+import { Check } from 'lucide-react'
 import {
   type ReactElement,
   useEffect,
   useState,
   useSyncExternalStore,
 } from 'react'
+import { Chip } from '#components/ui/controls'
 import { adapter } from '../../../../adapter'
 import { HQ } from '../../../../components/icon'
+import { ItemIcon } from '../../../../components/item-icon'
 import type { MarketItemMap } from '../interface'
 import './cell.css'
 import { Worlds } from '../../../../data/worlds'
-import { itemName, queryItem } from '../../../../lib/store/item'
+import {
+  type ItemRecord,
+  itemName,
+  queryItem,
+} from '../../../../lib/store/item'
 import { useFirstGroup, useGlobalCheapest, useLocalCheapest } from './calc'
 
-function Amount({ quantity, hq }: { quantity: number; hq: number }) {
+function Quantity({ quantity, hq }: { quantity: number; hq: number }) {
   return (
     <span className="quantity">
-      ({(quantity - hq).toLocaleString()}/<HQ />
-      {hq.toLocaleString()})
+      ×{quantity.toLocaleString()}
+      {hq > 0 && (
+        <>
+          {' · '}
+          <HQ />
+          {hq.toLocaleString()}
+        </>
+      )}
     </span>
   )
 }
@@ -35,40 +48,28 @@ export function Cell({
   const firstGroup = useFirstGroup(item, world, hqOnly)
 
   if (!localCheapest || !firstGroup) {
-    return <td className="no-record">-</td>
+    return <td className="no-record">—</td>
   }
 
   const isGlobalCheapest = localCheapest.price === globalCheapest
   return (
     <td className={isGlobalCheapest ? 'lowest' : ''}>
-      <div className="single">
-        {localCheapest.price.toLocaleString()}
-        <Amount quantity={localCheapest.quantity} hq={localCheapest.hq} />
+      <div className="price">
+        <b>{localCheapest.price.toLocaleString()}</b>
+        <Quantity quantity={localCheapest.quantity} hq={localCheapest.hq} />
+        {isGlobalCheapest && (
+          <Chip tone="ok">
+            <Check />
+            最低
+          </Chip>
+        )}
       </div>
       <div className="group">
-        ~
+        前 {firstGroup.quantity.toLocaleString()} 个均价{' '}
         {(firstGroup.totalPrice / firstGroup.quantity).toLocaleString(
           undefined,
-          {
-            maximumFractionDigits: 0,
-          },
+          { maximumFractionDigits: 0 },
         )}
-        <Amount quantity={firstGroup.quantity} hq={firstGroup.hq} />
-      </div>
-    </td>
-  )
-}
-
-Cell.Empty = function Empty() {
-  return (
-    <td>
-      <div className="single">
-        最低价
-        <Amount quantity={1} hq={0} />
-      </div>
-      <div className="group">
-        前 N 个均价
-        <Amount quantity={10} hq={2} />
       </div>
     </td>
   )
@@ -85,17 +86,25 @@ Cell.ItemName = function ItemNameSource(props: ItemNameProps) {
 }
 
 function ItemName({ item, language }: ItemNameProps) {
+  const [record, setRecord] = useState<ItemRecord | null>(null)
   const [name, setName] = useState<string>('')
   useEffect(() => {
+    setRecord(null)
     setName('载入中')
     queryItem(item, language)
-      .then((record) => setName(itemName(record, language)))
+      .then((record) => {
+        setRecord(record)
+        setName(itemName(record, language))
+      })
       .catch(() => setName(String(item)))
   }, [item, language])
 
   return (
-    <th key={item} className={name.length >= 6 ? 'small' : ''}>
-      {name}
+    <th key={item}>
+      <span className="item-head">
+        <ItemIcon record={record} className="size-6" />
+        <span className="truncate">{name}</span>
+      </span>
     </th>
   )
 }

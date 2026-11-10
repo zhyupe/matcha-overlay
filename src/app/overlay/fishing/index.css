@@ -1,3 +1,9 @@
+.overlay-fishing {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 .map-fishing {
   display: flex;
   flex: 1;
@@ -5,17 +11,18 @@
   gap: 6px;
   min-height: 0;
   min-width: 0;
-  padding: 0 10px 6px;
-  font-size: 14px;
   overflow: hidden;
 }
 .fishing-heading,
 .fishing-summary {
   display: flex;
   flex-shrink: 0;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
   gap: 10px;
+}
+.fishing-place {
+  font-weight: 600;
 }
 .fishing-place,
 .fishing-bait {
@@ -25,14 +32,22 @@
 }
 .fishing-clock {
   flex-shrink: 0;
-  color: #b7ca32;
+  color: var(--color-fg);
   font-variant-numeric: tabular-nums;
 }
 .fishing-clock > span {
   font-size: 22px;
+  font-weight: 600;
+  line-height: 1;
+}
+.fishing-clock small {
+  margin-left: 2px;
+  color: var(--color-fg-3);
+  font-size: 12px;
 }
 .fishing-summary {
-  color: #fffb;
+  margin-bottom: 4px;
+  color: var(--color-fg-2);
   font-size: 12px;
 }
 .fishing-state {
@@ -40,35 +55,37 @@
 }
 .fishing-candidates {
   display: grid;
-  grid-template-rows: repeat(var(--fish-count), minmax(0, 28px));
+  grid-template-rows: repeat(var(--fish-count), minmax(0, 30px));
   align-content: start;
-  gap: 3px;
+  gap: 4px;
   flex: 1;
   min-height: 0;
 }
+
+/* One fish: its tug, name and window; behind it the windows of every bait (faint) and of this bait (tinted) */
 .fishing-candidate {
-  --fish-color: #9ca5b2;
+  --fish-color: var(--color-fg-3);
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 24px 100px;
+  grid-template-columns: 22px minmax(0, 1fr) auto;
   align-items: center;
-  column-gap: 5px;
-  padding: 0 7px;
+  column-gap: 6px;
   min-height: 0;
+  padding: 0 8px;
   overflow: hidden;
-  background: #ffffff0d;
-  border-left: 3px solid var(--fish-color);
-  font-size: 12px;
+  border-radius: var(--radius-sm);
+  background: oklch(1 0 0 / 0.04);
+  font-size: 13px;
   line-height: 1.2;
 }
 .fishing-candidate[data-tug="1"] {
-  --fish-color: #57afd4;
+  --fish-color: var(--tug-1);
 }
 .fishing-candidate[data-tug="2"] {
-  --fish-color: #dfb251;
+  --fish-color: var(--tug-2);
 }
 .fishing-candidate[data-tug="3"] {
-  --fish-color: #dd7373;
+  --fish-color: var(--tug-3);
 }
 .fishing-window,
 .fishing-cursor {
@@ -78,24 +95,26 @@
   pointer-events: none;
 }
 .fishing-window {
-  background: var(--fish-color);
+  border-radius: 4px;
 }
 .fishing-window-all {
-  opacity: 0.36;
+  background: oklch(1 0 0 / 0.07);
 }
 .fishing-window-current {
-  opacity: 1;
+  background: var(--fish-color);
+  opacity: 0.28;
 }
 .fishing-cursor {
-  width: 1px;
-  background: #fffa;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--color-fg);
+  box-shadow: 0 0 0 1px oklch(0 0 0 / 0.35);
 }
 .fishing-name,
 .fishing-tug,
 .fishing-time {
   position: relative;
   white-space: nowrap;
-  text-shadow: 0 1px 2px #000;
 }
 .fishing-name {
   overflow: hidden;
@@ -103,12 +122,18 @@
 }
 .fishing-tug {
   color: var(--fish-color);
-  text-align: center;
-  font-weight: 600;
+  font: 700 12px var(--font-mono);
 }
 .fishing-time {
+  color: var(--color-fg-2);
+  font-size: 12px;
   text-align: right;
   font-variant-numeric: tabular-nums;
+}
+.fishing-source {
+  margin-left: 6px;
+  color: var(--color-fg-3);
+  font-size: 12px;
 }
 .fishing-outside .fishing-name,
 .fishing-outside .fishing-time {
@@ -117,18 +142,21 @@
 .fishing-excluded .fishing-name,
 .fishing-excluded .fishing-tug,
 .fishing-excluded .fishing-time {
-  opacity: 0.4;
+  opacity: 0.45;
 }
 .fishing-caught {
-  outline: 1px solid #b7ca32;
-  outline-offset: -1px;
+  box-shadow: inset 0 0 0 1px var(--fish-color);
 }
 .fishing-empty,
 .fishing-timing-note,
 .fishing-message {
   margin: 0;
-  color: #fffb;
+  color: var(--color-fg-3);
   font-size: 12px;
+}
+.fishing-empty {
+  padding: 16px 0;
+  text-align: center;
 }
 .fishing-timing-note {
   flex-shrink: 0;
@@ -145,18 +173,11 @@
   flex-shrink: 0;
   justify-content: flex-end;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
   padding-top: 4px;
 }
-.fishing-actions button {
-  flex-shrink: 0;
-}
-.map-fishing button:focus-visible {
-  outline: 2px solid #b7ca32;
-  outline-offset: 2px;
-}
 
-@media (max-height: 420px) {
+@media (max-height: 360px) {
   .map-fishing {
     gap: 3px;
   }
@@ -166,13 +187,4 @@
   .fishing-clock > span {
     font-size: 18px;
   }
-  .fishing-actions {
-    padding-top: 0;
-  }
-}
-
-.fishing-source {
-  margin-left: 0.5em;
-  font-size: 0.8em;
-  opacity: 0.75;
 }

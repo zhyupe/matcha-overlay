@@ -1,132 +1,123 @@
+/* The overlay window: one translucent dark panel with a title bar, or the folded logo tile */
 .app {
-  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
   box-sizing: border-box;
-  border: 1px solid #b7ca32aa;
-}
-
-.app-wrap {
   height: 100%;
-  padding: 5px;
-  background-color: #282c34aa;
+  overflow: hidden;
+  border: 1px solid oklch(1 0 0 / 0.1);
+  border-radius: var(--radius-panel);
+  background: var(--color-panel);
+  box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.04);
 }
 
 .app-minified {
-  display: inline-block;
-  padding: 10px;
-  line-height: 1;
-  border-color: transparent;
+  display: inline-flex;
+  height: auto;
+  padding: 4px;
+  border-radius: var(--radius-control);
 }
 
-.app-minified .logo {
-  border-radius: 50%;
-  box-shadow: 0 0 5px #0003;
+.app-header {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 2px;
+  height: 40px;
+  padding: 0 6px;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.app-logo {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-control);
+}
+.app-logo:hover {
+  background: var(--color-hover);
+}
+.app-minified .app-logo {
+  width: 32px;
+  height: 32px;
 }
 
 .logo {
-  flex-shrink: 0;
-  height: 30px;
-  width: 30px;
+  display: grid;
+  place-items: center;
 }
-
-.logo img,
-.logo svg {
-  height: 30px;
-  width: 30px;
-  background-color: #b7ca32;
+.logo svg,
+.logo img {
+  width: 20px;
+  height: 20px;
+}
+.app-minified .logo svg,
+.app-minified .logo img {
+  width: 24px;
+  height: 24px;
+}
+.logo path {
+  fill: var(--color-lime);
+}
+.logo img {
   border-radius: 50%;
 }
 
-.logo path {
-  fill: #fffc;
+.app-title {
+  font-weight: 600;
+  color: var(--color-fg);
+}
+.app-title svg {
+  color: var(--color-fg-3);
 }
 
-.header {
-  display: flex;
-  height: 40px;
-  padding: 0 10px 0 5px;
-  align-items: center;
-  user-select: none;
-}
-
-.header > span {
-  display: inline-flex;
-  padding: 0 5px;
-  align-items: center;
-  font-size: 0.875em;
-}
-
-.header > .tab {
-  line-height: 20px;
-  padding: 4px 10px;
-  border-bottom: 2px solid transparent;
-}
-
-.header > .tab.left {
-  margin-left: 5px;
-  margin-right: auto;
-}
-
-.header > .tab.active {
-  border-color: #b7ca32;
-}
-
-.header-lock {
-  margin-left: 5px;
-  margin-bottom: 2px;
-  color: #fff8;
-}
-
-.header-lock.locked {
-  color: #b7ca32;
-}
-
-.header-menu {
-  position: absolute;
-  z-index: 100;
-  top: 50px;
-  left: 2px;
-  right: 2px;
-
-  display: flex;
-  flex-wrap: wrap;
-  background: #b7ca32ee;
-}
-
-.header-menu::before {
-  position: absolute;
-  top: -12px;
-  left: 60px;
-  display: block;
-  content: " ";
-  border: 6px solid #0000;
-  border-bottom-color: #b7ca32cc;
-}
-
-.header-menu span {
-  width: 120px;
-  padding: 10px 0;
-  text-align: center;
-  font-size: 0.875em;
-}
-
-.tag {
-  padding: 0 5px;
-  color: #b7ca32;
-}
-
-.overlay {
-  height: calc(100% - 40px);
+.app-body {
+  position: relative;
+  flex: 1;
+  min-height: 0;
   overflow: auto;
 }
 
-html[data-matcha-view="overlay"] .header {
+/* Each feature fills the body; the ones that scroll do so inside it */
+.overlay {
+  box-sizing: border-box;
+  min-height: 100%;
+  padding: 10px;
+}
+
+/* A name or term picked out in running text */
+.tag {
+  color: var(--color-lime);
+}
+
+.notice {
+  margin: 10px;
+  padding: 8px 12px;
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  line-height: 1.5;
+}
+
+/* In Mojito the title bar moves the window; its controls stay clickable */
+html[data-matcha-view="overlay"] .app-header {
   -webkit-app-region: drag;
 }
-html[data-matcha-view="overlay"] .logo,
-html[data-matcha-view="overlay"] .header .tab,
-html[data-matcha-view="overlay"] .header-menu,
+html[data-matcha-view="overlay"] .app-logo,
+html[data-matcha-view="overlay"] .app-header button,
 html[data-matcha-view="overlay"] button,
 html[data-matcha-view="overlay"] input,
 html[data-matcha-view="overlay"] select {
   -webkit-app-region: no-drag;
+}
+
+.item-icon {
+  display: block;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+}
+.item-icon-empty {
+  background: var(--color-surface);
 }

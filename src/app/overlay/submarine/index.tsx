@@ -21,7 +21,8 @@ import { VoyageMap } from './mods/map'
 import { VoyageRoutes } from './mods/routes'
 import { VoyageEdit } from './mods/status'
 
-const panelClass = 'min-w-0 rounded border border-white/15 bg-black/25 p-2.5'
+const panelClass =
+  'min-w-0 rounded-control border border-line bg-[oklch(0_0_0/0.12)] p-2'
 
 export function SubmarineOverlay({
   eventEmitter,
@@ -111,7 +112,7 @@ export function SubmarineOverlay({
   if (!active) return null
 
   return (
-    <div className="overlay box-border flex flex-col gap-2.5 p-1">
+    <div className="overlay @container flex flex-col gap-2.5">
       <section>
         <VoyageEdit
           ships={ships}
@@ -121,7 +122,7 @@ export function SubmarineOverlay({
           onCalculate={calculate}
         />
       </section>
-      <div className="grid grid-cols-[minmax(360px,1fr)_minmax(360px,1fr)] gap-2.5 max-[820px]:grid-cols-1">
+      <div className="grid grid-cols-1 gap-2.5 @3xl:grid-cols-2">
         <section className={`${panelClass} overflow-hidden`}>
           <VoyageMap
             maps={submarineMap}

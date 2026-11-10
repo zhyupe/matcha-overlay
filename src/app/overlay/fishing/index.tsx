@@ -1,4 +1,6 @@
 import { type CSSProperties, useRef } from 'react'
+import { Button } from '#components/ui/button'
+import type { OverlayProps } from '../../interface'
 import {
   elapsed,
   type FishingEvent,
@@ -10,7 +12,7 @@ import {
   tugName,
 } from './model'
 import { statisticsMessage } from './statistics'
-import type { useFishing } from './use-fishing'
+import { useFishing } from './use-fishing'
 import './index.css'
 
 const stateNames: Record<FishingEvent['action'], string> = {
@@ -61,7 +63,6 @@ export function FishingPanel({
           className="fishing-place"
           title={placeName(cast?.placeId ?? null)}
         >
-          <span className="tag">[钓鱼]</span>
           {placeName(cast?.placeId ?? null)}
         </span>
         <span className="fishing-clock">
@@ -170,12 +171,12 @@ export function FishingPanel({
                     left: `${Math.min(99.5, (duration / axis) * 100)}%`,
                   }}
                 />
+                <span className="fishing-tug" aria-label={tugName(tug)}>
+                  {tug ? '!'.repeat(tug) : '?'}
+                </span>
                 <span className="fishing-name">
                   {name}
                   {hookset && ` · ${hooksetName(hookset)}`}
-                </span>
-                <span className="fishing-tug" aria-label={tugName(tug)}>
-                  {tug ? '!'.repeat(tug) : '?'}
                 </span>
                 <span className="fishing-time">
                   {timeLabel}
@@ -216,17 +217,27 @@ export function FishingPanel({
             if (file) void importArchive(file)
           }}
         />
-        <button
-          type="button"
-          className="button"
+        <Button
+          variant="ghost"
+          size="xs"
           onClick={() => fileInput.current?.click()}
         >
           导入
-        </button>
-        <button type="button" className="button" onClick={exportArchive}>
+        </Button>
+        <Button variant="ghost" size="xs" onClick={exportArchive}>
           导出
-        </button>
+        </Button>
       </footer>
     </section>
+  )
+}
+
+export function FishingOverlay(props: OverlayProps) {
+  const fishing = useFishing(props)
+  if (!props.active) return null
+  return (
+    <div className="overlay overlay-fishing">
+      <FishingPanel fishing={fishing} />
+    </div>
   )
 }
