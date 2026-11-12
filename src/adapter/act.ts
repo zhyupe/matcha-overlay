@@ -1,4 +1,5 @@
 import type { MatchaEvent } from '../app/interface'
+import { loadActCatalog } from '../data/catalog'
 import { tryParseJson } from '../lib/json'
 import type { AdapterState, OverlayAdapter } from './types'
 
@@ -258,6 +259,7 @@ export const adapter: OverlayAdapter = {
   name: 'ACT',
   async prepare() {
     if (!stopped) return
+    await loadActCatalog()
     stopped = false
     const unsupported = window.location.search.includes('HOST_PORT')
     updateState({ unsupportedActWebSocket: unsupported })

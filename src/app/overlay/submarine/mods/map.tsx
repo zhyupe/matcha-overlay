@@ -155,7 +155,12 @@ export function VoyageMap({
   const ref = useRef<HTMLCanvasElement>(null)
   const map = maps[mapId]
   const mapImageUrl = useMemo(
-    () => (map?.image ? xivapi.formatIconUrl(map.image) : undefined),
+    () =>
+      map?.image
+        ? map.image.startsWith('mojito-plugin://')
+          ? map.image
+          : xivapi.formatIconUrl(map.image)
+        : undefined,
     [map?.image],
   )
   const mapImage = useImage(mapImageUrl)

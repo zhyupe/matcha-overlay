@@ -6,6 +6,7 @@ import {
   useState,
   useSyncExternalStore,
 } from 'react'
+import { catalogRevision, subscribeCatalog } from '../data/catalog'
 import './index.css'
 import { EventEmitter } from 'events'
 import { ChevronDown, Lock, LockOpen } from 'lucide-react'
@@ -111,9 +112,12 @@ function Header({
 }
 
 function App() {
+  const dataRevision = useSyncExternalStore(subscribeCatalog, catalogRevision)
   const {
     version,
     language,
+    status,
+    message,
     unsupportedActWebSocket: isActWS,
   } = useSyncExternalStore(adapter.subscribeState, adapter.getState)
   const eventEmitter = useMemo(() => new EventEmitter(), [])
@@ -125,6 +129,7 @@ function App() {
   const [lock, setLock] = useState<boolean>(false)
   const { className, style } = useContext(SeasonContext)
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Catalog changes remount panels; restore their retained event snapshot.
   useEffect(() => {
     let stopped = false
     let dispose: (() => void) | undefined
@@ -141,7 +146,7 @@ function App() {
       stopped = true
       dispose?.()
     }
-  }, [eventEmitter])
+  }, [eventEmitter, dataRevision])
 
   useEffect(() => {
     if (!version) return
@@ -150,7 +155,7 @@ function App() {
 
   const content = available.map(([key, { Component }]) => (
     <Component
-      key={key}
+      key={`${key}:${dataRevision}`}
       {...{
         version,
         language,
@@ -191,7 +196,10 @@ function App() {
           <Header
             {...{ activeTab, setActiveTab, setMinified, lock, setLock }}
           />
-          <main className="app-body">{content}</main>
+          <main className="app-body">
+            {status === 'error' && <div role="status">{message}</div>}
+            {content}
+          </main>
         </>
       )}
     </div>

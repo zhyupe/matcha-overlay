@@ -19,28 +19,45 @@ function fixture() {
     location: { protocol: 'mojito-plugin:', search: '' },
   })
   vi.stubGlobal('document', { documentElement: { dataset: {} } })
-  const command = vi.fn(async (_channel: string, value: any) => {
-    switch (value.action) {
-      case 'config.get':
-        return 'true'
-      case 'map.icon':
-        return `mojito-plugin://runtime/icon/${value.id}`
-      case 'map.image':
-        return `mojito-plugin://runtime/map/${value.id}`
-      case 'map.get':
-        return { rowId: 1, id: 's1f1/00', marker: 1, sizeFactor: 100 }
-      case 'map.markers':
-        return [{ icon: 60561, x: 1, y: 2 }]
-      case 'http':
-        return {
-          body: new Uint8Array([1]),
-          status: 200,
-          headers: { 'content-type': 'image/png' },
-        }
-      default:
-        return null
-    }
-  })
+  const command = vi.fn(
+    async (_channel: string, value: any): Promise<Value> => {
+      switch (value.action) {
+        case 'data.catalog':
+          return {
+            fishing: {
+              fish: { 1: '客户端鱼' },
+              tackle: {},
+              places: {},
+              placefish: {},
+            },
+            maps: {},
+            treasures: {},
+            worlds: {},
+            submarineMap: {},
+            submarineParts: {},
+            submarineRanks: {},
+          }
+        case 'config.get':
+          return 'true'
+        case 'map.icon':
+          return `mojito-plugin://runtime/icon/${value.id}`
+        case 'map.image':
+          return `mojito-plugin://runtime/map/${value.id}`
+        case 'map.get':
+          return { rowId: 1, id: 's1f1/00', marker: 1, sizeFactor: 100 }
+        case 'map.markers':
+          return [{ icon: 60561, x: 1, y: 2 }]
+        case 'http':
+          return {
+            body: new Uint8Array([1]),
+            status: 200,
+            headers: { 'content-type': 'image/png' },
+          }
+        default:
+          return null
+      }
+    },
+  )
   const bridge = {
     identity: { kind: 'overlay' },
     command,
@@ -218,4 +235,51 @@ it('queries local item commands and uses client image URLs without a fetch', asy
   expect(f.command).toHaveBeenCalledTimes(calls)
   expect(f.originalFetch).not.toHaveBeenCalled()
   adapter.dispose()
+})
+
+it('loads client catalogs before render, clears them on disposal and keeps ACT snapshots separate', async () => {
+  const f = fixture()
+  const { adapter } = await import('./index')
+  const { FishingCatalog } = await import('../data/fishing')
+  const { loadActCatalog } = await import('../data/catalog')
+  await loadActCatalog()
+  expect(FishingCatalog.fish[4776]).toBe('星里海带')
+  await adapter.prepare()
+  expect(FishingCatalog.fish).toEqual({ 1: '客户端鱼' })
+  expect(f.command).toHaveBeenCalledWith(
+    'matcha.command',
+    { action: 'data.catalog' },
+    expect.anything(),
+  )
+  adapter.dispose()
+  expect(FishingCatalog.fish).toEqual({})
+})
+
+it('refreshes catalogs when client data changes and rejects late results after disposal', async () => {
+  const f = fixture()
+  const { adapter } = await import('./index')
+  const { FishingCatalog } = await import('../data/fishing')
+  await adapter.prepare()
+  let finish!: (value: Value) => void
+  f.command.mockImplementation(async (_channel, value) => {
+    if (value.action === 'data.catalog')
+      return new Promise<Value>((resolve) => {
+        finish = resolve
+      })
+    return null
+  })
+  await f.emit('matcha.status', [{ mapDataGeneration: 42 }])
+  expect(FishingCatalog.fish).toEqual({})
+  adapter.dispose()
+  finish({
+    fishing: { fish: { 999: 'stale' }, tackle: {}, places: {}, placefish: {} },
+    maps: {},
+    treasures: {},
+    worlds: {},
+    submarineMap: {},
+    submarineParts: {},
+    submarineRanks: {},
+  })
+  await new Promise((resolve) => setTimeout(resolve, 0))
+  expect(FishingCatalog.fish).toEqual({})
 })

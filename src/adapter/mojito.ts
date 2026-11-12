@@ -1,6 +1,11 @@
 import type { Value } from '@ffcafe/mojito-plugin-sdk'
 import type { ViewBridge } from '@ffcafe/mojito-plugin-sdk/view'
 import type { MapDataProvider } from '@thewakingsands/eorzea-interactive-map'
+import {
+  applyClientCatalog,
+  type ClientCatalog,
+  clearClientCatalog,
+} from '../data/catalog'
 import { imageUrls } from '../lib/image-urls'
 import type { AdapterState, OverlayAdapter, ViewClock } from './types'
 
@@ -70,6 +75,7 @@ export async function subscribeMojito(
     lastSequence = -1
     updateSourceClock(state)
     updateSourceData(state)
+    await refreshCatalog()
     metadata?.({
       language:
         'language' in state && typeof state.language === 'string'
@@ -211,6 +217,11 @@ export function updateSourceData(value: Value) {
   ) {
     mapDataGeneration = value.mapDataGeneration
     updateState({ mapGeneration: mapDataGeneration })
+    clearClientCatalog()
+    catalogRequest = undefined
+    void refreshCatalog().catch((error) =>
+      setSourceStatus('error', String(error)),
+    )
     for (const listener of mapDataListeners) listener()
   }
   if (!value || typeof value !== 'object' || !('dataSourceInfo' in value))
@@ -257,6 +268,29 @@ async function command(
     { action, ...values },
     { signal: lifetime.signal },
   )
+}
+let catalogRequest: Promise<void> | undefined
+async function refreshCatalog() {
+  if (!bridge) return
+  if (!catalogRequest) {
+    const generation = mapDataGeneration
+    const connection = bridge,
+      signal = lifetime.signal
+    const request = command('data.catalog')
+      .then((value) => {
+        signal.throwIfAborted()
+        if (bridge !== connection || generation !== mapDataGeneration) return
+        applyClientCatalog(value as unknown as ClientCatalog)
+        setSourceStatus('connected', '')
+        updateState({ mapGeneration: generation })
+      })
+      .catch((error) => {
+        if (catalogRequest === request) catalogRequest = undefined
+        throw error
+      })
+    catalogRequest = request
+  }
+  return catalogRequest
 }
 export async function queryItems(ids: number[]) {
   return command('item.get', { ids }) as unknown as Promise<
@@ -318,16 +352,23 @@ export async function prepareSource() {
     clock.dispose()
     if (originalFetch) window.fetch = originalFetch
     bridge = undefined
+    catalogRequest = undefined
+    clearClientCatalog()
   }
   try {
     await Promise.all([changes.ready, clock.ready])
     await hydrateStorage(touched)
+    await refreshCatalog().catch(() =>
+      setSourceStatus('error', '客户端游戏资料暂不可用'),
+    )
     signal.throwIfAborted()
   } catch (error) {
     changes.dispose()
     clock.dispose()
     if (originalFetch) window.fetch = originalFetch
     bridge = undefined
+    catalogRequest = undefined
+    clearClientCatalog()
     throw error
   }
 }
