@@ -1,4 +1,4 @@
-import cn from 'classnames'
+import clsx from 'clsx'
 import './index.scss'
 
 export interface RadioItem<T> {
@@ -20,7 +20,7 @@ export function RadioGroup<T>({
       {data.map((item) => (
         <button
           key={`${item.value}`}
-          className={cn(item.value === value && 'active')}
+          className={clsx(item.value === value && 'active')}
           onClick={() => onChange(item.value)}
         >
           {item.label}

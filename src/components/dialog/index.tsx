@@ -1,4 +1,4 @@
-import cn from 'classnames'
+import clsx from 'clsx'
 import type { PropsWithChildren } from 'react'
 import './index.scss'
 
@@ -11,7 +11,7 @@ export function Dialog({
   direction: 'top-right' | 'top-left'
 }>) {
   return (
-    <div className={cn('dialog', `dialog-${direction}`, className)}>
+    <div className={clsx('dialog', `dialog-${direction}`, className)}>
       {children}
     </div>
   )

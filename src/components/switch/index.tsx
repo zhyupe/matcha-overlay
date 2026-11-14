@@ -1,4 +1,4 @@
-import cn from 'classnames'
+import clsx from 'clsx'
 import './index.scss'
 
 export function Switch({
@@ -10,7 +10,7 @@ export function Switch({
 }) {
   return (
     <div
-      className={cn('switch', value && 'active')}
+      className={clsx('switch', value && 'active')}
       onClick={() => onChange(!value)}
     ></div>
   )

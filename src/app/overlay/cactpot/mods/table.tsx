@@ -1,4 +1,4 @@
-import cn from 'classnames'
+import clsx from 'clsx'
 import { Check } from 'lucide-react'
 import { useMemo } from 'react'
 import type { GameState } from '../interface'
@@ -45,7 +45,7 @@ export function InputBody({
 }) {
   return (
     <span
-      className={cn(
+      className={clsx(
         'cactpot-input',
         unknown && 'unknown',
         suggested && 'suggested',
