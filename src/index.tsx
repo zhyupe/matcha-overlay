@@ -1,7 +1,6 @@
 import { adapter } from './adapter'
 
 const root = document.getElementById('root')
-if (root) root.textContent = '正在读取游戏资料…'
 
 window.addEventListener('pagehide', () => adapter.dispose(), { once: true })
 void adapter

@@ -1,4 +1,4 @@
-/* The overlay window: one translucent dark panel with a title bar, or the folded logo tile */
+/* The overlay window: one translucent dark panel with a title bar, or the folded logo */
 .app {
   display: flex;
   flex-direction: column;
@@ -12,10 +12,10 @@
 }
 
 .app-minified {
-  display: inline-flex;
-  height: auto;
-  padding: 4px;
-  border-radius: var(--radius-control);
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
 }
 
 .app-header {
@@ -38,10 +38,6 @@
 .app-logo:hover {
   background: var(--color-hover);
 }
-.app-minified .app-logo {
-  width: 32px;
-  height: 32px;
-}
 
 .logo {
   display: grid;
@@ -51,11 +47,6 @@
 .logo img {
   width: 20px;
   height: 20px;
-}
-.app-minified .logo svg,
-.app-minified .logo img {
-  width: 24px;
-  height: 24px;
 }
 .logo path {
   fill: var(--color-lime);
@@ -100,14 +91,14 @@
 }
 
 /* In Mojito the title bar moves the window; its controls stay clickable */
-html[data-matcha-view="overlay"] .app-header {
+html[data-matcha-view='overlay'] .app-header {
   -webkit-app-region: drag;
 }
-html[data-matcha-view="overlay"] .app-logo,
-html[data-matcha-view="overlay"] .app-header button,
-html[data-matcha-view="overlay"] button,
-html[data-matcha-view="overlay"] input,
-html[data-matcha-view="overlay"] select {
+html[data-matcha-view='overlay'] .app-logo,
+html[data-matcha-view='overlay'] .app-header button,
+html[data-matcha-view='overlay'] button,
+html[data-matcha-view='overlay'] input,
+html[data-matcha-view='overlay'] select {
   -webkit-app-region: no-drag;
 }
 
