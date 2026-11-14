@@ -26,6 +26,16 @@ try {
     mergeArchives,
     isMoochBait,
   } = await import(pathToFileURL(path))
+  const catalogPath = join(temp, 'catalog.mjs')
+  await build({
+    entryPoints: ['src/data/act/fishing.ts'],
+    outfile: catalogPath,
+    bundle: true,
+    platform: 'node',
+    format: 'esm',
+  })
+  const { FishingCatalog } = await import(pathToFileURL(catalogPath))
+  Object.assign(catalog, FishingCatalog)
   const clockPath = join(temp, 'clock.mjs')
   await build({
     entryPoints: ['src/app/overlay/fishing/clock.ts'],

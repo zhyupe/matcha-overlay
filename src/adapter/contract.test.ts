@@ -157,6 +157,47 @@ it('provides state, storage, events, speech and authorized images through the Mo
   ])
   expect(receive).toHaveBeenCalledTimes(before)
 })
+it('keeps fishing data until the host confirms its targeted removal', async () => {
+  const f = fixture()
+  const { adapter } = await import('./mojito')
+  await adapter.prepare()
+  let finish!: (value: Value) => void
+  f.command.mockImplementationOnce(
+    () =>
+      new Promise<Value>((resolve) => {
+        finish = resolve
+      }),
+  )
+  const pending = adapter.storage.removeItem('matcha-fishing-v1')
+  expect(adapter.storage.getItem('matcha-fishing-v1')).toBe('true')
+  await Promise.resolve()
+  expect(f.command).toHaveBeenLastCalledWith(
+    'matcha.command',
+    { action: 'config.set', key: 'overlay.matcha-fishing-v1', value: null },
+    expect.anything(),
+  )
+  finish(null)
+  await pending
+  expect(adapter.storage.getItem('matcha-fishing-v1')).toBeNull()
+  expect(adapter.storage.getItem('config:app-minified')).toBe('true')
+  adapter.dispose()
+})
+
+it('preserves fishing data on a rejected deletion and allows a retry', async () => {
+  const f = fixture()
+  const { adapter } = await import('./mojito')
+  await adapter.prepare()
+  f.command.mockRejectedValueOnce(new Error('permission_denied'))
+  await expect(adapter.storage.removeItem('matcha-fishing-v1')).rejects.toThrow(
+    'permission_denied',
+  )
+  expect(adapter.storage.getItem('matcha-fishing-v1')).toBe('true')
+  await adapter.storage.removeItem('matcha-fishing-v1')
+  expect(adapter.storage.getItem('matcha-fishing-v1')).toBeNull()
+  expect(adapter.storage.getItem('config:app-minified')).toBe('true')
+  adapter.dispose()
+})
+
 it('keeps map resolvers synchronous after async preparation and clears them on disposal', async () => {
   fixture()
   const { adapter } = await import('./mojito')

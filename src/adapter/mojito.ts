@@ -418,12 +418,7 @@ async function hydrateStorage(touched: Set<string>) {
     }),
   )
 }
-export const sourceStorage: Pick<
-  Storage,
-  'getItem' | 'setItem' | 'removeItem'
-> & {
-  subscribe(key: string, callback: (value: string | null) => void): () => void
-} = {
+export const sourceStorage: OverlayAdapter['storage'] = {
   subscribe(key, callback) {
     let listeners = storageListeners.get(key)
     if (!listeners) {
@@ -452,14 +447,14 @@ export const sourceStorage: Pick<
       )
   },
   removeItem(key) {
-    memory.delete(key)
-    writes = writes
-      .then(async () => {
-        await command('config.set', { key: `overlay.${key}`, value: null })
-      })
-      .catch((error: unknown) =>
-        setSourceStatus('error', `保存失败：${String(error)}`),
-      )
+    const removal = writes.then(async () => {
+      await command('config.set', { key: `overlay.${key}`, value: null })
+      memory.delete(key)
+    })
+    writes = removal.catch((error: unknown) =>
+      setSourceStatus('error', `保存失败：${String(error)}`),
+    )
+    return removal
   },
 }
 

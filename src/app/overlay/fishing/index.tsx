@@ -1,4 +1,5 @@
-import { type CSSProperties, useRef } from 'react'
+import { AlertDialog } from '@base-ui/react/alert-dialog'
+import { type CSSProperties, useRef, useState } from 'react'
 import { Button } from '#components/ui/button'
 import type { OverlayProps } from '../../interface'
 import {
@@ -35,6 +36,8 @@ export function FishingPanel({
   fishing: ReturnType<typeof useFishing>
 }) {
   const fileInput = useRef<HTMLInputElement>(null)
+  const cancelClear = useRef<HTMLButtonElement>(null)
+  const [clearOpen, setClearOpen] = useState(false)
   const {
     cast,
     statistics,
@@ -43,6 +46,10 @@ export function FishingPanel({
     baseBait,
     running,
     message,
+    messageDetail,
+    hasInvalidArchive,
+    clearing,
+    clearInvalidArchive,
     importArchive,
     exportArchive,
   } = fishing
@@ -200,7 +207,9 @@ export function FishingPanel({
           <p
             className="fishing-message"
             role="status"
-            title={message || '长时间未收到后续事件，请检查连接。'}
+            title={
+              messageDetail || message || '长时间未收到后续事件，请检查连接。'
+            }
           >
             {message || '请检查连接。'}
           </p>
@@ -227,6 +236,54 @@ export function FishingPanel({
         <Button variant="ghost" size="xs" onClick={exportArchive}>
           导出
         </Button>
+        {hasInvalidArchive && (
+          <AlertDialog.Root
+            open={clearOpen}
+            onOpenChange={(open) => {
+              if (!clearing) setClearOpen(open)
+            }}
+          >
+            <AlertDialog.Trigger render={<Button variant="ghost" size="xs" />}>
+              清理
+            </AlertDialog.Trigger>
+            <AlertDialog.Portal>
+              <AlertDialog.Backdrop className="fixed inset-0 z-50 bg-black/50" />
+              <AlertDialog.Popup
+                initialFocus={cancelClear}
+                className="fixed top-1/2 left-1/2 z-50 max-h-[calc(100dvh-24px)] w-[min(360px,calc(100vw-24px))] -translate-x-1/2 -translate-y-1/2 overflow-auto rounded-panel border border-line bg-pop p-4 text-fg shadow-pop"
+              >
+                <AlertDialog.Title className="text-sm font-semibold">
+                  清理钓鱼存档？
+                </AlertDialog.Title>
+                <AlertDialog.Description className="mt-2 text-sm text-fg-2">
+                  将删除异常的本地钓鱼存档（鱼获及导入资料），无法恢复。其他功能数据及鱼漂统计不受影响。
+                </AlertDialog.Description>
+                <p className="mt-2 text-xs text-fg-3" role="status">
+                  {messageDetail || message}
+                </p>
+                <div className="mt-4 flex flex-wrap justify-end gap-2">
+                  <Button onClick={exportArchive} disabled={clearing}>
+                    导出
+                  </Button>
+                  <AlertDialog.Close
+                    render={<Button ref={cancelClear} disabled={clearing} />}
+                  >
+                    取消
+                  </AlertDialog.Close>
+                  <Button
+                    className="text-danger"
+                    disabled={clearing}
+                    onClick={async () => {
+                      if (await clearInvalidArchive()) setClearOpen(false)
+                    }}
+                  >
+                    {clearing ? '清理中…' : '清理'}
+                  </Button>
+                </div>
+              </AlertDialog.Popup>
+            </AlertDialog.Portal>
+          </AlertDialog.Root>
+        )}
       </footer>
     </section>
   )

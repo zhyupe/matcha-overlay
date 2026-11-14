@@ -28,7 +28,8 @@ export interface OverlayAdapter {
   ): Promise<Dispose>
   getState(): AdapterState
   subscribeState(listener: () => void): Dispose
-  storage: Pick<Storage, 'getItem' | 'setItem' | 'removeItem'> & {
+  storage: Pick<Storage, 'getItem' | 'setItem'> & {
+    removeItem(key: string): void | Promise<void>
     subscribe(key: string, listener: (value: string | null) => void): Dispose
   }
   speak(text: string): Promise<void>

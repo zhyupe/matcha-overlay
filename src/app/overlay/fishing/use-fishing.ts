@@ -19,6 +19,20 @@ import { type FishingStatistics, validStatistics } from './statistics'
 
 const storageKey = 'matcha-fishing-v1'
 
+export async function removeInvalidFishingArchive(text: string) {
+  if (adapter.storage.getItem(storageKey) !== text)
+    throw new Error('钓鱼存档已变化，请重新加载后检查，未清理。')
+  let valid = false
+  try {
+    parseArchive(text)
+    valid = true
+  } catch {
+    // Only an archive rejected by the reader can be cleared here.
+  }
+  if (valid) throw new Error('钓鱼存档有效，未清理。')
+  await adapter.storage.removeItem(storageKey)
+}
+
 export function useFishing({ eventEmitter, active, setActive }: OverlayProps) {
   const [statistics, setStatistics] = useState<FishingStatistics | null>(null)
   const statisticsRef = useRef<FishingStatistics | null>(null)
@@ -29,7 +43,13 @@ export function useFishing({ eventEmitter, active, setActive }: OverlayProps) {
   const [archive, setArchive] = useState<Archive>(emptyArchive)
   const archiveRef = useRef(archive)
   const [loaded, setLoaded] = useState(false)
-  const [storageError, setStorageError] = useState('')
+  const [storageError, setStorageError] = useState<{
+    message: string
+    detail?: string
+  } | null>(null)
+  const [invalidArchive, setInvalidArchive] = useState<string | null>(null)
+  const [clearing, setClearing] = useState(false)
+  const clearingRef = useRef(false)
   const [message, setMessage] = useState('')
   const [now, setNow] = useState(0)
   const [baseBait, setBaseBait] = useState<number | null>(null)
@@ -42,9 +62,22 @@ export function useFishing({ eventEmitter, active, setActive }: OverlayProps) {
   useEffect(() => {
     try {
       const text = adapter.storage.getItem(storageKey)
-      if (text) updateArchive(parseArchive(text))
+      if (text !== null) {
+        try {
+          updateArchive(parseArchive(text))
+        } catch (error) {
+          setInvalidArchive(text)
+          const reason =
+            error instanceof SyntaxError
+              ? '存档不是有效的 JSON。'
+              : error instanceof Error
+                ? error.message
+                : '存档格式无效。'
+          setStorageError({ message: '本地数据读取失败。', detail: reason })
+        }
+      }
     } catch {
-      setStorageError('本地数据读取失败，原数据未覆盖。')
+      setStorageError({ message: '无法访问本地存储。' })
     }
     setLoaded(true)
   }, [updateArchive])
@@ -54,7 +87,7 @@ export function useFishing({ eventEmitter, active, setActive }: OverlayProps) {
     try {
       adapter.storage.setItem(storageKey, JSON.stringify(archive))
     } catch {
-      setStorageError('本地保存失败，请导出备份。')
+      setStorageError({ message: '本地保存失败，请导出备份。' })
     }
   }, [archive, loaded, storageError])
 
@@ -143,15 +176,40 @@ export function useFishing({ eventEmitter, active, setActive }: OverlayProps) {
 
   function exportArchive() {
     const url = URL.createObjectURL(
-      new Blob([JSON.stringify(archiveRef.current, null, 2)], {
-        type: 'application/json',
-      }),
+      new Blob(
+        [invalidArchive ?? JSON.stringify(archiveRef.current, null, 2)],
+        {
+          type: 'application/json',
+        },
+      ),
     )
     const link = document.createElement('a')
     link.href = url
-    link.download = `matcha-fishing-${new Date().toISOString().slice(0, 10)}.json`
+    link.download = `matcha-fishing-${invalidArchive !== null ? 'invalid-' : ''}${new Date().toISOString().slice(0, 10)}.json`
     link.click()
     setTimeout(() => URL.revokeObjectURL(url), 1000)
+  }
+
+  async function clearInvalidArchive() {
+    if (invalidArchive === null || clearingRef.current) return false
+    clearingRef.current = true
+    setClearing(true)
+    try {
+      await removeInvalidFishingArchive(invalidArchive)
+      setInvalidArchive(null)
+      setStorageError(null)
+      setMessage('已清理。')
+      return true
+    } catch (error) {
+      setStorageError({
+        message: '清理失败。',
+        detail: error instanceof Error ? error.message : undefined,
+      })
+      return false
+    } finally {
+      clearingRef.current = false
+      setClearing(false)
+    }
   }
 
   async function importArchive(file: File) {
@@ -174,7 +232,11 @@ export function useFishing({ eventEmitter, active, setActive }: OverlayProps) {
     now,
     baseBait,
     running,
-    message: storageError || message,
+    message: storageError?.message || message,
+    messageDetail: storageError?.detail,
+    hasInvalidArchive: invalidArchive !== null,
+    clearing,
+    clearInvalidArchive,
     importArchive,
     exportArchive,
   }
