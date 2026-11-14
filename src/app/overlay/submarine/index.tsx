@@ -70,11 +70,6 @@ export function SubmarineOverlay({
 
   useEvent<SubmarinePartsLog>(eventEmitter, 'SubmarineParts', (data) => {
     setConditions((previous) => updateConditionSnapshots(previous, data))
-    if (data.reset) {
-      setShips([])
-      setActiveKey(0)
-      setRoutes([])
-    }
   })
 
   const activeShip = ships[activeKey]

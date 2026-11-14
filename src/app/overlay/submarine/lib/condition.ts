@@ -50,7 +50,7 @@ export function readPartCondition(
 }
 
 export function formatCondition(condition: number | null | undefined): string {
-  if (condition == null) return '耐久未知'
+  if (condition == null) return ''
   if (condition === 0) return '已损坏'
   if (condition < 300) return '<1%'
   return `${Math.floor(condition / 300)}%`

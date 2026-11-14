@@ -11,6 +11,7 @@ import type { SubmarineMap } from '../../../../data/submarine'
 import { useImageUrl } from '../../../../lib/image'
 import { xivapi } from '../../../../lib/xivapi'
 import type { useSpotStatus } from '../lib/ship'
+import startMarker from './start.svg?raw'
 
 const imageWidth = 880
 const imageHeight = 760
@@ -27,8 +28,9 @@ const width = imageWidth - clipLeft - clipRight
 const height = imageHeight - clipTop - clipBottom
 const canvasSize = Math.max(width, height)
 
-// Mojito's overlay palette: the start in white, explored spots in lime, unexplored ones as dashed outlines
-const colorStart = '#f4f4f8'
+// A blue button marks the start; explored spots are lime, unexplored ones dashed.
+const startMarkerUrl = `data:image/svg+xml,${encodeURIComponent(startMarker)}`
+const colorStart = '#65adb9'
 const colorSpot = '#bfe85a'
 const colorSpotInk = '#1f2a0e'
 const colorOpen = 'rgba(255, 255, 255, 0.55)'
@@ -125,7 +127,7 @@ function Legend() {
   return (
     <div className="flex flex-wrap items-center gap-4 text-xs text-fg-2">
       <span className="flex items-center gap-1.5">
-        <Circle color={colorStart} />
+        <img className="size-[18px] shrink-0" src={startMarkerUrl} alt="" />
         起点
       </span>
       <span className="flex items-center gap-1.5">
@@ -164,6 +166,7 @@ export function VoyageMap({
     [map?.image],
   )
   const mapImage = useImage(mapImageUrl)
+  const startImage = useImage(startMarkerUrl)
 
   useEffect(() => {
     const canvas = ref.current
@@ -180,20 +183,22 @@ export function VoyageMap({
     }
 
     ctx.save()
-    ctx.setLineDash([6, 8])
-    ctx.lineWidth = 3
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)'
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)'
-    ctx.shadowOffsetY = 1
+    ctx.setLineDash([12, 8])
+    ctx.lineCap = 'round'
+    ctx.beginPath()
 
     for (const spot of Object.values(map.spots)) {
       if (!spot.parent) continue
 
-      ctx.beginPath()
       ctx.moveTo(...spotToCanvas(map.spots[spot.parent]))
       ctx.lineTo(...spotToCanvas(spot))
-      ctx.stroke()
     }
+    ctx.strokeStyle = 'rgba(5, 15, 25, 0.85)'
+    ctx.lineWidth = 6
+    ctx.stroke()
+    ctx.strokeStyle = '#d2ecf2'
+    ctx.lineWidth = 2
+    ctx.stroke()
 
     ctx.restore()
 
@@ -204,6 +209,11 @@ export function VoyageMap({
     for (const spot of Object.values(map.spots)) {
       const [x, y] = spotToCanvas(spot)
       const isStart = spot.location === '0'
+      if (isStart && startImage) {
+        const size = (radius + 3) * 2
+        ctx.drawImage(startImage, x - size / 2, y - size / 2, size, size)
+        continue
+      }
       const color = isStart ? colorStart : colorSpot
       const isDiscovered = isStart || spotStatus.get(mapId, spot.location)
 
@@ -243,7 +253,7 @@ export function VoyageMap({
     return () => {
       canvas.removeEventListener('click', handler)
     }
-  }, [mapId, map, mapImage, spotStatus])
+  }, [mapId, map, mapImage, startImage, spotStatus])
 
   const menu = useMemo(() => Object.entries(maps), [maps])
   const mapItems = useMemo(

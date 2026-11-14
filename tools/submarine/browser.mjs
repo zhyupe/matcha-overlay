@@ -46,13 +46,13 @@ try {
   await page.getByText('已损坏', { exact: true }).waitFor()
   await page.getByText('50%', { exact: true }).waitFor()
   await page.getByText('100%', { exact: true }).waitFor()
-  await page.getByText('耐久未知', { exact: true }).waitFor()
+  assert.equal(await page.getByText('耐久未知', { exact: true }).count(), 0)
   assert.match(
     await page
       .getByText('已损坏', { exact: true })
       .locator('..')
       .getAttribute('class'),
-    /text-red-200/,
+    /text-danger/,
   )
   await emit('SubmarineParts', {
     reset: false,
@@ -64,14 +64,18 @@ try {
   // Changing to another catalog item invalidates a cached condition.
   await emit('SubmarineStatus', { ...status, hull: 7 })
   await page.waitForFunction(
-    () => document.body.innerText.split('耐久未知').length === 3,
+    () => document.body.innerText.split('100%').length === 2,
   )
   await emit('SubmarineParts', { reset: true, index: -1, parts: [] })
-  await page.getByText('请到部队工房管理潜水艇', { exact: true }).waitFor()
-  await emit('SubmarineStatus', status)
-  await page.waitForFunction(
-    () => document.body.innerText.split('耐久未知').length === 5,
+  await page.waitForFunction(() => !document.body.innerText.includes('100%'))
+  assert.equal(await page.getByText('测试潜艇', { exact: true }).count(), 1)
+  assert.equal(
+    await page.getByText('请到部队工房管理潜水艇', { exact: true }).count(),
+    0,
   )
+  assert.equal(await page.getByText('耐久未知', { exact: true }).count(), 0)
+  await emit('SubmarineStatus', status)
+  assert.equal(await page.getByText('耐久未知', { exact: true }).count(), 0)
   assert.deepEqual(errors, [])
   console.log('Synthetic submarine browser checks passed.')
 } finally {

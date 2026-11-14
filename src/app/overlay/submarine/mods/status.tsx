@@ -17,7 +17,9 @@ function ShipPart({
   return (
     <Chip tone={condition === 0 ? 'danger' : undefined}>
       {getShipPartName(ship.type, slot, ship.parts[slot])}
-      <span className="text-fg-3">{formatCondition(condition)}</span>
+      {condition != null && (
+        <span className="text-fg-3">{formatCondition(condition)}</span>
+      )}
     </Chip>
   )
 }

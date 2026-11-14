@@ -50,8 +50,8 @@ test('invalid entries and changed equipment cannot show stale durability', () =>
 })
 
 test('presentation distinguishes missing, broken, low and full conditions', () => {
-  assert.equal(formatCondition(null), '耐久未知')
-  assert.equal(formatCondition(undefined), '耐久未知')
+  assert.equal(formatCondition(null), '')
+  assert.equal(formatCondition(undefined), '')
   assert.equal(formatCondition(0), '已损坏')
   assert.equal(formatCondition(1), '<1%')
   assert.equal(formatCondition(14999), '49%')
